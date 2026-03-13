@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outpost Leasing Tool 2.0</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root {
+    --primary: #1a365d;
+    --primary-light: #2a4a7f;
+    --accent: #2b6cb0;
+    --success: #276749;
+    --success-bg: #c6f6d5;
+    --danger: #9b2c2c;
+    --danger-bg: #fed7d7;
+    --warning: #975a16;
+    --warning-bg: #fefcbf;
+    --gray-50: #f7fafc;
+    --gray-100: #edf2f7;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e0;
+    --gray-400: #a0aec0;
+    --gray-500: #718096;
+    --gray-600: #4a5568;
+    --gray-700: #2d3748;
+    --gray-800: #1a202c;
+    --border: #cbd5e0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--gray-100); color: var(--gray-800); font-size: 14px; }
+  .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+  /* TOP BAR */
+  .top-bar { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+  .top-bar-left h1 { font-size: 24px; color: var(--primary); margin-bottom: 4px; }
+  .top-bar-left .subtitle { color: var(--gray-500); font-size: 13px; }
+  .print-btn { background: var(--primary); color: #fff; border: none; border-radius: 6px; padding: 9px 18px; font-size: 13px; cursor: pointer; font-weight: 600; letter-spacing: 0.3px; }
+  .print-btn:hover { background: var(--primary-light); }
+
+  /* LAYOUT */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .card { background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.1); padding: 20px; margin-bottom: 20px; }
+  .card-title { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--accent); display: flex; justify-content: space-between; align-items: center; }
+
+  /* FORM */
+  .form-row { display: grid; grid-template-columns: 180px 1fr; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .form-row label { font-weight: 600; font-size: 13px; color: var(--gray-600); }
+  .form-row-3 { display: grid; grid-template-columns: 180px 1fr 1fr; align-items: center; gap: 8px; margin-bottom: 8px; }
+  input, select, textarea { padding: 6px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; color: var(--gray-700); background: #fff; font-family: inherit; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(43,108,176,.15); }
+  input[type="number"] { text-align: right; }
+  input[readonly] { background: var(--gray-50); color: var(--gray-500); }
+  .computed { background: var(--gray-50); font-weight: 600; color: var(--primary); }
+  .hint { font-size: 11px; color: var(--gray-400); font-style: italic; }
+  textarea.notes-area { width: 100%; resize: vertical; min-height: 75px; }
+
+  /* TABLES */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: var(--primary); color: #fff; padding: 8px 10px; text-align: left; font-weight: 600; font-size: 12px; }
+  td { padding: 6px 10px; border-bottom: 1px solid var(--gray-200); }
+  tr:hover td { background: var(--gray-50); }
+  .space-table th { font-size: 11px; }
+  .space-table input, .space-table select { width: 100%; font-size: 12px; padding: 4px 6px; }
+  .space-table .num { text-align: right; }
+  .esc-table input { width: 100%; font-size: 12px; padding: 4px 6px; }
+  .esc-table .num { text-align: right; }
+
+  /* SCORECARD */
+  .scorecard-row { display: grid; grid-template-columns: 1fr 70px 70px 70px; gap: 4px; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--gray-200); font-size: 13px; }
+  .scorecard-row:hover { background: var(--gray-50); }
+  .scorecard-header { font-weight: 700; font-size: 12px; color: var(--gray-500); text-transform: uppercase; background: var(--gray-100); }
+  .score-badge { text-align: center; font-weight: 700; padding: 2px 8px; border-radius: 12px; font-size: 12px; }
+  .score-positive { background: var(--success-bg); color: var(--success); }
+  .score-negative { background: var(--danger-bg); color: var(--danger); }
+  .score-neutral { background: var(--gray-200); color: var(--gray-600); }
+  .check-pass { color: var(--success); font-weight: 700; }
+  .check-fail { color: var(--danger); font-weight: 700; }
+  .result-banner { padding: 16px 24px; border-radius: 8px; text-align: center; font-size: 20px; font-weight: 800; letter-spacing: 1px; margin-top: 16px; }
+  .result-pass { background: var(--success-bg); color: var(--success); border: 2px solid var(--success); }
+  .result-fail { background: var(--danger-bg); color: var(--danger); border: 2px solid var(--danger); }
+
+  /* SUMMARY BOXES */
+  .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .summary-box { background: var(--gray-50); border-radius: 6px; padding: 12px; border-left: 4px solid var(--accent); }
+  .summary-box .label { font-size: 11px; color: var(--gray-500); text-transform: uppercase; font-weight: 600; }
+  .summary-box .value { font-size: 18px; font-weight: 700; color: var(--primary); margin-top: 4px; }
+  .summary-box .sub { font-size: 11px; color: var(--gray-400); }
+  .summary-box.green { border-left-color: var(--success); }
+  .summary-box.red { border-left-color: var(--danger); }
+
+  /* METRIC BOXES */
+  .metric-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 4px; }
+  .metric-box { background: var(--gray-50); border-radius: 6px; padding: 10px 12px; border-left: 3px solid var(--accent); }
+  .metric-box .m-label { font-size: 10px; color: var(--gray-500); text-transform: uppercase; font-weight: 600; }
+  .metric-box .m-value { font-size: 15px; font-weight: 700; color: var(--primary); margin-top: 3px; }
+  .metric-box .m-sub { font-size: 10px; color: var(--gray-400); margin-top: 2px; }
+  .metric-box.green { border-left-color: var(--success); }
+  .metric-box.red { border-left-color: var(--danger); }
+  .metric-box.yellow { border-left-color: #d69e2e; }
+
+  /* MARKET DELTA BADGE */
+  .market-delta { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+  .delta-up { background: var(--success-bg); color: var(--success); }
+  .delta-down { background: var(--danger-bg); color: var(--danger); }
+  .delta-flat { background: var(--gray-200); color: var(--gray-600); }
+
+
+  /* CASH FLOW TABLE */
+  .cf-wrap { max-height: 320px; overflow-y: auto; border: 1px solid var(--gray-200); border-radius: 4px; margin-top: 8px; }
+  .cf-table th { font-size: 11px; text-align: right; position: sticky; top: 0; z-index: 1; }
+  .cf-table th:first-child, .cf-table th:nth-child(2) { text-align: left; }
+  .cf-table td { font-size: 11px; text-align: right; }
+  .cf-table td:first-child, .cf-table td:nth-child(2) { text-align: left; }
+  .cf-table .neg { color: var(--danger); }
+  .cf-table .pos { color: var(--success); }
+  .cf-table tr.free-row td { background: #fffbeb; }
+  .toggle-btn { background: var(--gray-100); border: 1px solid var(--gray-300); border-radius: 4px; padding: 3px 12px; font-size: 12px; cursor: pointer; color: var(--gray-600); font-weight: 600; }
+  .toggle-btn:hover { background: var(--gray-200); }
+
+  /* OTHER */
+  .rent-sched-table td { font-size: 12px; }
+  .section-divider { margin: 12px 0; border: 0; border-top: 1px dashed var(--gray-300); }
+  .nnn-note { background: var(--warning-bg); color: var(--warning); padding: 8px 12px; border-radius: 4px; font-size: 12px; margin-bottom: 12px; }
+
+  /* PRINT */
+  @media print {
+    .no-print { display: none !important; }
+    body { background: #fff; font-size: 12px; }
+    .container { padding: 0; max-width: 100%; }
+    .grid { grid-template-columns: 1fr; }
+    .card { box-shadow: none; border: 1px solid var(--gray-300); page-break-inside: avoid; margin-bottom: 10px; padding: 14px; }
+    .card-title { font-size: 14px; margin-bottom: 10px; }
+    input[readonly], .computed { background: transparent; color: var(--gray-800); border: none; padding: 0; font-weight: 600; }
+    .nnn-note { display: none; }
+    #cfSection { display: block !important; }
+  }
+  @media (max-width: 1000px) { .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <h1>Outpost Leasing Tool 2.0</h1>
+      <p class="subtitle">Lease Proposal vs. Underwriting Comparison</p>
+    </div>
+    <div class="no-print" style="display:flex; gap:10px; align-items:center;">
+      <button class="print-btn" onclick="window.print()">⬇ Export / Print</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- ===== LEFT COLUMN: INPUTS ===== -->
+    <div>
+
+      <!-- LEASE INFO -->
+      <div class="card">
+        <div class="card-title">Lease Info</div>
+        <div class="form-row">
+          <label>Prepared By</label>
+          <input type="text" id="preparedBy" placeholder="Your name">
+        </div>
+        <div class="form-row">
+          <label>Date</label>
+          <input type="date" id="prepDate" value="">
+        </div>
+        <div class="form-row">
+          <label>Yard</label>
+          <select id="yard" onchange="recalc()">
+            <option value="">-- Select --</option>
+            <option value="DEN2">DEN2</option>
+            <option value="DFW3">DFW3</option>
+            <option value="DTW1">DTW1</option>
+            <option value="HOU2">HOU2</option>
+            <option value="LRD2">LRD2</option>
+            <option value="PHX3">PHX3</option>
+            <option value="SAT2">SAT2</option>
+            <option value="SAV1">SAV1</option>
+            <option value="LAS5">LAS5</option>
+            <option value="ONT4">ONT4</option>
+            <option value="DFW4">DFW4</option>
+            <option value="ONT5">ONT5</option>
+            <option value="PDX4" selected>PDX4</option>
+            <option value="EWR2">EWR2</option>
+            <option value="MIA1">MIA1</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Lease Type</label>
+          <select id="leaseType" onchange="recalc()">
+            <option value="NNN" selected>NNN</option>
+            <option value="Gross">Gross</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Commencement Date</label>
+          <input type="date" id="commDate" value="2026-05-01" onchange="recalc()">
+        </div>
+        <div class="form-row">
+          <label>Expiration Date</label>
+          <input type="date" id="expDate" value="2029-01-31" onchange="recalc()">
+        </div>
+        <div class="form-row">
+          <label>Lease Term (Months)</label>
+          <input type="text" id="leaseTerm" readonly class="computed">
+        </div>
+      </div>
+
+      <!-- SPACE LEASED -->
+      <div class="card">
+        <div class="card-title">Space Leased</div>
+        <table class="space-table">
+          <thead>
+            <tr>
+              <th style="width:25%">Type</th>
+              <th style="width:15%">Units</th>
+              <th style="width:20%">Quantity</th>
+              <th style="width:20%">Rate</th>
+              <th style="width:20%">Total/Month</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><select id="s1type" onchange="recalc()"><option value="">--</option><option value="Yard" selected>Yard</option><option value="Truck/Trailer">Truck/Trailer</option><option value="Office">Office</option><option value="Terminal">Terminal</option><option value="Maintenance">Maintenance</option><option value="Other">Other</option></select></td>
+              <td><select id="s1units" onchange="recalc()"><option value="Acres" selected>Acres</option><option value="SF">SF</option><option value="Spaces">Spaces</option></select></td>
+              <td><input type="number" id="s1qty" value="2100" class="num" onchange="recalc()"></td>
+              <td><input type="number" id="s1rate" value="1" step="0.01" class="num" onchange="recalc()"></td>
+              <td><input type="text" id="s1total" readonly class="computed num"></td>
+            </tr>
+            <tr>
+              <td><select id="s2type" onchange="recalc()"><option value="" selected>--</option><option value="Yard">Yard</option><option value="Truck/Trailer">Truck/Trailer</option><option value="Office">Office</option><option value="Terminal">Terminal</option><option value="Maintenance">Maintenance</option><option value="Other">Other</option></select></td>
+              <td><select id="s2units" onchange="recalc()"><option value="Acres">Acres</option><option value="SF">SF</option><option value="Spaces">Spaces</option></select></td>
+              <td><input type="number" id="s2qty" value="0" class="num" onchange="recalc()"></td>
+              <td><input type="number" id="s2rate" value="0" step="0.01" class="num" onchange="recalc()"></td>
+              <td><input type="text" id="s2total" readonly class="computed num"></td>
+            </tr>
+            <tr>
+              <td><select id="s3type" onchange="recalc()"><option value="" selected>--</option><option value="Yard">Yard</option><option value="Truck/Trailer">Truck/Trailer</option><option value="Office">Office</option><option value="Terminal">Terminal</option><option value="Maintenance">Maintenance</option><option value="Other">Other</option></select></td>
+              <td><select id="s3units" onchange="recalc()"><option value="Acres">Acres</option><option value="SF">SF</option><option value="Spaces">Spaces</option></select></td>
+              <td><input type="number" id="s3qty" value="0" class="num" onchange="recalc()"></td>
+              <td><input type="number" id="s3rate" value="0" step="0.01" class="num" onchange="recalc()"></td>
+              <td><input type="text" id="s3total" readonly class="computed num"></td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr style="font-weight:700; border-top:2px solid var(--gray-300)">
+              <td colspan="2">Total</td>
+              <td><span id="totalAcres" style="display:block; text-align:right;"></span></td>
+              <td></td>
+              <td><span id="totalMonthly" style="display:block; text-align:right; font-weight:700; color:var(--primary)"></span></td>
+            </tr>
+            <tr>
+              <td colspan="2">Market Rent (<span id="mktRentLabel">NNN</span>)</td>
+              <td colspan="2"><span id="marketRentTotal" style="font-weight:700; color:var(--accent)"></span></td>
+              <td style="text-align:right"><span id="marketDeltaBadge"></span></td>
+            </tr>
+          </tfoot>
+        </table>
+        <hr class="section-divider">
+        <div id="nnnNote" class="nnn-note">Please enter the NNN Estimate from Asset Management below.</div>
+        <div class="form-row">
+          <label id="nnnLabel">NNN from AM:</label>
+          <input type="number" id="nnnAM" value="4500" onchange="recalc()">
+        </div>
+      </div>
+
+      <!-- LEASE ECONOMICS -->
+      <div class="card">
+        <div class="card-title">Lease Economics</div>
+        <table class="esc-table">
+          <thead>
+            <tr><th></th><th style="width:15%">%</th><th style="width:30%">Beg. Date</th><th style="width:25%">Rent</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Escalation #1</td><td><input type="number" id="esc1pct" value="3" step="0.1" class="num" onchange="recalc()"></td><td><input type="date" id="esc1date" value="2027-02-01" onchange="recalc()"></td><td><input type="text" id="esc1rent" readonly class="computed num"></td></tr>
+            <tr><td>Escalation #2</td><td><input type="number" id="esc2pct" value="3" step="0.1" class="num" onchange="recalc()"></td><td><input type="date" id="esc2date" value="2028-02-01" onchange="recalc()"></td><td><input type="text" id="esc2rent" readonly class="computed num"></td></tr>
+            <tr><td>Escalation #3</td><td><input type="number" id="esc3pct" value="3" step="0.1" class="num" onchange="recalc()"></td><td><input type="date" id="esc3date" value="2028-06-30" onchange="recalc()"></td><td><input type="text" id="esc3rent" readonly class="computed num"></td></tr>
+            <tr><td>Escalation #4</td><td><input type="number" id="esc4pct" value="" step="0.1" class="num" onchange="recalc()"></td><td><input type="date" id="esc4date" onchange="recalc()"></td><td><input type="text" id="esc4rent" readonly class="computed num"></td></tr>
+            <tr><td>Escalation #5</td><td><input type="number" id="esc5pct" value="" step="0.1" class="num" onchange="recalc()"></td><td><input type="date" id="esc5date" onchange="recalc()"></td><td><input type="text" id="esc5rent" readonly class="computed num"></td></tr>
+          </tbody>
+        </table>
+        <hr class="section-divider">
+        <div class="form-row">
+          <label>Free Rent (Months)</label>
+          <input type="number" id="freeRent" value="2" min="0" onchange="recalc()">
+        </div>
+        <div class="hint" style="margin-left:188px; margin-bottom:8px;">*NNN Expenses are Required During Free Rent Period</div>
+        <div class="form-row">
+          <label>Tenant Improvements ($)</label>
+          <input type="number" id="tiCost" value="10000" onchange="recalc()">
+        </div>
+        <div class="form-row">
+          <label>Other Capex Required ($)</label>
+          <input type="number" id="otherCapex" value="0" onchange="recalc()">
+        </div>
+        <hr class="section-divider">
+        <div class="form-row">
+          <label>Commission Rate (%)</label>
+          <input type="number" id="commissionRate" value="5" step="0.1" onchange="recalc()">
+        </div>
+        <div class="hint" style="margin-left:188px; margin-bottom:8px;">% of total base rent over lease term</div>
+        <div class="form-row">
+          <label>Discount Rate (%)</label>
+          <input type="number" id="discountRate" value="9" step="0.5" onchange="recalc()">
+        </div>
+        <div class="hint" style="margin-left:188px; margin-bottom:4px;">Used for NPV calculation</div>
+      </div>
+
+      <!-- EXTENSION & TERMINATION -->
+      <div class="card">
+        <div class="card-title">Extension & Termination Options</div>
+        <div class="form-row">
+          <label>Opt. #1 Term End Date</label>
+          <input type="date" id="ext1date" value="2036-12-31" onchange="recalc()">
+        </div>
+        <div class="form-row">
+          <label>Opt. #1 Escalation (%)</label>
+          <input type="number" id="ext1esc" value="5" step="0.1" onchange="recalc()">
+        </div>
+        <div class="form-row">
+          <label>Opt. #2 Term End Date</label>
+          <input type="date" id="ext2date" onchange="recalc()">
+        </div>
+        <div class="form-row">
+          <label>Opt. #2 Escalation (%)</label>
+          <input type="number" id="ext2esc" value="" step="0.1" onchange="recalc()">
+        </div>
+        <hr class="section-divider">
+        <div class="form-row-3">
+          <label>Landlord Termination (Days)</label>
+          <input type="number" id="llTermDays" value="0" onchange="recalc()">
+          <input type="text" id="llTermStip" placeholder="Stipulations...">
+        </div>
+        <div class="form-row-3">
+          <label>Tenant Termination (Days)</label>
+          <input type="number" id="tenTermDays" value="0" onchange="recalc()">
+          <input type="text" id="tenTermStip" placeholder="Stipulations...">
+        </div>
+        <hr class="section-divider">
+        <div class="form-row">
+          <label>Security Deposit ($)</label>
+          <input type="number" id="secDeposit" value="0" onchange="recalc()">
+        </div>
+        <hr class="section-divider">
+        <div class="form-row">
+          <label>Pass Score Threshold</label>
+          <input type="number" id="passThreshold" value="7.5" step="0.5" onchange="recalc()">
+        </div>
+        <div class="hint" style="margin-left:188px; margin-bottom:4px;">Minimum score to auto-approve</div>
+      </div>
+
+      <!-- DEAL NOTES -->
+      <div class="card">
+        <div class="card-title">Deal Notes</div>
+        <div style="margin-bottom:10px;">
+          <label style="font-weight:600; font-size:13px; color:var(--gray-600); display:block; margin-bottom:5px;">Notes / Deal Context</label>
+          <textarea class="notes-area" id="dealNotes" placeholder="Add deal context, key conditions, competitive situation, or rationale for approval..."></textarea>
+        </div>
+        <div>
+          <label style="font-weight:600; font-size:13px; color:var(--gray-600); display:block; margin-bottom:5px;">Landlord Concessions</label>
+          <textarea class="notes-area" id="landlordConcessions" style="min-height:60px;" placeholder="e.g., LL pays for roof repair, re-stripe parking lot, HVAC upgrade..."></textarea>
+        </div>
+      </div>
+
+    </div><!-- end left column -->
+
+    <!-- ===== RIGHT COLUMN: RESULTS ===== -->
+    <div>
+
+      <!-- REVENUE COMPARISON -->
+      <div class="card">
+        <div class="card-title">Revenue Comparison</div>
+        <div class="summary-grid">
+          <div class="summary-box" id="leaseRevBox">
+            <div class="label">Total Lease Revenue</div>
+            <div class="value" id="totalLeaseRev">$0</div>
+            <div class="sub" id="leaseRevPerAcre"></div>
+          </div>
+          <div class="summary-box" id="uwRevBox">
+            <div class="label">Total U/W Revenue</div>
+            <div class="value" id="totalUWRev">$0</div>
+            <div class="sub" id="uwRevPerAcre"></div>
+          </div>
+          <div class="summary-box" id="yr1LeaseBox">
+            <div class="label">Year-1 Lease Revenue</div>
+            <div class="value" id="yr1LeaseRev">$0</div>
+          </div>
+          <div class="summary-box" id="yr1UWBox">
+            <div class="label">Year-1 U/W Revenue</div>
+            <div class="value" id="yr1UWRev">$0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FINANCIAL METRICS -->
+      <div class="card">
+        <div class="card-title">Financial Metrics</div>
+        <div class="metric-grid">
+          <div class="metric-box" id="npvBox">
+            <div class="m-label">Lease NPV</div>
+            <div class="m-value" id="leaseNPV">—</div>
+            <div class="m-sub" id="npvRateSub">@ 9% discount rate</div>
+          </div>
+          <div class="metric-box" id="uwNpvBox">
+            <div class="m-label">U/W NPV</div>
+            <div class="m-value" id="uwNPV">—</div>
+            <div class="m-sub">Market benchmark</div>
+          </div>
+          <div class="metric-box" id="effRentBox">
+            <div class="m-label">Effective Monthly Rent</div>
+            <div class="m-value" id="effectiveRent">—</div>
+            <div class="m-sub">Net of free rent concessions</div>
+          </div>
+          <div class="metric-box" id="paybackBox">
+            <div class="m-label">Payback Period</div>
+            <div class="m-value" id="paybackPeriod">—</div>
+            <div class="m-sub">Months to recoup costs</div>
+          </div>
+          <div class="metric-box" id="commBox">
+            <div class="m-label">Total Commission</div>
+            <div class="m-value" id="totalCommission">—</div>
+            <div class="m-sub" id="commRateSub">@ 5% of base rent</div>
+          </div>
+          <div class="metric-box" id="totalCostBox">
+            <div class="m-label">Total Deal Cost</div>
+            <div class="m-value" id="totalDealCost">—</div>
+            <div class="m-sub">TI + Capex + Commission</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RENT SCHEDULE -->
+      <div class="card">
+        <div class="card-title">Rent Schedule</div>
+        <table class="rent-sched-table">
+          <thead><tr><th></th><th>Beg. Date</th><th>End Date</th><th style="text-align:right">Base Rent/Mo.</th></tr></thead>
+          <tbody id="rentSchedBody"></tbody>
+        </table>
+      </div>
+
+
+      <!-- CASH FLOW TABLE -->
+      <div class="card">
+        <div class="card-title">
+          Month-by-Month Cash Flow
+          <span style="display:flex; gap:8px; align-items:center;">
+            <button class="toggle-btn no-print" id="cfToggleBtn" onclick="toggleCF()">Show ▼</button>
+            <button class="toggle-btn no-print" onclick="exportCashFlow()" style="background:#276749; color:#fff; border-color:#276749;">⬇ Export Excel</button>
+          </span>
+        </div>
+        <div id="cfSection" style="display:none;">
+          <div class="cf-wrap">
+            <table class="cf-table">
+              <thead>
+                <tr>
+                  <th>Mo.</th>
+                  <th>End Date</th>
+                  <th style="text-align:right">Base Rent</th>
+                  <th style="text-align:right">Concession</th>
+                  <th style="text-align:right">NNN</th>
+                  <th style="text-align:right">Net CF</th>
+                  <th style="text-align:right">Cumulative</th>
+                </tr>
+              </thead>
+              <tbody id="cfBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCORECARD -->
+      <div class="card">
+        <div class="card-title">Underwriting Scorecard</div>
+        <div class="scorecard-header scorecard-row">
+          <span>Criteria</span>
+          <span style="text-align:center">Check</span>
+          <span style="text-align:center">Score</span>
+          <span style="text-align:center">Max</span>
+        </div>
+        <div id="scorecardBody"></div>
+        <div id="resultBanner" class="result-banner result-fail">REACH OUT TO ASSET MANAGEMENT</div>
+      </div>
+
+    </div><!-- end right column -->
+  </div>
+</div><!-- end container -->
+
+<script>
+// ========== MARKET ASSUMPTIONS ==========
+const MKT = {
+  DEN2: { acres:17.5, usableAcres:4.7, spaces:482, building:353, farStandard:0, yardRent:6894.53125, truckRent:250, maintenanceRent:0, officeRent:0, terminalRent:0, escalation:0, nnn:0, recovery:'', lc:0, rentGrowth:[0.05,0.05,0.05,0.05,0.05], opexInflation:0.03 },
+  DFW3: { acres:27, usableAcres:27, spaces:845, building:845, farStandard:0, yardRent:0, truckRent:150, maintenanceRent:0, officeRent:0, terminalRent:0, escalation:0, nnn:0, recovery:'', lc:0, rentGrowth:[0.04,0.04,0.04,0.04,0.04], opexInflation:0.03 },
+  DTW1: { acres:33, usableAcres:33, spaces:0, building:0, farStandard:0, yardRent:4500, truckRent:200, maintenanceRent:0, officeRent:0, terminalRent:0, escalation:0.03, nnn:1316.85, recovery:'NNN', lc:0.07, rentGrowth:[0.03,0.03,0.03,0.03,0.03], opexInflation:0.03 },
+  HOU2: { acres:0, usableAcres:11.3, spaces:108, building:0, farStandard:0, yardRent:5500, truckRent:225, maintenanceRent:0, officeRent:0, terminalRent:0, escalation:0.05, nnn:2834, recovery:'NNN', lc:0.07, rentGrowth:[0.05,0.05,0.05,0.05,0.05], opexInflation:0.03 },
+  LRD2: { acres:11.2, usableAcres:11.2, spaces:199, building:0, farStandard:0, yardRent:4500, truckRent:125, maintenanceRent:0, officeRent:0, terminalRent:0, escalation:0.03, nnn:2007.2, recovery:'NNN', lc:0.07, rentGrowth:[0.03,0.03,0.03,0.03,0.03], opexInflation:0.03 },
+  PHX3: { acres:10, usableAcres:10, spaces:0, building:0, farStandard:0, yardRent:8000, truckRent:0, maintenanceRent:0, officeRent:0, terminalRent:0, escalation:0.03, nnn:1936.5, recovery:'NNN', lc:0.07, rentGrowth:[0.03,0.03,0.03,0.03,0.03], opexInflation:0.03 },
+  SAT2: { acres:15, usableAcres:15, spaces:0, building:0, farStandard:0, yardRent:5000, truckRent:0, maintenanceRent:0, officeRent:0, terminalRent:0, escalation:0.03, nnn:2246, recovery:'NNN', lc:0.07, rentGrowth:[0.03,0.03,0.03,0.03,0.03], opexInflation:0.03 },
+  SAV1: { acres:10, usableAcres:10, spaces:0, building:0, farStandard:0, yardRent:7250, truckRent:0, maintenanceRent:0, officeRent:0, terminalRent:0, escalation:0.04, nnn:1893, recovery:'NNN', lc:0.06, rentGrowth:[0.04,0.06,0.05,0.04,0.04], opexInflation:0.03 },
+  LAS5: { acres:12.6, usableAcres:12.6, spaces:360, building:54155, farStandard:0.35, yardRent:0, truckRent:459, maintenanceRent:0, officeRent:0, terminalRent:0, escalation:0, nnn:0, recovery:'', lc:0, rentGrowth:[0,0,0,0,0], opexInflation:0.03 },
+  ONT4: { acres:4.3, usableAcres:4.3, spaces:0, building:0, farStandard:0, yardRent:23000, truckRent:0, maintenanceRent:0, officeRent:0, terminalRent:0, escalation:0.03, nnn:1586, recovery:'NNN', lc:0.07, rentGrowth:[0.03,0.03,0.03,0.03,0.03], opexInflation:0.03 },
+  DFW4: { acres:0, usableAcres:27, spaces:0, building:0, farStandard:0, yardRent:10700, truckRent:0, maintenanceRent:13000, officeRent:0, terminalRent:10000, escalation:0, nnn:1696.23, recovery:'', lc:0, rentGrowth:[0,0,0,0,0], opexInflation:0.03 },
+  ONT5: { acres:0, usableAcres:22.43, spaces:0, building:49284, farStandard:0.4, yardRent:24000, truckRent:0, maintenanceRent:0, officeRent:0, terminalRent:0, escalation:0.04, nnn:2410, recovery:'NNN', lc:0.06, rentGrowth:[0.10,0.10,0.04,0.04,0.04], opexInflation:0.03 },
+  PDX4: { acres:14.2, usableAcres:14.2, spaces:0, building:34204, farStandard:0.4, yardRent:8275, truckRent:0, maintenanceRent:1.02, officeRent:1.02, terminalRent:1.02, escalation:0.03, nnn:2006.92, recovery:'NNN', lc:0.06, rentGrowth:[0.04,0.04,0.04,0.04,0.04], opexInflation:0.03 },
+  EWR2: { acres:5.8, usableAcres:5.8, spaces:0, building:0, farStandard:0, yardRent:35000, truckRent:0, maintenanceRent:0, officeRent:0, terminalRent:0, escalation:0.035, nnn:8673.65, recovery:'NNN', lc:0.07, rentGrowth:[0.06,0.06,0.06,0.06,0.06], opexInflation:0.03 },
+  MIA1: { acres:17.1, usableAcres:15.3, spaces:0, building:0, farStandard:0, yardRent:27000, truckRent:775, maintenanceRent:0, officeRent:0, terminalRent:0, escalation:0.06, nnn:4947.41, recovery:'Gross', lc:0.065, rentGrowth:[0.04,0.06,0.06,0.06,0.06], opexInflation:0.03 },
+};
+
+function getMarketRent(yard, spaceType) {
+  const m = MKT[yard];
+  if (!m) return 0;
+  const map = { 'Yard': m.yardRent, 'Truck/Trailer': m.truckRent, 'Office': m.officeRent, 'Terminal': m.terminalRent, 'Maintenance': m.maintenanceRent };
+  return map[spaceType] || 0;
+}
+
+// ========== HELPERS ==========
+function fmt(n) { return '$' + Math.round(n).toLocaleString('en-US'); }
+function fmt2(n) { return '$' + n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+function fmtK(n) { if (Math.abs(n) >= 1000000) return '$' + (n/1000000).toFixed(2) + 'M'; if (Math.abs(n) >= 1000) return '$' + Math.round(n/1000) + 'K'; return fmt(n); }
+function parseDate(s) { if (!s) return null; const d = new Date(s + 'T00:00:00'); return isNaN(d) ? null : d; }
+function fmtDate(d) { if (!d) return ''; return d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}); }
+function eomonth(d, months) { const r = new Date(d); r.setMonth(r.getMonth() + months + 1, 0); return r; }
+function daysBetween(a, b) { return Math.round((b - a) / 86400000); }
+function monthsBetween(a, b) { return daysBetween(a, b) / 30; }
+function v(id) { return document.getElementById(id).value; }
+function n(id) { const val = parseFloat(document.getElementById(id).value); return isNaN(val) ? 0 : val; }
+function setV(id, val) { document.getElementById(id).value = val; }
+function setT(id, val) { document.getElementById(id).textContent = val; }
+
+// NPV helper
+function calcNPV(cashFlows, annualRate, upfrontCost) {
+  if (annualRate <= 0) return cashFlows.reduce((s, v) => s + v, 0) - upfrontCost;
+  const mr = Math.pow(1 + annualRate, 1/12) - 1;
+  let npv = -upfrontCost;
+  for (let i = 0; i < cashFlows.length; i++) {
+    if (cashFlows[i] !== 0) npv += cashFlows[i] / Math.pow(1 + mr, i + 1);
+  }
+  return npv;
+}
+
+// Cash flow table toggle
+function toggleCF() {
+  const sec = document.getElementById('cfSection');
+  const btn = document.getElementById('cfToggleBtn');
+  if (sec.style.display === 'none') { sec.style.display = 'block'; btn.textContent = 'Hide ▲'; }
+  else { sec.style.display = 'none'; btn.textContent = 'Show ▼'; }
+}
+
+// ========== GLOBAL STATE ==========
+let globalCfData = [];
+let globalDealMeta = {};
+
+// ========== EXCEL EXPORT ==========
+function exportCashFlow() {
+  if (!globalCfData.length) { alert('No cash flow data to export. Please select a yard and fill in the inputs.'); return; }
+  const wb = XLSX.utils.book_new();
+  const meta = globalDealMeta;
+
+  // ---- SHEET 1: Month-by-Month Cash Flow ----
+  const cfRows = [
+    ['Outpost Leasing Tool 2.0 — Cash Flow Export'],
+    [],
+    ['Yard', meta.yard, '', 'Prepared By', meta.preparedBy || ''],
+    ['Lease Type', meta.leaseType, '', 'Date', meta.prepDate || ''],
+    ['Commencement', meta.commDateStr, '', 'Lease Term (Mo.)', meta.term],
+    ['Expiration', meta.expDateStr, '', 'Starting Base Rent/Mo', meta.totalMonthly],
+    ['NNN/Mo (AM Est.)', meta.nnnAM, '', 'TI + Capex', meta.tiCost + meta.otherCapex],
+    ['Commission', meta.totalCommission, '', 'Total Deal Cost', meta.totalCost],
+    [],
+    ['Month', 'Period End', 'Base Rent', 'Concession', 'NNN Recovery', 'Net Cash Flow', 'Cumulative CF'],
+  ];
+
+  let cumulative = -meta.totalCost;
+  globalCfData.forEach(row => {
+    cumulative += row.net;
+    cfRows.push([
+      row.month,
+      fmtDate(row.date),
+      row.baseRent,
+      row.concession !== 0 ? row.concession : 0,
+      row.nnn,
+      row.net,
+      cumulative,
+    ]);
+  });
+
+  const cfSheet = XLSX.utils.aoa_to_sheet(cfRows);
+  cfSheet['!cols'] = [
+    {wch: 7}, {wch: 14}, {wch: 14}, {wch: 14}, {wch: 14}, {wch: 16}, {wch: 16},
+  ];
+  // Bold title
+  if (cfSheet['A1']) cfSheet['A1'].s = { font: { bold: true, sz: 13 } };
+  // Bold header row (row 10 = index 9 in 0-based, so row 10 in 1-based)
+  const headerRow = 10;
+  ['A','B','C','D','E','F','G'].forEach(col => {
+    const cell = cfSheet[`${col}${headerRow}`];
+    if (cell) cell.s = { font: { bold: true }, fill: { fgColor: { rgb: '1A365D' } }, fontColor: { rgb: 'FFFFFF' } };
+  });
+  XLSX.utils.book_append_sheet(wb, cfSheet, 'Cash Flow');
+
+  // ---- SHEET 2: Deal Summary ----
+  const sumRows = [
+    ['Outpost Leasing Tool 2.0 — Deal Summary'],
+    [],
+    ['REVENUE COMPARISON', ''],
+    ['Metric', 'Value'],
+    ['Total Lease Revenue', meta.totalLeaseRevenue],
+    ['Total U/W Revenue', meta.totalUWRevenue],
+    ['Year-1 Lease Revenue', meta.yr1Lease],
+    ['Year-1 U/W Revenue', meta.yr1UW],
+    [],
+    ['FINANCIAL METRICS', ''],
+    ['Metric', 'Value'],
+    ['Lease NPV', meta.leaseNPV],
+    ['U/W NPV', meta.uwNPV],
+    ['Effective Monthly Rent', meta.effectiveMonthlyRent],
+    ['Payback Period (Months)', meta.paybackMonths !== null ? meta.paybackMonths : 'Beyond lease term'],
+    ['Total Commission', meta.totalCommission],
+    ['Total Deal Cost', meta.totalCost],
+    [],
+    ['DEAL INFO', ''],
+    ['Yard', meta.yard],
+    ['Lease Type', meta.leaseType],
+    ['Commencement Date', meta.commDateStr],
+    ['Expiration Date', meta.expDateStr],
+    ['Lease Term (Months)', meta.term],
+    ['Discount Rate', (meta.discountRate * 100).toFixed(1) + '%'],
+    ['Commission Rate', (meta.commissionRatePct * 100).toFixed(1) + '%'],
+    ['Prepared By', meta.preparedBy || ''],
+    ['Date', meta.prepDate || ''],
+  ];
+
+  const sumSheet = XLSX.utils.aoa_to_sheet(sumRows);
+  sumSheet['!cols'] = [{ wch: 28 }, { wch: 20 }];
+  XLSX.utils.book_append_sheet(wb, sumSheet, 'Deal Summary');
+
+  const filename = `${meta.yard || 'Lease'}_CashFlow_${new Date().toISOString().split('T')[0]}.xlsx`;
+  XLSX.writeFile(wb, filename);
+}
+
+// ========== MAIN RECALC ==========
+function recalc() {
+  const yard = v('yard');
+  const leaseType = v('leaseType');
+  const commDate = parseDate(v('commDate'));
+  const expDate = parseDate(v('expDate'));
+  if (!commDate || !expDate || !yard) return;
+
+  const m = MKT[yard];
+  const term = monthsBetween(commDate, expDate);
+  setV('leaseTerm', term.toFixed(1));
+
+  // ---- SPACE CALCULATIONS ----
+  let totalMonthly = 0, totalAcres = 0, totalMarketRent = 0;
+  for (let i = 1; i <= 3; i++) {
+    const type = v('s'+i+'type');
+    const units = v('s'+i+'units');
+    const qty = n('s'+i+'qty');
+    const rate = n('s'+i+'rate');
+    const tot = qty * rate;
+    setV('s'+i+'total', tot ? fmt(tot) : '$0');
+    totalMonthly += tot;
+    if (units === 'SF') totalAcres += qty / 43560;
+    else if (units === 'Acres') totalAcres += qty;
+    if (type && qty > 0) totalMarketRent += getMarketRent(yard, type) * qty;
+  }
+  setT('totalAcres', totalAcres.toLocaleString('en-US', {maximumFractionDigits:1}));
+  setT('totalMonthly', fmt(totalMonthly));
+  setT('marketRentTotal', fmt(totalMarketRent));
+
+  // Market delta badge
+  const marketDeltaPct = totalMarketRent > 0 ? (totalMonthly - totalMarketRent) / totalMarketRent : 0;
+  const deltaBadge = document.getElementById('marketDeltaBadge');
+  if (totalMarketRent > 0) {
+    const sign = marketDeltaPct >= 0 ? '+' : '';
+    const cls = marketDeltaPct >= -0.02 ? 'delta-up' : 'delta-down';
+    deltaBadge.innerHTML = `<span class="market-delta ${cls}">${sign}${(marketDeltaPct*100).toFixed(1)}% vs mkt</span>`;
+  } else { deltaBadge.innerHTML = ''; }
+
+  // Recovery label & NNN note
+  const recovery = m.recovery || leaseType;
+  setT('mktRentLabel', recovery || 'NNN');
+  const nnnNote = document.getElementById('nnnNote');
+  const nnnLabel = document.getElementById('nnnLabel');
+  if (leaseType === 'NNN') { nnnNote.style.display = 'block'; nnnLabel.textContent = 'NNN from AM:'; }
+  else if (leaseType === 'Gross') { nnnNote.style.display = 'none'; nnnLabel.textContent = 'Approx. NNN Conversion:'; }
+  else { nnnNote.style.display = 'none'; nnnLabel.textContent = 'NNN from AM:'; }
+
+  // ---- ESCALATION RENTS ----
+  const escRents = [];
+  let prevRent = totalMonthly;
+  for (let i = 1; i <= 5; i++) {
+    const pctVal = n('esc'+i+'pct') / 100;
+    const escDate = parseDate(v('esc'+i+'date'));
+    if (pctVal > 0 && escDate) {
+      prevRent = prevRent * (1 + pctVal);
+      escRents.push({ pct: pctVal, date: escDate, rent: prevRent });
+      setV('esc'+i+'rent', fmt2(prevRent));
+    } else {
+      escRents.push({ pct: 0, date: null, rent: prevRent });
+      setV('esc'+i+'rent', prevRent > 0 ? fmt2(prevRent) : '');
+    }
+  }
+
+  const freeRentMonths = n('freeRent');
+  const tiCost = n('tiCost');
+  const otherCapex = n('otherCapex');
+  const nnnAM = n('nnnAM');
+  const discountRate = n('discountRate') / 100;
+  const commissionRatePct = n('commissionRate') / 100;
+
+  // ---- RENT SCHEDULE ----
+  const rentSchedule = [];
+  if (freeRentMonths > 0) {
+    const freeEnd = eomonth(commDate, freeRentMonths - 1);
+    rentSchedule.push({ label: 'Free Rent', start: commDate, end: freeEnd, rent: totalMonthly });
+  }
+  const baseStart = freeRentMonths > 0 ? new Date(eomonth(commDate, freeRentMonths - 1).getTime() + 86400000) : new Date(commDate);
+  const escDates = escRents.filter(e => e.date && e.pct > 0).map(e => e.date).sort((a, b) => a - b);
+  let currentRent = totalMonthly;
+  const breakpoints = escDates.filter(d => d > baseStart && d <= expDate);
+  if (breakpoints.length === 0) {
+    rentSchedule.push({ label: 'Base Term', start: baseStart, end: expDate, rent: currentRent });
+  } else {
+    rentSchedule.push({ label: 'Base Term', start: baseStart, end: new Date(breakpoints[0].getTime() - 86400000), rent: currentRent });
+    for (let i = 0; i < breakpoints.length; i++) {
+      const esc = escRents.find(e => e.date && e.date.getTime() === breakpoints[i].getTime());
+      if (esc) currentRent = esc.rent;
+      const segEnd = (i < breakpoints.length - 1) ? new Date(breakpoints[i+1].getTime() - 86400000) : expDate;
+      rentSchedule.push({ label: '', start: breakpoints[i], end: segEnd, rent: currentRent });
+    }
+  }
+
+  // Render rent schedule
+  const rsBody = document.getElementById('rentSchedBody');
+  rsBody.innerHTML = '';
+  rentSchedule.forEach(seg => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${seg.label}</td><td>${fmtDate(seg.start)}</td><td>${fmtDate(seg.end)}</td><td style="text-align:right; font-weight:600">${fmt2(seg.rent)}</td>`;
+    rsBody.appendChild(tr);
+  });
+
+  // ---- MONTHLY CASH FLOW MODEL ----
+  const MAX_MONTHS = 60;
+  const leaseMonthly = [], uwMonthly = [];
+  globalCfData = [];
+  const monthDates = [];
+  for (let i = 0; i < MAX_MONTHS; i++) monthDates.push(eomonth(commDate, i));
+  const leaseMonths = Math.ceil(monthsBetween(commDate, expDate));
+
+  // FY boundary logic
+  const commMonth = commDate.getMonth();
+  const firstFY = commMonth === 0 ? 13 : (12 - commMonth + 1);
+  const fyBoundaries = [];
+  for (let fb = firstFY; fb <= MAX_MONTHS; fb += 12) fyBoundaries.push(fb);
+  function fyCount(mn) { return fyBoundaries.filter(fb => mn >= fb).length; }
+
+  // Commission: % of total base rent collected
+  let totalBaseRentForComm = 0;
+  for (let i = 0; i < Math.min(leaseMonths + 2, MAX_MONTHS); i++) {
+    const monthEnd = monthDates[i];
+    if (!monthEnd || monthEnd > expDate) break;
+    for (const seg of rentSchedule) {
+      if (seg.start <= monthEnd && seg.end >= monthEnd) { totalBaseRentForComm += seg.rent; break; }
+    }
+  }
+  const totalCommission = totalBaseRentForComm * commissionRatePct;
+  const totalCost = tiCost + otherCapex + totalCommission;
+
+  // LEASE cash flows
+  let totalBaseRentNet = 0;
+  for (let i = 0; i < MAX_MONTHS; i++) {
+    const monthNum = i + 1;
+    const monthEnd = monthDates[i];
+    if (monthEnd > expDate || i >= leaseMonths + 2) { leaseMonthly.push(0); continue; }
+
+    let baseRent = 0;
+    for (const seg of rentSchedule) {
+      if (seg.start <= monthEnd && seg.end >= monthEnd) { baseRent = seg.rent; break; }
+    }
+    const isFreeMonth = monthNum <= freeRentMonths;
+    const concession = isFreeMonth ? -baseRent : 0;
+    let nnnRecov = 0;
+    if (leaseType === 'NNN' && nnnAM > 0) {
+      nnnRecov = nnnAM * Math.pow(1 + (m.opexInflation || 0.03), fyCount(monthNum));
+    }
+    const net = baseRent + concession + nnnRecov;
+    leaseMonthly.push(net);
+    if (!isFreeMonth) totalBaseRentNet += baseRent;
+    globalCfData.push({ month: monthNum, date: monthEnd, baseRent, concession, nnn: nnnRecov, net, isFreeMonth });
+  }
+
+  // Effective rent
+  const effectiveMonthlyRent = leaseMonths > 0 ? totalBaseRentNet / leaseMonths : 0;
+
+  // UW cash flows
+  let uwBaseRent = totalMarketRent;
+  const isNNNRecovery = (m.recovery === 'NNN') || (leaseType === 'NNN');
+  let uwNNN = isNNNRecovery ? Math.max(nnnAM, Math.ceil(m.nnn / 10) * 10) : 0;
+  let prevFYCount = 0;
+  for (let i = 0; i < MAX_MONTHS; i++) {
+    const monthNum = i + 1;
+    const monthEnd = monthDates[i];
+    if (monthEnd > expDate || i >= leaseMonths + 2) { uwMonthly.push(0); continue; }
+    const currentFY = fyCount(monthNum);
+    if (currentFY > prevFYCount) {
+      const yearIdx = currentFY - 1;
+      const gr = (yearIdx < m.rentGrowth.length) ? m.rentGrowth[yearIdx] : (m.rentGrowth[m.rentGrowth.length-1] || 0);
+      uwBaseRent *= (1 + gr);
+      if (isNNNRecovery) uwNNN *= (1 + (m.opexInflation || 0.03));
+      prevFYCount = currentFY;
+    }
+    uwMonthly.push(uwBaseRent + uwNNN);
+  }
+
+  // Revenue totals
+  const totalLeaseRevenue = leaseMonthly.reduce((s, v) => s + v, 0) - tiCost - otherCapex;
+  const totalUWRevenue = uwMonthly.reduce((s, v) => s + v, 0);
+  const yr1Lease = leaseMonthly.slice(0, 12).reduce((s, v) => s + v, 0);
+  const yr1UW = uwMonthly.slice(0, 12).reduce((s, v) => s + v, 0);
+
+  // NPV
+  const leaseNPV = calcNPV(leaseMonthly, discountRate, totalCost);
+  const uwNPV = calcNPV(uwMonthly, discountRate, 0);
+
+  // Payback period (from initial cost)
+  let cumCF = -totalCost;
+  let paybackMonths = null;
+  for (let i = 0; i < leaseMonthly.length; i++) {
+    cumCF += leaseMonthly[i];
+    if (cumCF >= 0 && paybackMonths === null) { paybackMonths = i + 1; break; }
+  }
+
+  // ---- STORE GLOBAL DEAL METADATA FOR EXCEL EXPORT ----
+  globalDealMeta = {
+    yard, leaseType,
+    commDateStr: v('commDate'), expDateStr: v('expDate'), term,
+    preparedBy: v('preparedBy'), prepDate: v('prepDate'),
+    totalMonthly, nnnAM, tiCost, otherCapex,
+    totalCommission, totalCost,
+    totalLeaseRevenue, totalUWRevenue, yr1Lease, yr1UW,
+    leaseNPV, uwNPV,
+    effectiveMonthlyRent, paybackMonths,
+    discountRate, commissionRatePct,
+  };
+
+  // ---- UPDATE SUMMARY BOXES ----
+  setT('totalLeaseRev', fmtK(totalLeaseRevenue));
+  setT('leaseRevPerAcre', totalAcres > 0 ? fmt2(totalLeaseRevenue / totalAcres) + ' / Acre' : '');
+  setT('totalUWRev', fmtK(totalUWRevenue));
+  setT('uwRevPerAcre', totalAcres > 0 ? fmt2(totalUWRevenue / totalAcres) + ' / Acre' : '');
+  setT('yr1LeaseRev', fmtK(yr1Lease));
+  setT('yr1UWRev', fmtK(yr1UW));
+  document.getElementById('leaseRevBox').className = 'summary-box ' + (totalLeaseRevenue >= totalUWRevenue ? 'green' : 'red');
+  document.getElementById('uwRevBox').className = 'summary-box';
+  document.getElementById('yr1LeaseBox').className = 'summary-box ' + (yr1Lease >= yr1UW ? 'green' : 'red');
+  document.getElementById('yr1UWBox').className = 'summary-box';
+
+  // ---- FINANCIAL METRICS ----
+  const dr = n('discountRate');
+  setT('leaseNPV', fmtK(leaseNPV));
+  setT('npvRateSub', `@ ${dr}% discount rate`);
+  setT('uwNPV', fmtK(uwNPV));
+  setT('effectiveRent', fmt(effectiveMonthlyRent) + '/mo');
+  setT('paybackPeriod', paybackMonths ? paybackMonths + ' months' : 'Beyond term');
+  setT('totalCommission', fmtK(totalCommission));
+  setT('commRateSub', `@ ${n('commissionRate')}% of base rent`);
+  setT('totalDealCost', fmtK(totalCost));
+
+  document.getElementById('npvBox').className = 'metric-box ' + (leaseNPV >= 0 ? 'green' : 'red');
+  document.getElementById('uwNpvBox').className = 'metric-box';
+  document.getElementById('effRentBox').className = 'metric-box ' + (effectiveMonthlyRent >= nnnAM ? 'green' : 'yellow');
+  document.getElementById('paybackBox').className = 'metric-box ' + (!paybackMonths ? 'red' : paybackMonths <= leaseMonths * 0.5 ? 'green' : 'yellow');
+  document.getElementById('commBox').className = 'metric-box';
+  document.getElementById('totalCostBox').className = 'metric-box ' + (totalCost > totalMonthly * 3 ? 'red' : '');
+
+
+  // ---- CASH FLOW TABLE ----
+  const cfBody = document.getElementById('cfBody');
+  cfBody.innerHTML = '';
+  let cumulative = -totalCost;
+  globalCfData.forEach(row => {
+    cumulative += row.net;
+    const tr = document.createElement('tr');
+    if (row.isFreeMonth) tr.className = 'free-row';
+    const cumClass = cumulative >= 0 ? 'pos' : 'neg';
+    tr.innerHTML = `
+      <td>${row.month}</td>
+      <td>${fmtDate(row.date)}</td>
+      <td>${fmt(row.baseRent)}</td>
+      <td class="${row.concession < 0 ? 'neg' : ''}">${row.concession !== 0 ? fmt(row.concession) : '—'}</td>
+      <td>${row.nnn > 0 ? fmt(row.nnn) : '—'}</td>
+      <td class="${row.net >= 0 ? 'pos' : 'neg'}">${fmt(row.net)}</td>
+      <td class="${cumClass}">${fmt(cumulative)}</td>
+    `;
+    cfBody.appendChild(tr);
+  });
+
+  // ---- SCORECARD ----
+  const maxLeaseMonthly = Math.max(...leaseMonthly);
+  const maxUWMonthly = Math.max(...uwMonthly);
+  const llTermDays = n('llTermDays');
+  const tenTermDays = n('tenTermDays');
+  const secDeposit = n('secDeposit');
+  const ext1date = parseDate(v('ext1date'));
+  const ext1esc = n('ext1esc') / 100;
+  const acreYardLeased = [1,2,3].reduce((sum, i) => v('s'+i+'units') === 'Acres' ? sum + n('s'+i+'qty') : sum, 0);
+  const passThreshold = n('passThreshold');
+
+  const scores = [
+    { label: 'Year-1 Rent vs. Underwriting', check: yr1Lease > yr1UW, maxScore: 3 },
+    { label: 'Out Year Rent vs. Underwriting', check: maxLeaseMonthly > maxUWMonthly, maxScore: 3 },
+    { label: 'Total Revenue vs. Underwriting', check: totalLeaseRevenue > totalUWRevenue, maxScore: 3 },
+    { label: 'Proposed Rent at or Above Market', check: totalMonthly >= totalMarketRent * 0.98, maxScore: 1 },
+    { label: 'Lease NPV Positive', check: leaseNPV > 0, maxScore: 1 },
+    { label: 'Effective Rent Covers NNN', check: effectiveMonthlyRent > nnnAM, maxScore: 0.5 },
+    { label: 'Major Capex Required', check: (tiCost + otherCapex) > 15000, maxScore: -1 },
+    { label: 'Landlord Termination Option', check: llTermDays > 0 && llTermDays <= 90, maxScore: 1 },
+    { label: 'Tenant Termination Option', check: tenTermDays > 0, maxScore: -1 },
+    { label: 'Tenant Extension Option', check: false, maxScore: 0, score: (ext1date ? 1 : 0) - (ext1esc < 0.03 ? 1 : 0) },
+    { label: 'Yard Space Requirement Met', check: acreYardLeased > 0, maxScore: 0.5 },
+    { label: 'Security Deposit > 1 Month Rent', check: secDeposit > totalMonthly, maxScore: 0.5 },
+  ];
+
+  let totalScore = 0, totalMaxScore = 0;
+  const scBody = document.getElementById('scorecardBody');
+  scBody.innerHTML = '';
+  scores.forEach(s => {
+    const score = s.score !== undefined ? s.score : (s.check ? s.maxScore : 0);
+    totalScore += score;
+    totalMaxScore += Math.abs(s.maxScore);
+    const row = document.createElement('div');
+    row.className = 'scorecard-row';
+    const checkClass = s.check ? 'check-pass' : 'check-fail';
+    const checkText = s.check ? 'YES' : 'NO';
+    const scoreClass = score > 0 ? 'score-positive' : (score < 0 ? 'score-negative' : 'score-neutral');
+    row.innerHTML = `
+      <span>${s.label}</span>
+      <span class="${checkClass}" style="text-align:center">${checkText}</span>
+      <span style="text-align:center"><span class="score-badge ${scoreClass}">${score > 0 ? '+' : ''}${score}</span></span>
+      <span style="text-align:center; color:var(--gray-400)">${s.maxScore > 0 ? '+' : ''}${s.maxScore}</span>
+    `;
+    scBody.appendChild(row);
+  });
+
+  const totalRow = document.createElement('div');
+  totalRow.className = 'scorecard-row';
+  totalRow.style.fontWeight = '700';
+  totalRow.style.borderTop = '2px solid var(--gray-300)';
+  totalRow.style.fontSize = '15px';
+  const totalClass = totalScore >= passThreshold ? 'score-positive' : 'score-negative';
+  totalRow.innerHTML = `
+    <span>Total (Pass ≥ ${passThreshold})</span>
+    <span></span>
+    <span style="text-align:center"><span class="score-badge ${totalClass}" style="font-size:14px">${totalScore.toFixed(1)}</span></span>
+    <span style="text-align:center; color:var(--gray-400)">${totalMaxScore}</span>
+  `;
+  scBody.appendChild(totalRow);
+
+  const banner = document.getElementById('resultBanner');
+  if (totalScore >= passThreshold) {
+    banner.textContent = '✓ PASS';
+    banner.className = 'result-banner result-pass';
+  } else {
+    banner.textContent = 'REACH OUT TO ASSET MANAGEMENT';
+    banner.className = 'result-banner result-fail';
+  }
+}
+
+// Set today's date as default for prepDate
+document.getElementById('prepDate').value = new Date().toISOString().split('T')[0];
+
+// Initial calculation
+recalc();
+</script>
+</body>
+</html>
