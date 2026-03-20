@@ -5,679 +5,395 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Outpost &mdash; Internal Dashboard</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Barlow:wght@400;500;600;700;800&display=swap');
   
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Barlow:wght@400;500;600;700;800&display=swap');
+  /* ── OUTPOST BRAND SYSTEM ── */
+  /* Dark mode (default): Asphalt/Gunmetal Blue backgrounds, white text */
+  /* Light mode: Concrete/White backgrounds, black text */
+  /* Accent: Horizon Blue for lines and small highlights only */
 
-  /* ── OUTPOST BRAND — extracted from logo ── */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
   :root {
-    /* Backgrounds — logo background navy */
-    --bg:         #001623;
-    --bg-mid:     #001e32;
-    --surface:    #002438;
-    --surface2:   #002d46;
-    --surface3:   #003555;
-    --border:     #0a3a52;
-    --border-lt:  #0f4a68;
+    /* Brand ground colors */
+    --asphalt: #001017;
+    --gunmetal: #052533;
+    --concrete: #F5F3F0;
+    --white: #FFFFFF;
 
-    /* Brand blue — logo icon color */
-    --blue:       #8cc8dc;
-    --blue-dim:   #2a6a84;
-    --blue-glow:  rgba(140,200,220,0.10);
-    --blue-deep:  rgba(140,200,220,0.06);
+    /* Brand accents */
+    --horizon: #8DCAE3;
+    --horizon-dim: rgba(141,202,227,0.15);
+    --horizon-border: rgba(141,202,227,0.25);
+    --signal-orange: #F26E35;
+    --diesel-yellow: #C6C963;
 
-    /* White — wordmark */
-    --white:      #ffffff;
-    --white-90:   #e8f0f5;
-    --white-60:   #7a9eb4;
-    --white-30:   #2e5570;
-    --white-15:   #183346;
+    /* Dark mode defaults */
+    --bg: var(--asphalt);
+    --bg-alt: var(--gunmetal);
+    --surface: #071e2c;
+    --border: #0d3045;
+    --border-light: #144058;
+    --text-primary: #FFFFFF;
+    --text-secondary: #98b8c8;
+    --text-muted: #5a7d90;
 
-    /* Status — adapted to navy palette */
-    --green:      #3ecf8e;
-    --green-bg:   rgba(62,207,142,0.08);
-    --red:        #e85555;
-    --red-bg:     rgba(232,85,85,0.08);
-    --amber:      #f5b942;
-    --amber-bg:   rgba(245,185,66,0.08);
+    /* Status */
+    --green: #22c55e;
+    --green-bg: rgba(34,197,94,0.1);
+    --red: #ef4444;
+    --red-bg: rgba(239,68,68,0.1);
+    --amber: #eab308;
+    --amber-bg: rgba(234,179,8,0.1);
+    --purple: #8b5cf6;
+    --purple-bg: rgba(139,92,246,0.1);
 
-    /* Text */
-    --text-1: #e8f4f8;
-    --text-2: #7ab4cc;
-    --text-3: #2e6882;
-    --text-4: #1a4a62;
+    /* Investment section (inherits from theme) */
+    --inv-bg: var(--bg);
+    --inv-surface: var(--surface);
+    --inv-card: var(--bg-alt);
+    --inv-border: var(--border);
+    --inv-text: var(--text-primary);
+    --inv-text-secondary: var(--text-secondary);
+    --inv-text-muted: var(--text-muted);
+    --inv-accent: var(--horizon);
+    --inv-green: var(--green);
+    --inv-green-bg: var(--green-bg);
+    --inv-red: var(--red);
+    --inv-red-bg: var(--red-bg);
+    --inv-amber: var(--amber);
+    --inv-amber-bg: var(--amber-bg);
+    --inv-purple: var(--purple);
+    --inv-purple-bg: var(--purple-bg);
   }
 
+  /* ── LIGHT MODE ── */
+  body.light-mode {
+    --bg: #F5F3F0;
+    --bg-alt: #FFFFFF;
+    --surface: #FFFFFF;
+    --border: #d8d4cf;
+    --border-light: #e8e5e0;
+    --text-primary: #000000;
+    --text-secondary: #4a4540;
+    --text-muted: #8a8580;
+    --inv-bg: #F5F3F0;
+    --inv-surface: #FFFFFF;
+    --inv-card: #FFFFFF;
+    --inv-border: #d8d4cf;
+    --inv-text: #000000;
+    --inv-text-secondary: #4a4540;
+    --inv-text-muted: #8a8580;
+  }
+  body.light-mode .topbar { background: var(--asphalt); }
+  body.light-mode .deal-card-header:hover { background: #eceae6; }
+  body.light-mode .em-table th { background: #eceae6; }
+  body.light-mode .em-table .total-row { background: #eceae6; }
+  body.light-mode .inv-subtab.active { border-bottom-color: var(--asphalt); color: var(--asphalt); }
+  body.light-mode .filter-btn.active { background: var(--asphalt); color: white; border-color: var(--asphalt); }
+  body.light-mode .region-banner.northeast { background: #e8eef4; color: #1a2e42; border-left-color: #1a2e42; }
+  body.light-mode .region-banner.central { background: #f0ece4; color: #3e3520; border-left-color: #3e3520; }
+  body.light-mode .region-banner.westcoast { background: #e4f0ea; color: #1a3a2a; border-left-color: #1a3a2a; }
+  body.light-mode .insight-card { background: #eceae6; border-color: #d8d4cf; }
+  body.light-mode .insight-card:hover { background: #e4e2de; }
+
+  /* ── RESET ── */
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     background: var(--bg);
-    color: var(--text-1);
-    font-family: 'Inter', sans-serif;
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, sans-serif;
     font-size: 13px;
     line-height: 1.5;
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
   }
 
   /* ── TOPBAR ── */
   .topbar {
+    background: var(--asphalt);
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 32px;
-    height: 60px;
+    padding: 0 28px;
+    height: 52px;
     border-bottom: 1px solid var(--border);
-    background: var(--bg-mid);
     position: sticky;
     top: 0;
     z-index: 100;
   }
-
-  .logo-img {
-    height: 32px;
-    width: auto;
-    display: block;
-  }
-
-  .logo-lockup {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-
-  .logo-divider {
-    width: 1px;
-    height: 22px;
-    background: var(--border-lt);
-  }
-
-  .logo-sub {
-    font-family: 'Barlow', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text-3);
-  }
-
-  /* ── TABS ── */
-  .tabs { display: flex; gap: 2px; }
+  .logo-lockup { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+  .logo-img { height: 22px; }
+  .logo-divider { width: 1px; height: 20px; background: rgba(141,202,227,0.3); }
+  .logo-sub { font-size: 11px; font-weight: 500; color: var(--horizon); letter-spacing: 0.04em; text-transform: uppercase; }
+  .tabs { display: flex; gap: 0; margin-left: 32px; }
   .tab-btn {
-    padding: 6px 18px;
-    border: 1px solid transparent;
-    background: transparent;
-    color: var(--text-3);
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: all 0.12s;
+    background: none; border: none; color: var(--text-muted);
+    font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500;
+    padding: 16px 20px; cursor: pointer; border-bottom: 2px solid transparent;
+    text-transform: uppercase; letter-spacing: 0.04em;
+    transition: color 0.15s, border-color 0.15s;
   }
-  .tab-btn:hover { color: var(--text-2); background: var(--blue-deep); }
-  .tab-btn.active { color: var(--white-90); background: var(--surface); border-color: var(--border); }
-  .tab-btn.active[data-tab="development"] { color: var(--blue); border-color: var(--blue-dim); background: var(--blue-glow); }
-  .tab-btn.active[data-tab="investments"] { color: var(--amber); border-color: rgba(245,185,66,0.3); background: var(--amber-bg); }
-  .tab-btn.active[data-tab="investments"] { color: var(--amber); border-color: rgba(245,185,66,0.3); background: var(--amber-bg); }
+  .tab-btn:hover { color: #FFFFFF; }
+  .tab-btn.active { color: #FFFFFF; border-bottom-color: var(--horizon); }
+  .as-of { margin-left: auto; font-size: 11px; color: var(--text-muted); }
+  #theme-toggle {
+    background: none; border: 1px solid rgba(141,202,227,0.25);
+    color: var(--horizon); padding: 5px 14px; cursor: pointer;
+    font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 500;
+    margin-left: 14px; white-space: nowrap; letter-spacing: 0.02em;
+    transition: background 0.15s;
+  }
+  #theme-toggle:hover { background: rgba(141,202,227,0.08); }
 
-  .as-of { font-size: 11px; color: var(--text-4); font-variant-numeric: tabular-nums; }
-
-  /* ── DEPT SECTIONS ── */
-  .dept-section { display: none; padding: 28px 32px; max-width: 1400px; margin: 0 auto; }
+  /* ── DEPARTMENT SECTIONS ── */
+  .dept-section { display: none; }
   .dept-section.active { display: block; }
+  .placeholder { background: var(--inv-card); border: 1px solid var(--inv-border); padding: 48px 24px; text-align: center; margin: 32px; }
+  .placeholder-icon { font-size: 36px; margin-bottom: 12px; }
+  .placeholder p { color: var(--inv-text-muted); font-size: 14px; }
 
-  /* ── DEPT HEADER ── */
-  .dept-header {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    margin-bottom: 24px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border);
-  }
-  .dept-eyebrow {
-    font-size: 10px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--text-3);
-    margin-bottom: 5px;
-    font-weight: 500;
-  }
-  .dept-title {
-    font-family: 'Barlow', sans-serif;
-    font-weight: 800;
-    font-size: 28px;
-    line-height: 1;
-    letter-spacing: -0.01em;
-    text-transform: uppercase;
-  }
-  .dept-title.blue   { color: var(--blue); }
-  .dept-title.amber  { color: var(--amber); }
-  .dept-title.green  { color: var(--green); }
-  .dept-title.white  { color: var(--white-90); }
+  /* ── LEGACY DARK SECTIONS (non-investment) ── */
+  .subsection { background: var(--surface); border: 1px solid var(--border); overflow: hidden; margin-bottom: 14px; }
+  .col-item { background: var(--bg-alt); border: 1px solid var(--border); padding: 7px 10px; font-size: 12px; }
 
-  /* ── LIVE BADGE ── */
-  .live-badge {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    font-size: 11px;
-    color: var(--text-3);
-    padding: 5px 12px;
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    background: var(--surface);
-    letter-spacing: 0.02em;
-  }
-  .live-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--green);
-    animation: blink 2.5s infinite;
-    flex-shrink: 0;
-  }
-  .static-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--amber); flex-shrink: 0; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
-
-  /* ── STAT CARDS ── */
-  .cards-row { display: grid; gap: 12px; margin-bottom: 24px; }
-  .cols-4 { grid-template-columns: repeat(4,1fr); }
-  .cols-3 { grid-template-columns: repeat(3,1fr); }
-  .cols-2 { grid-template-columns: repeat(2,1fr); }
-
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px 18px;
-    position: relative;
-    overflow: hidden;
-  }
-  .stat-card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  }
-  .stat-card.blue::before   { background: var(--blue); }
-  .stat-card.green::before  { background: var(--green); }
-  .stat-card.amber::before  { background: var(--amber); }
-  .stat-card.red::before    { background: var(--red); }
-  .stat-card.none::before   { display: none; }
-
-  .stat-label {
-    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--text-3); margin-bottom: 8px; font-weight: 500;
-  }
-  .stat-value {
-    font-family: 'Barlow', sans-serif;
-    font-size: 30px; font-weight: 700; line-height: 1;
-    letter-spacing: -0.01em; color: var(--white-90);
-  }
-  .stat-value.sm    { font-size: 18px; }
-  .stat-value.blue  { color: var(--blue); }
-  .stat-value.amber { color: var(--amber); }
-  .stat-value.green { color: var(--green); }
-  .stat-value.red   { color: var(--red); }
-  .stat-sub { font-size: 11px; color: var(--text-4); margin-top: 6px; }
-
-  /* ── SECTION LABELS ── */
-  .section-label {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 12px; margin-top: 32px;
-  }
-  .section-label-text {
-    font-family: 'Barlow', sans-serif;
-    font-size: 11px; font-weight: 700;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--text-2); white-space: nowrap;
-  }
-  .section-label-line { flex: 1; height: 1px; background: var(--border); }
-  .section-tag {
-    font-size: 10px; padding: 2px 8px; border-radius: 3px;
-    font-weight: 500; letter-spacing: 0.04em; white-space: nowrap;
-  }
-  .tag-blue  { background: var(--blue-glow); color: var(--blue); border: 1px solid var(--blue-dim); }
-  .tag-green { background: var(--green-bg);  color: var(--green); border: 1px solid rgba(62,207,142,0.2); }
-  .tag-amber { background: var(--amber-bg);  color: var(--amber); border: 1px solid rgba(245,185,66,0.2); }
-  .tag-dim   { background: var(--surface2);  color: var(--text-3); border: 1px solid var(--border); }
-
-  /* ── PILLS ── */
-  .pill {
-    display: inline-flex; align-items: center; padding: 3px 8px;
-    border-radius: 4px; font-size: 10px; font-weight: 600;
-    letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap;
-  }
-  .pill.complete   { background: var(--green-bg);  color: var(--green);  border: 1px solid rgba(62,207,142,0.2); }
-  .pill.inprogress { background: var(--blue-glow); color: var(--blue);   border: 1px solid var(--blue-dim); }
-  .pill.notstarted { background: var(--surface3);  color: var(--text-3); border: 1px solid var(--border); }
-  .pill.update     { background: var(--blue-glow); color: var(--blue);   border: 1px solid var(--blue-dim); }
-  .pill.decision   { background: var(--amber-bg);  color: var(--amber);  border: 1px solid rgba(245,185,66,0.2); }
-  .pill.risk       { background: var(--red-bg);    color: var(--red);    border: 1px solid rgba(232,85,85,0.2); }
-  .pill.dd         { background: var(--blue-glow); color: var(--blue);   border: 1px solid var(--blue-dim); }
-
-  /* ── SUBSECTION ── */
-  .subsection { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 14px; }
-  .subsection-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 13px 20px; border-bottom: 1px solid var(--border); background: var(--surface2);
-  }
-  .subsection-title {
-    font-family: 'Barlow', sans-serif; font-size: 13px; font-weight: 700;
-    letter-spacing: 0.02em; display: flex; align-items: center; gap: 8px; color: var(--white-90);
-  }
-  .subsection-meta { font-size: 11px; color: var(--text-4); }
-
-  /* ── MEETING TABLE ── */
-  .meeting-table-wrap { overflow-x: auto; }
-  table.meeting { width: 100%; border-collapse: collapse; font-size: 12px; }
-  table.meeting thead th {
-    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--text-3); font-weight: 600; text-align: left;
-    padding: 10px 14px; border-bottom: 1px solid var(--border);
-    white-space: nowrap; background: var(--surface2);
-  }
-  table.meeting thead th.num { text-align: right; }
-  table.meeting tbody tr { border-bottom: 1px solid var(--surface2); transition: background 0.08s; }
-  table.meeting tbody tr:last-child { border-bottom: none; }
-  table.meeting tbody tr:hover { background: var(--surface2); }
-  table.meeting tbody td { padding: 11px 14px; vertical-align: top; color: var(--text-1); }
-  table.meeting tbody td.dim { color: var(--text-2); }
-  table.meeting tbody td.num { text-align: right; font-variant-numeric: tabular-nums; }
-  table.meeting tbody td.notes-cell { font-size: 11px; color: var(--text-2); line-height: 1.55; max-width: 320px; }
-
-  .budget-ok   { color: var(--green); }
-  .budget-warn { color: var(--amber); }
-  .budget-over { color: var(--red); }
-
-  /* ── DETAIL CARDS GRID ── */
-  .const-grid {
-    display: grid; grid-template-columns: repeat(2,1fr);
-    gap: 1px; background: var(--border);
-    border-radius: 10px; overflow: hidden; border: 1px solid var(--border);
-  }
-  .const-proj { background: var(--surface); padding: 20px; }
-  .const-proj-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
-  .const-proj-code {
-    font-family: 'Barlow', sans-serif; font-size: 14px; font-weight: 700;
-    color: var(--white-90); letter-spacing: 0.01em;
-  }
-  .const-proj-loc { font-size: 11px; color: var(--text-4); margin-top: 2px; }
-  .const-metrics { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px; }
-  .const-metric-label { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 3px; }
-  .const-metric-value { font-family: 'Barlow', sans-serif; font-size: 15px; font-weight: 700; color: var(--white-90); }
-  .budget-bar-wrap { margin: 0 0 10px; }
-  .budget-bar-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-3); margin-bottom: 4px; }
-  .budget-bar { height: 4px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
-  .budget-fill { height: 100%; border-radius: 2px; }
-  .fill-ok   { background: var(--green); }
-  .fill-warn { background: var(--amber); }
-  .fill-over { background: var(--red); }
-  .dates-row { display: flex; gap: 20px; margin-bottom: 12px; font-size: 11px; }
-  .date-label { font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); }
-  .date-value { color: var(--text-2); margin-top: 1px; }
-  .date-value.late { color: var(--red); }
-  .const-notes { font-size: 11px; color: var(--text-2); line-height: 1.55; border-top: 1px solid var(--border); padding-top: 12px; }
-  .const-notes ul { padding-left: 14px; }
-  .const-notes li { margin-bottom: 3px; }
-
-  /* ── BUDGET BREAKDOWN (hard / soft) ── */
-  .budget-breakdown { padding: 0 14px 12px; }
-  .budget-breakdown-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-  .budget-breakdown-table thead th {
-    font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--text-4); font-weight: 600; padding: 4px 6px;
-    text-align: right; border-bottom: 1px solid var(--border);
-  }
-  .budget-breakdown-table thead th:first-child { text-align: left; }
-  .budget-breakdown-table tbody tr { border-bottom: 1px solid var(--surface2); }
-  .budget-breakdown-table tbody td {
-    padding: 5px 6px; text-align: right;
-    color: var(--text-2); font-variant-numeric: tabular-nums;
-  }
-  .budget-breakdown-table tbody td:first-child { text-align: left; color: var(--text-3); font-weight: 500; }
-  .budget-breakdown-table tfoot td {
-    padding: 6px 6px; text-align: right; font-weight: 700; font-size: 11px;
-    color: var(--white-90); border-top: 1px solid var(--border); font-variant-numeric: tabular-nums;
-  }
-  .budget-breakdown-table tfoot td:first-child { text-align: left; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.06em; font-size: 10px; }
-
-  /* ── CALLOUT ── */
-  .callout {
-    background: rgba(140,200,220,0.05);
-    border-left: 3px solid var(--blue-dim);
-    padding: 10px 14px; margin-bottom: 16px;
-    font-size: 11px; color: var(--text-2); line-height: 1.55;
-    border-radius: 0 4px 4px 0;
-  }
-
-  /* ── COMPANY MINI CARDS ── */
-  .company-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 24px; }
-  .mini-dept { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-  .mini-dept-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-  .mini-dept-name { font-family: 'Barlow', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
-  .mini-dept-body { padding: 14px 16px; }
-  .mini-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--surface2); font-size: 11px; }
-  .mini-row:last-child { border-bottom: none; }
-  .mini-row .lbl { color: var(--text-2); }
-  .mini-row .val { font-weight: 500; }
-
-  /* ── PLACEHOLDER ── */
-  .placeholder {
-    background: var(--surface); border: 1px dashed var(--border);
-    border-radius: 8px; padding: 40px 24px; text-align: center; margin-bottom: 20px;
-  }
-  .placeholder-icon { font-size: 30px; margin-bottom: 10px; opacity: 0.2; }
-  .placeholder p { font-size: 12px; color: var(--text-3); line-height: 1.6; }
-  .placeholder strong { color: var(--text-2); }
-
-  /* ── SETUP TABLE ── */
-  table.setup { width: 100%; border-collapse: collapse; font-size: 12px; }
-  table.setup th { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--border); font-weight: 600; }
-  table.setup td { padding: 9px 14px; border-bottom: 1px solid var(--surface2); color: var(--text-2); }
-  table.setup tr:last-child td { border-bottom: none; }
-  table.setup tr:hover td { background: var(--surface2); }
-
-  /* ── COL MAP ── */
-  .col-map { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; margin-bottom: 20px; }
-  .col-map-title { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 12px; font-weight: 600; }
-  .col-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(170px,1fr)); gap: 8px; }
-  .col-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 7px 10px; }
-  .col-name { font-size: 11px; font-weight: 500; color: var(--text-1); }
-  .col-type { font-size: 10px; color: var(--text-3); margin-top: 2px; }
-
-  /* ── SOURCE NOTE ── */
-  .source-note { display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--text-4); padding-top: 16px; margin-top: 16px; border-top: 1px solid var(--border); }
-
-  /* ── CONTRACT DETAIL ROW ── */
-  .contract-detail-footer {
-    display: grid; grid-template-columns: repeat(4,1fr);
-    border-top: 1px solid var(--border);
-  }
-  .cdf-item { padding: 12px 20px; }
-  .cdf-item:not(:last-child) { border-right: 1px solid var(--border); }
-
-  /* ── GANTT CHART ── */
-  .gantt-wrap { padding: 20px 20px 0; }
-  .gantt-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-  .gantt-title { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); font-weight: 600; }
-  .gantt-legend { display: flex; gap: 14px; font-size: 10px; color: var(--text-3); }
-  .gantt-legend-item { display: flex; align-items: center; gap: 5px; }
-  .gantt-legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
-
-  .gantt-chart { position: relative; overflow-x: auto; }
-  .gantt-inner { min-width: 600px; }
-  .gantt-month-row { display: flex; border-bottom: 1px solid var(--border); }
-  .gantt-label-col { width: 160px; flex-shrink: 0; }
-  .gantt-month-cell { flex: 1; text-align: center; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--text-3); font-weight: 600; padding: 6px 0; border-left: 1px solid var(--border); }
-
-  .gantt-row { display: flex; align-items: center; min-height: 38px; border-bottom: 1px solid rgba(10,58,82,0.5); position: relative; }
-  .gantt-row:last-child { border-bottom: none; }
-  .gantt-row:hover { background: rgba(140,200,220,0.03); }
-  .gantt-label { width: 160px; flex-shrink: 0; padding: 0 12px 0 0; }
-  .gantt-label-name { font-size: 11px; font-weight: 500; color: var(--text-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .gantt-label-sub { font-size: 9px; color: var(--text-4); margin-top: 2px; }
-  .gantt-track { flex: 1; position: relative; height: 38px; display: flex; align-items: center; }
-
-  .gantt-bar {
-    position: absolute; height: 14px; border-radius: 3px;
-    display: flex; align-items: center; cursor: default;
-  }
-  .gantt-bar-fill { height: 100%; width: 100%; border-radius: 3px; }
-  .gantt-bar.complete  .gantt-bar-fill { background: var(--green); }
-  .gantt-bar.prog      .gantt-bar-fill { background: var(--blue); opacity: 0.85; }
-  .gantt-bar.pending   .gantt-bar-fill { background: var(--surface3); border: 1px solid var(--border-lt); }
-  .gantt-bar.psa       .gantt-bar-fill { background: var(--amber); }
-  .gantt-bar.dd-exp    .gantt-bar-fill { background: var(--red); opacity: 0.7; }
-
-  .gantt-diamond {
-    position: absolute; width: 10px; height: 10px;
-    transform: rotate(45deg); border-radius: 2px;
-    top: 50%; margin-top: -5px; z-index: 4;
-  }
-  .gantt-diamond.amber { background: var(--amber); }
-  .gantt-diamond.red   { background: var(--red); }
-  .gantt-diamond.blue  { background: var(--blue); }
-
-  .gantt-today-line {
-    position: absolute; top: 0; bottom: 0; width: 2px;
-    background: rgba(140,200,220,0.5); z-index: 3; pointer-events: none;
-  }
-  .gantt-col-line {
-    position: absolute; top: 0; bottom: 0; width: 1px;
-    background: var(--border); opacity: 0.5; pointer-events: none;
-  }
-  .gantt-today-label {
-    position: absolute; top: 4px; font-size: 9px; color: var(--blue);
-    letter-spacing: 0.06em; transform: translateX(-50%); white-space: nowrap;
-    background: var(--surface); padding: 1px 4px; border-radius: 2px; z-index: 5;
-  }
-
-  /* ── INVESTMENT PIPELINE ── */
-  .inv-funnel { display: flex; flex-direction: column; gap: 6px; }
-  .inv-funnel-stage { width: var(--stage-w); min-width: 220px; }
-  .inv-funnel-bar {
-    background: var(--stage-color); border-radius: 4px;
-    padding: 9px 14px; display: flex; justify-content: space-between;
-    align-items: center; transition: opacity 0.15s;
-  }
-  .inv-funnel-bar:hover { opacity: 0.85; }
-  .inv-funnel-label { font-family: 'Barlow', sans-serif; font-size: 12px; font-weight: 700;
-    color: var(--white); letter-spacing: 0.04em; }
-  .inv-funnel-count { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.75); }
-  .inv-funnel-meta { font-size: 10px; color: var(--text-3); padding: 4px 4px 0;
-    letter-spacing: 0.03em; }
-
-  /* investment table */
-  .inv-table-wrap { overflow-x: auto; }
-  .inv-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-  .inv-table th {
-    padding: 8px 10px; background: var(--surface2); color: var(--text-3);
-    font-size: 9px; letter-spacing: 0.09em; text-transform: uppercase;
-    font-weight: 600; border-bottom: 1px solid var(--border);
-    white-space: nowrap; text-align: left;
-  }
-  .inv-table th.num { text-align: right; }
-  .inv-table td { padding: 9px 10px; border-bottom: 1px solid rgba(10,58,82,0.4);
-    color: var(--text-2); vertical-align: top; }
-  .inv-table tr:last-child td { border-bottom: none; }
-  .inv-table tr:hover td { background: rgba(140,200,220,0.03); }
-  .inv-table td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
-  .inv-table td.dim { color: var(--text-3); font-size: 10px; }
-  .inv-table td.fw { font-weight: 600; color: var(--white-90); }
-  .inv-deal-name { font-weight: 600; color: var(--white-90); font-size: 11px; white-space: nowrap; }
-  .inv-deal-sub { font-size: 9px; color: var(--text-3); margin-top: 2px; }
-  .inv-lead { font-size: 10px; color: var(--blue); font-weight: 500; white-space: nowrap; }
-  .inv-table tfoot td { background: var(--surface2); border-top: 1px solid var(--border);
-    border-bottom: none; padding: 8px 10px; font-size: 11px; }
-  .date-cell { white-space: nowrap; font-size: 10px; color: var(--text-2); }
-  .date-cell.urgent { color: var(--amber); font-weight: 600; }
-  .report-section-label { padding: 14px 20px 6px; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); font-weight: 600; border-top: 1px solid var(--border); }
-  .report-cards { padding: 6px 14px 18px; display: flex; flex-direction: column; gap: 8px; }
-  .report-card { background: var(--surface); border: 1px solid var(--border); border-radius: 7px; overflow: hidden; }
-  .report-card-header {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 14px; border-bottom: 1px solid var(--border);
-    cursor: pointer; user-select: none;
-  }
-  .report-card-header:hover { background: var(--surface2); }
-  .report-num { font-family: 'Barlow', sans-serif; font-size: 10px; font-weight: 700; color: var(--text-4); width: 14px; flex-shrink: 0; }
-  .report-name { font-size: 12px; font-weight: 600; color: var(--white-90); flex: 1; }
-  .report-dates { font-size: 10px; color: var(--text-3); white-space: nowrap; margin-right: 8px; }
-  .report-card-body { padding: 12px 14px; }
-  .report-summary { font-size: 11px; color: var(--text-2); line-height: 1.7; margin-bottom: 12px; }
-  .report-link {
-    display: inline-flex; align-items: center; gap: 6px; font-size: 10px;
-    font-weight: 600; letter-spacing: 0.04em; color: var(--blue); text-decoration: none;
-    padding: 5px 11px; background: var(--blue-glow); border: 1px solid var(--blue-dim);
-    border-radius: 4px; transition: all 0.12s;
-  }
-  .report-link:hover { background: rgba(140,200,220,0.18); border-color: var(--blue); }
-  .report-link.no-file { color: var(--text-3); background: var(--surface2); border-color: var(--border); pointer-events: none; }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 960px) {
-    .const-grid { grid-template-columns: 1fr; }
-    .company-grid { grid-template-columns: 1fr; }
-    .cols-4 { grid-template-columns: repeat(2,1fr); }
-    .cols-3 { grid-template-columns: 1fr; }
-    .topbar { height: auto; padding: 12px 20px; flex-wrap: wrap; gap: 10px; }
-    .dept-section { padding: 20px 16px; }
-  }
-
-  /* ══ INVESTMENTS / PIPELINE DASHBOARD STYLES ══ */
-  :root {
-    --inv-green: #059669; --inv-green-bg: #ecfdf5;
-    --inv-amber: #d97706; --inv-amber-bg: #fffbeb;
-    --inv-blue: #2563eb;  --inv-blue-bg: #eff6ff;
-    --inv-purple: #7c3aed; --inv-purple-bg: #f5f3ff;
-    --inv-red: #dc2626;   --inv-red-bg: #fef2f2;
-    --inv-orange: #ea580c;
-    --inv-card: #ffffff;
-    --inv-border: #e4e7ef;
-    --inv-text: #111827;
-    --inv-text-muted: #6b7280;
-    --inv-bg: #f0f2f7;
-    --inv-accent: #4f46e5;
-    --inv-accent-light: #eef2ff;
-    --inv-shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
-    --inv-shadow-md: 0 4px 16px rgba(0,0,0,0.06);
-    --inv-radius: 14px;
-  }
-
-  /* Investment sub-tabs */
+  /* ── SUB-TAB BAR ── */
   .inv-subtab-bar {
     display: flex; gap: 0; background: var(--inv-card);
     border-bottom: 1px solid var(--inv-border); padding: 0 32px;
-    box-shadow: var(--inv-shadow-sm);
   }
   .inv-subtab {
-    padding: 14px 24px; font-family: 'Inter', sans-serif;
-    font-size: 13px; font-weight: 600; color: var(--inv-text-muted);
-    background: none; border: none; border-bottom: 2.5px solid transparent;
-    margin-bottom: -1px; cursor: pointer; transition: all 0.2s;
+    background: none; border: none; border-bottom: 2px solid transparent;
+    padding: 14px 18px; font-family: 'Inter', sans-serif; font-size: 12px;
+    font-weight: 500; color: var(--inv-text-muted); cursor: pointer;
+    text-transform: uppercase; letter-spacing: 0.04em;
+    transition: color 0.15s, border-color 0.15s;
   }
-  .inv-subtab:hover { color: var(--inv-text); background: #fafbfc; }
-  .inv-subtab.active { color: var(--inv-accent); border-bottom-color: var(--inv-accent); background: var(--inv-accent-light); }
+  .inv-subtab:hover { color: var(--inv-text); }
+  .inv-subtab.active { color: var(--inv-accent); border-bottom-color: var(--inv-accent); }
   .inv-tab-panel { display: none; }
   .inv-tab-panel.active { display: block; }
 
-  /* KPI grid */
-  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; margin-bottom: 36px; }
-  .kpi-card { background: var(--inv-card); border: 1px solid var(--inv-border); border-radius: var(--inv-radius); padding: 22px 24px; box-shadow: var(--inv-shadow-sm); transition: all 0.2s; }
-  .kpi-card:hover { box-shadow: var(--inv-shadow-md); transform: translateY(-1px); }
-  .kpi-card .label { font-size: 11px; color: var(--inv-text-muted); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
-  .kpi-card .value { font-size: 30px; font-weight: 800; margin-top: 6px; letter-spacing: -0.5px; color: var(--inv-text); }
-  .kpi-card .sub { font-size: 12px; color: var(--inv-text-muted); margin-top: 4px; }
+  /* ── KPI CARDS ── */
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .kpi-card {
+    background: var(--inv-card); border: 1px solid var(--inv-border);
+    padding: 18px 20px;
+  }
+  .kpi-card .label { font-size: 10px; color: var(--inv-text-muted); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+  .kpi-card .value { font-size: 24px; font-weight: 700; margin-top: 4px; color: var(--inv-text); }
+  .kpi-card .sub { font-size: 11px; color: var(--inv-text-muted); margin-top: 3px; }
 
-  /* Filter bar */
-  .filter-bar { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; align-items: center; }
-  .filter-btn { padding: 8px 20px; border-radius: 24px; border: 1px solid var(--inv-border); background: var(--inv-card); font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; box-shadow: var(--inv-shadow-sm); }
+  /* ── FILTER BAR ── */
+  .filter-bar { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+  .filter-btn {
+    padding: 6px 14px; border: 1px solid var(--inv-border);
+    background: var(--inv-card); font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 500; cursor: pointer; color: var(--inv-text-secondary);
+    text-transform: uppercase; letter-spacing: 0.03em;
+    transition: all 0.15s;
+  }
   .filter-btn:hover { border-color: var(--inv-accent); color: var(--inv-accent); }
-  .filter-btn.active { background: var(--inv-accent); color: white; border-color: var(--inv-accent); }
+  .filter-btn.active { background: var(--inv-accent); color: var(--asphalt); border-color: var(--inv-accent); font-weight: 600; }
 
-  /* Section headers */
-  .section-header { display: flex; align-items: center; gap: 12px; margin: 36px 0 18px; cursor: pointer; user-select: none; padding: 8px 0; }
-  .section-header h2 { font-size: 18px; font-weight: 700; letter-spacing: -0.2px; color: var(--inv-text); }
-  .section-header .toggle { margin-left: auto; font-size: 16px; color: var(--inv-text-muted); transition: transform 0.25s; }
-  .section-header .toggle.collapsed { transform: rotate(-90deg); }
+  /* ── REGION BANNERS ── */
+  .region-banner {
+    padding: 12px 20px; margin-bottom: 12px; font-weight: 600;
+    font-size: 13px; display: flex; align-items: center; gap: 10px;
+    border-left: 3px solid; text-transform: uppercase; letter-spacing: 0.03em;
+  }
+  .region-banner .region-total { margin-left: auto; font-size: 12px; font-weight: 400; opacity: 0.7; text-transform: none; letter-spacing: 0; }
+  .region-banner.northeast { background: rgba(141,202,227,0.06); color: var(--horizon); border-left-color: var(--horizon); }
+  .region-banner.central { background: rgba(234,179,8,0.05); color: var(--amber); border-left-color: var(--amber); }
+  .region-banner.westcoast { background: rgba(34,197,94,0.05); color: var(--green); border-left-color: var(--green); }
 
-  /* Region banners */
-  .region-banner { padding: 16px 24px; border-radius: 12px; margin-bottom: 18px; font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 12px; box-shadow: var(--inv-shadow-sm); }
-  .region-banner .region-total { margin-left: auto; font-size: 13px; font-weight: 500; opacity: 0.75; }
-  .region-banner.northeast { background: linear-gradient(135deg, #dbeafe, #e0f2fe); color: #1e40af; }
-  .region-banner.central { background: linear-gradient(135deg, #fef3c7, #fef9c3); color: #92400e; }
-  .region-banner.westcoast { background: linear-gradient(135deg, #d1fae5, #ccfbf1); color: #065f46; }
-
-  /* Deal cards */
-  .deal-card { background: var(--inv-card); border: 1px solid var(--inv-border); border-radius: var(--inv-radius); margin-bottom: 14px; overflow: hidden; transition: all 0.2s; box-shadow: var(--inv-shadow-sm); }
-  .deal-card:hover { box-shadow: var(--inv-shadow-md); border-color: #d1d5db; }
-  .deal-card-header { display: flex; align-items: center; padding: 18px 24px; gap: 16px; cursor: pointer; transition: background 0.15s; }
-  .deal-card-header:hover { background: #fafbfd; }
-  .deal-card-header .deal-name { font-weight: 600; font-size: 15px; flex: 1; color: var(--inv-text); }
-  .deal-card-header .deal-pp { font-weight: 800; font-size: 15px; color: var(--inv-text); }
-  .deal-card-body { padding: 0 24px 22px; display: none; }
+  /* ── DEAL CARDS ── */
+  .deal-card {
+    background: var(--inv-card); border: 1px solid var(--inv-border);
+    margin-bottom: 8px; overflow: hidden;
+  }
+  .deal-card:hover { border-color: var(--horizon-border); }
+  .deal-card-header {
+    display: flex; align-items: center; padding: 14px 20px; gap: 14px;
+    cursor: pointer; transition: background 0.1s;
+  }
+  .deal-card-header:hover { background: rgba(141,202,227,0.04); }
+  .deal-card-header .deal-name { font-weight: 600; font-size: 13px; flex: 1; color: var(--inv-text); }
+  .deal-card-header .deal-pp { font-weight: 700; font-size: 13px; color: var(--inv-text); font-variant-numeric: tabular-nums; }
+  .deal-card-body { padding: 0 20px 18px; display: none; }
   .deal-card.open .deal-card-body { display: block; }
 
-  .stage-badge { font-size: 10.5px; font-weight: 700; padding: 4px 12px; border-radius: 8px; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
+  /* ── STAGE BADGES ── */
+  .stage-badge {
+    font-size: 9px; font-weight: 700; padding: 3px 8px;
+    white-space: nowrap; text-transform: uppercase; letter-spacing: 0.05em;
+  }
   .stage-badge.under-contract { background: var(--inv-green-bg); color: var(--inv-green); }
   .stage-badge.negotiating-psa { background: var(--inv-amber-bg); color: var(--inv-amber); }
   .stage-badge.negotiating-loi { background: var(--inv-purple-bg); color: var(--inv-purple); }
 
-  .deal-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; padding: 16px 0; border-bottom: 1px solid #f1f5f9; }
-  .meta-item .meta-label { font-size: 10.5px; color: var(--inv-text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
-  .meta-item .meta-value { font-size: 14px; font-weight: 600; margin-top: 3px; color: var(--inv-text); }
+  /* ── DEAL META GRID ── */
+  .deal-meta {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px; margin-bottom: 14px; padding-top: 4px;
+  }
+  .meta-item { }
+  .meta-label { font-size: 10px; color: var(--inv-text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+  .meta-value { font-size: 13px; color: var(--inv-text); font-weight: 500; margin-top: 1px; }
 
-  .key-dates { display: flex; gap: 20px; padding: 16px 0; border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; }
-  .key-date { display: flex; align-items: center; gap: 8px; font-size: 13px; background: #f8fafc; padding: 6px 14px; border-radius: 8px; }
-  .key-date .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  /* ── KEY DATES ── */
+  .key-dates { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  .key-date {
+    display: flex; align-items: center; gap: 6px; font-size: 12px;
+    background: var(--inv-surface); padding: 5px 12px; border: 1px solid var(--inv-border);
+  }
+  .dot { width: 6px; height: 6px; flex-shrink: 0; }
   .dot.signed { background: var(--inv-green); }
   .dot.go-hard { background: var(--inv-amber); }
   .dot.closing { background: var(--inv-red); }
-  .key-date .date-label { color: var(--inv-text-muted); font-weight: 500; }
-  .key-date .date-value { font-weight: 700; color: var(--inv-text); }
-  .days-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 6px; white-space: nowrap; }
+  .date-label { color: var(--inv-text-muted); font-weight: 500; }
+  .date-value { color: var(--inv-text); font-weight: 600; }
+
+  /* ── DAYS BADGES ── */
+  .days-badge { font-size: 10px; font-weight: 700; padding: 2px 6px; letter-spacing: 0.02em; }
   .days-badge.urgent { background: var(--inv-red-bg); color: var(--inv-red); }
   .days-badge.soon { background: var(--inv-amber-bg); color: var(--inv-amber); }
   .days-badge.ok { background: var(--inv-green-bg); color: var(--inv-green); }
-  .days-badge.past { background: #f1f5f9; color: var(--inv-text-muted); }
+  .days-badge.past { background: rgba(100,116,139,0.1); color: var(--inv-text-muted); }
 
-  .action-items { padding: 16px 0 0; }
-  .action-items h4 { font-size: 11px; font-weight: 700; color: var(--inv-text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; }
-  .action-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 14px; font-size: 13.5px; border-radius: 8px; margin-bottom: 4px; transition: background 0.15s; color: var(--inv-text); }
-  .action-item:hover { background: #f8fafc; }
-  .action-item input[type="checkbox"] { margin-top: 3px; accent-color: var(--inv-accent); width: 17px; height: 17px; flex-shrink: 0; cursor: pointer; }
-  .action-item.completed span { text-decoration: line-through; color: #9ca3af; }
-  .key-date-item { font-size: 13px; padding: 8px 0; display: flex; align-items: center; gap: 8px; color: var(--inv-text); }
-  .key-date-item .kd-label { color: var(--inv-text-muted); font-weight: 500; }
-  .key-date-item .kd-value { font-weight: 700; }
+  /* ── ACTION ITEMS ── */
+  .action-items { margin-top: 10px; }
+  .action-items h4 {
+    font-size: 10px; font-weight: 700; color: var(--inv-text-muted);
+    text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;
+    padding-bottom: 4px; border-bottom: 1px solid var(--inv-border);
+  }
+  .action-item {
+    display: flex; align-items: flex-start; gap: 8px; padding: 5px 0;
+    font-size: 12.5px; color: var(--inv-text-secondary); cursor: pointer;
+    border-bottom: 1px solid rgba(141,202,227,0.06);
+  }
+  .action-item:last-child { border-bottom: none; }
+  .action-item:hover { color: var(--inv-text); }
+  .action-item input[type="checkbox"] { margin-top: 3px; accent-color: var(--inv-accent); }
 
-  /* EM Table */
-  .em-table-wrapper { overflow-x: auto; background: var(--inv-card); border: 1px solid var(--inv-border); border-radius: var(--inv-radius); margin-top: 8px; box-shadow: var(--inv-shadow-sm); }
-  .em-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .em-table th { text-align: left; padding: 14px 18px; background: linear-gradient(180deg, #f8fafc, #f1f5f9); font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--inv-text-muted); border-bottom: 1px solid var(--inv-border); }
-  .em-table td { padding: 12px 18px; border-bottom: 1px solid #f1f5f9; color: var(--inv-text); }
-  .em-table tbody tr:hover { background: #fafbfd; }
-  .em-table tr:last-child td { border-bottom: none; }
-  .em-table .total-row { font-weight: 800; background: linear-gradient(180deg, #f8fafc, #f1f5f9); }
-  .confidence-bar { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: var(--inv-text); }
-  .confidence-bar .bar { width: 56px; height: 7px; background: #e5e7eb; border-radius: 4px; overflow: hidden; }
-  .confidence-bar .bar-fill { height: 100%; border-radius: 4px; }
+  .key-date-item { display: flex; gap: 8px; padding: 4px 0; font-size: 12.5px; }
+  .kd-label { color: var(--inv-text-muted); font-weight: 500; }
+  .kd-value { color: var(--inv-text); }
 
-  /* Gantt (investments) */
-  .gantt-container { margin-top: 8px; background: var(--inv-card); border: 1px solid var(--inv-border); border-radius: var(--inv-radius); padding: 20px 24px; box-shadow: var(--inv-shadow-sm); overflow-x: auto; }
-  .gantt-grid { display: grid; gap: 0; min-width: 800px; }
-  .gantt-header-label { font-size: 11px; font-weight: 700; color: var(--inv-text-muted); text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 12px; border-bottom: 2px solid var(--inv-border); background: var(--inv-bg); border-radius: 8px 0 0 0; }
-  .gantt-header-dates { display: grid; border-bottom: 2px solid var(--inv-border); background: var(--inv-bg); border-radius: 0 8px 0 0; }
-  .gantt-header-dates > div { font-size: 10px; font-weight: 700; color: var(--inv-text-muted); text-transform: uppercase; padding: 8px 4px; text-align: center; border-left: 1px solid var(--inv-border); }
-  .gantt-header-dates > div.today-col { background: rgba(79,70,229,0.08); color: var(--inv-accent); }
-  .gantt-row-label { font-size: 12.5px; font-weight: 600; color: var(--inv-text); padding: 10px 12px; border-bottom: 1px solid var(--inv-border); display: flex; align-items: center; gap: 8px; white-space: nowrap; }
-  .gantt-row-label .deal-region { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
-  .gantt-row-label .deal-region.ne { background: #eef2ff; color: var(--inv-accent); }
-  .gantt-row-label .deal-region.ce { background: var(--inv-green-bg); color: var(--inv-green); }
-  .gantt-row-label .deal-region.wc { background: var(--inv-amber-bg); color: var(--inv-amber); }
-  .gantt-row-bars { display: grid; border-bottom: 1px solid var(--inv-border); position: relative; }
-  .gantt-row-bars > div { border-left: 1px solid #f0f0f0; min-height: 40px; }
-  .gantt-marker { position: absolute; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 4px; z-index: 2; cursor: default; }
-  .gantt-dot { width: 14px; height: 14px; border-radius: 50%; border: 2.5px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.2); flex-shrink: 0; }
-  .gantt-label { font-size: 9.5px; font-weight: 600; white-space: nowrap; padding: 2px 6px; border-radius: 4px; line-height: 1; }
-  .gantt-today-line { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--inv-accent); z-index: 3; opacity: 0.6; }
-  .gantt-today-label { position: absolute; top: -18px; transform: translateX(-50%); font-size: 9px; font-weight: 700; color: var(--inv-accent); background: var(--inv-accent-light); padding: 1px 6px; border-radius: 4px; }
-  .gantt-legend { display: flex; gap: 20px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--inv-border); justify-content: center; }
-  .gantt-legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--inv-text-muted); font-weight: 500; }
-  .gantt-legend-dot { width: 10px; height: 10px; border-radius: 50%; }
-  .collapsible-content { transition: max-height 0.3s ease-out; overflow: hidden; }
-  .collapsible-content.collapsed { max-height: 0 !important; }
+  /* ── TABLES (EM + Weekly Report + Dead Deals) ── */
+  .em-table-wrapper {
+    overflow-x: auto; background: var(--inv-card);
+    border: 1px solid var(--inv-border); margin-top: 8px;
+  }
+  .em-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .em-table th {
+    text-align: left; padding: 10px 14px; background: var(--bg-alt);
+    font-weight: 700; font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--inv-text-muted);
+    border-bottom: 2px solid var(--inv-border);
+  }
+  .em-table td { padding: 10px 14px; border-bottom: 1px solid var(--inv-border); color: var(--inv-text); vertical-align: top; }
+  .em-table .total-row { font-weight: 700; background: var(--bg-alt); }
+  .em-table .total-row td { border-top: 2px solid var(--inv-border); }
+  .em-table tr:hover td { background: rgba(141,202,227,0.03); }
 
-  /* BD/AM sections */
-  .bd-header-bar { background: linear-gradient(135deg, #0ea5e9, #2563eb); color: white; padding: 14px 24px; border-radius: var(--inv-radius); margin-bottom: 20px; font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-  .insight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 18px; }
-  .insight-card { background: #f8fafc; border: 1px solid var(--inv-border); border-radius: 10px; padding: 18px 20px; transition: all 0.15s; }
-  .insight-card:hover { background: #f1f5f9; transform: translateY(-1px); box-shadow: var(--inv-shadow-sm); }
-  .insight-card h4 { font-size: 13px; font-weight: 700; color: var(--inv-accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .insight-card p, .insight-card li { font-size: 13.5px; color: var(--inv-text); line-height: 1.6; }
+  /* Confidence bars */
+  .confidence-bar { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; color: var(--inv-text-muted); }
+  .confidence-bar .bar { width: 50px; height: 4px; background: rgba(141,202,227,0.1); overflow: hidden; }
+  .confidence-bar .bar-fill { height: 100%; }
+
+  /* Status pills */
+  .pill { font-size: 10px; font-weight: 600; padding: 2px 8px; text-transform: uppercase; letter-spacing: 0.03em; }
+  .pill.complete { background: var(--inv-green-bg); color: var(--inv-green); }
+  .pill.inprogress { background: var(--inv-amber-bg); color: var(--inv-amber); }
+  .pill.notstarted { background: rgba(141,202,227,0.1); color: var(--inv-text-muted); }
+
+  /* ── BD SECTION ── */
+  .bd-header-bar {
+    background: var(--gunmetal); color: #FFFFFF;
+    padding: 11px 20px; margin-bottom: 16px;
+    font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px;
+    text-transform: uppercase; letter-spacing: 0.03em;
+    border-left: 3px solid var(--horizon);
+  }
+  .insight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin-bottom: 28px; }
+  .insight-card {
+    background: var(--surface); border: 1px solid var(--inv-border); padding: 16px 18px;
+  }
+  .insight-card:hover { border-color: var(--horizon-border); }
+  .insight-card h4 {
+    font-size: 10px; font-weight: 700; color: var(--inv-text-muted);
+    margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .insight-card p, .insight-card li { font-size: 12.5px; color: var(--inv-text-secondary); line-height: 1.6; }
   .insight-card ul { list-style: none; padding: 0; }
-  .insight-card ul li { padding: 4px 0 4px 16px; position: relative; }
-  .insight-card ul li::before { content: '▸'; position: absolute; left: 0; color: var(--inv-accent); font-weight: 700; }
-  .travel-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-  .travel-chip { background: var(--inv-blue-bg); color: var(--inv-blue); font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 20px; white-space: nowrap; }
+  .insight-card ul li { padding: 3px 0 3px 14px; position: relative; }
+  .insight-card ul li::before { content: '—'; position: absolute; left: 0; color: var(--inv-text-muted); font-weight: 400; }
+  .travel-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .travel-chip {
+    background: var(--horizon-dim); color: var(--inv-text-secondary);
+    font-size: 11px; font-weight: 500; padding: 4px 10px;
+    border: 1px solid var(--horizon-border);
+  }
+
+  /* ── GANTT ── */
+  .gantt-container {
+    margin-top: 8px; background: var(--inv-card); border: 1px solid var(--inv-border);
+    padding: 16px 20px; overflow-x: auto;
+  }
+  .section-header { cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; }
+  .section-header h2 { font-size: 16px; font-weight: 700; color: var(--inv-text); }
+  .gantt-header-label {
+    font-size: 10px; font-weight: 700; color: var(--inv-text-muted);
+    text-transform: uppercase; letter-spacing: 0.05em; padding: 8px 10px;
+    border-bottom: 2px solid var(--inv-border); background: var(--inv-surface);
+  }
+  .gantt-header-dates { display: grid; border-bottom: 2px solid var(--inv-border); background: var(--inv-surface); }
+  .gantt-header-dates > div { font-size: 9px; font-weight: 600; color: var(--inv-text-muted); text-transform: uppercase; padding: 8px 4px; text-align: center; border-left: 1px solid var(--inv-border); }
+  .gantt-row { display: contents; }
+  .gantt-row-label {
+    font-size: 12px; font-weight: 600; color: var(--inv-text); padding: 8px 10px;
+    border-bottom: 1px solid var(--inv-border); display: flex; align-items: center; gap: 6px; white-space: nowrap;
+  }
+  .gantt-row-label .deal-region { font-size: 8px; font-weight: 700; padding: 1px 5px; letter-spacing: 0.04em; }
+  .gantt-row-label .deal-region.ne { background: rgba(141,202,227,0.1); color: var(--horizon); }
+  .gantt-row-label .deal-region.ce { background: var(--inv-amber-bg); color: var(--inv-amber); }
+  .gantt-row-label .deal-region.wc { background: var(--inv-green-bg); color: var(--inv-green); }
+  .gantt-row-bars { display: grid; border-bottom: 1px solid var(--inv-border); position: relative; }
+  .gantt-cell { border-left: 1px solid var(--inv-border); position: relative; }
+  .gantt-dot { width: 10px; height: 10px; border: 2px solid white; flex-shrink: 0; }
+  .gantt-line { height: 3px; position: absolute; top: 50%; transform: translateY(-50%); opacity: 0.7; }
+  .gantt-today-line { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--inv-red); opacity: 0.6; z-index: 5; }
+  .gantt-legend { display: flex; gap: 16px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--inv-border); justify-content: center; }
+  .gantt-legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--inv-text-muted); font-weight: 500; }
+  .gantt-legend-dot { width: 8px; height: 8px; }
+  .collapsible-content { }
+  .collapsible-content.collapsed { display: none; }
+  .toggle { font-size: 12px; color: var(--inv-text-muted); }
+  .toggle.collapsed { transform: rotate(-90deg); display: inline-block; }
+
+  /* ── REPORT STYLES ── */
+  .report-section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--inv-text-muted); margin: 24px 0 8px; }
+  .inv-table-wrap { overflow-x: auto; margin-bottom: 16px; }
+  .inv-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .inv-table th { text-align: left; padding: 8px 12px; font-weight: 700; font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--inv-text-muted); border-bottom: 2px solid var(--inv-border); }
+  .inv-table td { padding: 8px 12px; border-bottom: 1px solid var(--inv-border); color: var(--inv-text); }
+  .inv-table td.fw { font-weight: 600; }
+  .inv-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .inv-table td.inv-lead { color: var(--inv-text-secondary); }
+  .inv-table td.date-cell { font-variant-numeric: tabular-nums; }
+  .inv-table td.date-cell.urgent { color: var(--inv-red); font-weight: 600; }
+
+  /* ── SECTION LABELS ── */
+  .section-label { display: flex; align-items: center; gap: 12px; margin: 20px 0 10px; }
+  .section-label-text { font-size: 10px; font-weight: 700; color: var(--inv-text-muted); text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
+  .section-label-line { flex: 1; height: 1px; background: var(--inv-border); }
+
+  /* ── DEAD DEALS NARRATIVE ROW ── */
+  .dead-narrative-toggle {
+    text-align: center; cursor: pointer; font-size: 12px; color: var(--inv-accent);
+    font-weight: 600; user-select: none;
+  }
+  .dead-narrative-toggle:hover { color: var(--horizon); }
 
 </style>
 </head>
@@ -689,36 +405,39 @@
     <button class="tab-btn" data-tab="development" onclick="switchTab('development')">Development</button>
   </div>
   <div class="as-of" id="as-of-date"></div>
+  <button id="theme-toggle" onclick="toggleTheme()">&#9788; LIGHT</button>
 </div>
 <div id="tab-all" class="dept-section active" style="padding:0;max-width:none;">
-  <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#334155 100%);color:white;padding:24px 32px;display:flex;justify-content:space-between;align-items:center;">
-    <div><div style="font-family:'Barlow',sans-serif;font-size:20px;font-weight:800;letter-spacing:-0.3px;">Weekly Pipeline Meeting Dashboard</div>
-    <div style="font-size:12px;color:#94a3b8;margin-top:4px;">Active Deal Pipeline &amp; Action Items</div></div>
-    <div style="background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);padding:8px 18px;border-radius:10px;font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,0.08);">Week of March 16, 2026</div>
+  <div style="background:var(--gunmetal);color:#FFFFFF;padding:18px 32px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);">
+    <div><div style="font-family:'Inter',sans-serif;font-size:16px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase;">Weekly Pipeline Meeting</div>
+    <div style="font-size:11px;color:var(--horizon);margin-top:3px;font-weight:500;">Active Deal Pipeline &amp; Action Items</div></div>
+    <div style="background:rgba(141,202,227,0.08);padding:6px 14px;font-size:11px;font-weight:600;border:1px solid rgba(141,202,227,0.2);color:var(--horizon);text-transform:uppercase;letter-spacing:0.03em;">Week of March 16, 2026</div>
   </div>
   <div class="inv-subtab-bar">
     <button class="inv-subtab active" onclick="switchInvTab('pipeline', this)">Pipeline &amp; Action Items</button>
     <button class="inv-subtab" onclick="switchInvTab('weekly-report', this)">Weekly Report</button>
     <button class="inv-subtab" onclick="switchInvTab('em-forecast', this)">EM Forecast</button>
     <button class="inv-subtab" onclick="switchInvTab('asset-mgmt', this)">Asset Management</button>
+    <button class="inv-subtab" onclick="switchInvTab('dead-deals', this)">Dead / Passed Deals</button>
+    <button class="inv-subtab" onclick="switchInvTab('activity', this)">Team Activity</button>
   </div>
-  <div style="padding:28px 32px;">
+  <div style="padding:24px 32px;">
   <div id="inv-tab-pipeline" class="inv-tab-panel active">
-    <div class="bd-header-bar"><span>&#128202;</span> Business Development</div><div class="insight-grid"><div class="insight-card"><h4>Weekly Travel &amp; Market Intel</h4><p style="margin:0 0 8px 0;font-size:13px;color:#94a3b8;">Chen, Harry, and I visited Indianapolis and Columbus. High absorption of big box and newer traditional industrial product over the last 6 months.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;"><div><div style="font-weight:700;font-size:13px;color:var(--inv-green);margin-bottom:6px;">Indianapolis</div><ul style="margin:0;"><li>Leasing velocity strong in IOS with rates as high as ~$8,000/acre/mo</li><li>Net absorption Q4: 6.2mm SF; Asking rate $6.41/sf</li><li>Vacancy rate ~7.9% (lowest since Q1 2023)</li><li>Toured 3 assets. Ownership dominated by local groups (IOS)</li></ul></div><div><div style="font-weight:700;font-size:13px;color:var(--inv-green);margin-bottom:6px;">Columbus</div><ul style="margin:0;"><li>Overbuilt 2020-2023 but vacancy now dropping. Traditional industrial vacancy ~5.5%</li><li>2025 net absorption: 11m SF</li><li>IOS rents around $4,500-6,000</li><li>Transport, Alterra, Amza most active groups beyond local</li></ul></div></div></div><div class="insight-card"><h4>Industry News</h4><ul><li>Alterra / PGIM Financing</li><li>Jadian raises core+ fund</li></ul></div><div class="insight-card"><h4>Upcoming Travel &amp; Events</h4><div class="travel-chips"><span class="travel-chip">&#128205; Seattle 3/18-19</span><span class="travel-chip">&#128205; Florida Trip (Tampa, Orlando, MIA) March 24-27</span></div></div></div>
+    <div class="bd-header-bar"><span>&#128202;</span> Business Development</div><div class="insight-grid"><div class="insight-card"><h4>Weekly Travel &amp; Market Intel</h4><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;"><div><div style="font-weight:700;font-size:13px;color:var(--inv-green);margin-bottom:6px;">Indianapolis</div><ul style="margin:0;"><li>Leasing velocity strong in IOS with rates as high as ~$8,000/acre/mo</li><li>Net absorption Q4: 6.2mm SF; Asking rate $6.41/sf</li><li>Vacancy rate ~7.9% (lowest since Q1 2023)</li><li>Toured 3 assets. Ownership dominated by local groups (IOS)</li></ul></div><div><div style="font-weight:700;font-size:13px;color:var(--inv-green);margin-bottom:6px;">Columbus</div><ul style="margin:0;"><li>Overbuilt 2020-2023 but vacancy now dropping. Traditional industrial vacancy ~5.5%</li><li>2025 net absorption: 11m SF</li><li>IOS rents around $4,500-6,000</li><li>Transport, Alterra, Amza most active groups beyond local</li></ul></div></div></div><div class="insight-card"><h4>Industry News</h4><ul></ul></div><div class="insight-card"><h4>Upcoming Travel &amp; Events</h4><div class="travel-chips"><span class="travel-chip">&#128205; Florida Trip (Tampa, Orlando, MIA) March 24-27</span></div></div></div>
     
     <div class="kpi-grid">
-      <div class="kpi-card"><div class="label">Total Active Deals</div><div class="value">13</div>
-        <div class="sub">4 Under Contract &middot; 3 Negotiating PSA &middot; 6 LOI</div></div>
+      <div class="kpi-card"><div class="label">Total Active Deals</div><div class="value">12</div>
+        <div class="sub">4 Under Contract &middot; 3 Negotiating PSA &middot; 5 LOI</div></div>
       <div class="kpi-card"><div class="label">Under Contract</div><div class="value" style="color:var(--inv-green)">$227.2M</div>
         <div class="sub">4 deals &middot; 68.4 usable acres</div></div>
       <div class="kpi-card"><div class="label">Negotiating PSA</div><div class="value" style="color:var(--inv-amber)">$106.4M</div>
         <div class="sub">3 deals &middot; 88.6 usable acres</div></div>
-      <div class="kpi-card"><div class="label">LOI Submitted</div><div class="value" style="color:var(--inv-purple)">$295.7M</div>
-        <div class="sub">6 deals &middot; 103.8 usable acres</div></div>
-      <div class="kpi-card"><div class="label">Total Pipeline</div><div class="value">$629.3M</div>
-        <div class="sub">260.8 usable acres</div></div>
-      <div class="kpi-card"><div class="label">EM Committed</div><div class="value">$7.0M</div>
-        <div class="sub">13 active deals</div></div>
+      <div class="kpi-card"><div class="label">LOI Submitted</div><div class="value" style="color:var(--inv-purple)">$261.3M</div>
+        <div class="sub">5 deals &middot; 91.8 usable acres</div></div>
+      <div class="kpi-card"><div class="label">Total Pipeline</div><div class="value">$594.9M</div>
+        <div class="sub">248.8 usable acres</div></div>
+      <div class="kpi-card"><div class="label">EM Committed</div><div class="value">$10.4M</div>
+        <div class="sub">12 active deals</div></div>
     </div>
     <div class="filter-bar">
       <button class="filter-btn active" onclick="filterStage('all', this)">All Stages</button>
@@ -737,9 +456,9 @@
         <span class="deal-pp">$85.0M</span>
       </div>
       <div class="deal-card-body">
-        <div class="deal-meta"><div class="meta-item"><div class="meta-label">Address</div><div class="meta-value">704 Doremus Ave, Newark, NJ 07105</div></div><div class="meta-item"><div class="meta-label">Seller</div><div class="meta-value">Claremont</div></div><div class="meta-item"><div class="meta-label">Deal Lead</div><div class="meta-value">Chenying Zhao</div></div><div class="meta-item"><div class="meta-label">Deal Support</div><div class="meta-value">Harry Zhang</div></div><div class="meta-item"><div class="meta-label">Dev Lead</div><div class="meta-value">Sam Penny</div></div><div class="meta-item"><div class="meta-label">Usable Acres</div><div class="meta-value">12.65</div></div><div class="meta-item"><div class="meta-label">Gross Yr 3 YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">Untrended YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">IRR</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">$/Usable Acre</div><div class="meta-value">$6.7M</div></div><div class="meta-item"><div class="meta-label">EM Deposit</div><div class="meta-value">$1M</div></div></div>
-        <div class="key-dates"><div class="key-date"><span class="dot signed"></span><span class="date-label">PSA Signed:</span><span class="date-value">10/28/25</span></div><div class="key-date"><span class="dot go-hard"></span><span class="date-label">Go Hard:</span><span class="date-value">03/04/26</span><span class="days-badge past">Passed</span></div><div class="key-date"><span class="dot closing"></span><span class="date-label">Closing:</span><span class="date-value">03/25/26</span><span class="days-badge urgent">6 days</span></div></div>
-        <div class="action-items"><h4>Action Items</h4><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Finalizing all outstanding financing items - loan docs, GL insurance etc.</span></div></div>
+        <div class="deal-meta"><div class="meta-item"><div class="meta-label">Address</div><div class="meta-value">704 Doremus Ave, Newark, NJ 07105</div></div><div class="meta-item"><div class="meta-label">Seller</div><div class="meta-value">Claremont</div></div><div class="meta-item"><div class="meta-label">Deal Lead</div><div class="meta-value">Chenying Zhao</div></div><div class="meta-item"><div class="meta-label">Deal Support</div><div class="meta-value">Harry Zhang</div></div><div class="meta-item"><div class="meta-label">Dev Lead</div><div class="meta-value">Sam Penny</div></div><div class="meta-item"><div class="meta-label">Usable Acres</div><div class="meta-value">12.65</div></div><div class="meta-item"><div class="meta-label">Gross Yr 3 YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">Untrended YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">IRR</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">$/Usable Acre</div><div class="meta-value">$6.7M</div></div><div class="meta-item"><div class="meta-label">EM Deposit</div><div class="meta-value">$4M</div></div></div>
+        <div class="key-dates"><div class="key-date"><span class="dot signed"></span><span class="date-label">PSA Signed:</span><span class="date-value">10/28/25</span></div><div class="key-date"><span class="dot go-hard"></span><span class="date-label">Go Hard:</span><span class="date-value">03/04/26</span><span class="days-badge past">Passed</span></div><div class="key-date"><span class="dot closing"></span><span class="date-label">Closing:</span><span class="date-value">03/25/26</span><span class="days-badge urgent">5 days</span></div></div>
+        <div class="action-items"><h4>Action Items</h4><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>City of Newark Estoppel</span></div><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Finalizing all outstanding financing items - loan docs, GL insurance etc.</span></div><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Price allocations between parcels</span></div></div>
         <div class="action-items"><h4>Key Dates</h4><div class="key-date-item"><span class="kd-label">&#128197; 03/25/26 &ndash;</span><span class="kd-value">Closing Date</span></div></div>
       </div>
     </div>
@@ -751,8 +470,8 @@
       </div>
       <div class="deal-card-body">
         <div class="deal-meta"><div class="meta-item"><div class="meta-label">Address</div><div class="meta-value">7708 NJ-440, Jersey City, NJ 07305</div></div><div class="meta-item"><div class="meta-label">Seller</div><div class="meta-value">Gallium Real Estate</div></div><div class="meta-item"><div class="meta-label">Deal Lead</div><div class="meta-value">Chenying Zhao</div></div><div class="meta-item"><div class="meta-label">Deal Support</div><div class="meta-value">Harry Zhang</div></div><div class="meta-item"><div class="meta-label">Dev Lead</div><div class="meta-value">Sam Penny</div></div><div class="meta-item"><div class="meta-label">Usable Acres</div><div class="meta-value">16.10</div></div><div class="meta-item"><div class="meta-label">Gross Yr 3 YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">Untrended YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">IRR</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">$/Usable Acre</div><div class="meta-value">$4.7M</div></div><div class="meta-item"><div class="meta-label">EM Deposit</div><div class="meta-value">$760K</div></div></div>
-        <div class="key-dates"><div class="key-date"><span class="dot signed"></span><span class="date-label">PSA Signed:</span><span class="date-value">01/15/26</span></div><div class="key-date"><span class="dot go-hard"></span><span class="date-label">Go Hard:</span><span class="date-value">05/01/26</span><span class="days-badge soon">43 days</span></div><div class="key-date"><span class="dot closing"></span><span class="date-label">Closing:</span><span class="date-value">03/03/27</span><span class="days-badge ok">349 days</span></div></div>
-        <div class="action-items"><h4>Action Items</h4><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Receive, review and finalize the pipeline easement amendment with seller team</span></div><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Seller receives site plan approval</span></div><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Review and sign off on all development related documents</span></div></div>
+        <div class="key-dates"><div class="key-date"><span class="dot signed"></span><span class="date-label">PSA Signed:</span><span class="date-value">01/15/26</span></div><div class="key-date"><span class="dot go-hard"></span><span class="date-label">Go Hard:</span><span class="date-value">05/01/26</span><span class="days-badge soon">42 days</span></div><div class="key-date"><span class="dot closing"></span><span class="date-label">Closing:</span><span class="date-value">03/03/27</span><span class="days-badge ok">348 days</span></div></div>
+        <div class="action-items"><h4>Action Items</h4><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Receive, review and finalize the pipeline easement amendment with seller team</span></div><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Seller receives site plan approval</span></div><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Sign change order</span></div><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Review and sign off on all development related documents</span></div></div>
         <div class="action-items"><h4>Key Dates</h4><div class="key-date-item"><span class="kd-label">&#128197; 03/24/26 &ndash;</span><span class="kd-value">March Jersey City PB hearing</span></div><div class="key-date-item"><span class="kd-label">&#128197; 04/17/26 &ndash;</span><span class="kd-value">Seller to deliver all materials required for project (up to 45 days auto extension)</span></div><div class="key-date-item"><span class="kd-label">&#128197; 05/01/26 &ndash;</span><span class="kd-value">Go hard date (subject to automatic extension up to 45 days)</span></div></div>
       </div>
     </div>
@@ -764,7 +483,7 @@
       </div>
       <div class="deal-card-body">
         <div class="deal-meta"><div class="meta-item"><div class="meta-label">Address</div><div class="meta-value">100 N Hackensack, Kearny, NJ 07032</div></div><div class="meta-item"><div class="meta-label">Seller</div><div class="meta-value">Epstein Family Trust</div></div><div class="meta-item"><div class="meta-label">Deal Lead</div><div class="meta-value">Chenying Zhao</div></div><div class="meta-item"><div class="meta-label">Deal Support</div><div class="meta-value">Harry Zhang</div></div><div class="meta-item"><div class="meta-label">Dev Lead</div><div class="meta-value">Sam Penny</div></div><div class="meta-item"><div class="meta-label">Usable Acres</div><div class="meta-value">6.50</div></div><div class="meta-item"><div class="meta-label">Gross Yr 3 YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">Untrended YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">IRR</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">$/Usable Acre</div><div class="meta-value">$5.2M</div></div><div class="meta-item"><div class="meta-label">EM Deposit</div><div class="meta-value">$500K</div></div></div>
-        <div class="key-dates"><div class="key-date"><span class="dot signed"></span><span class="date-label">Est. PSA Signed:</span><span class="date-value">03/27/26</span><span class="days-badge urgent">8 days</span></div><div class="key-date"><span class="dot go-hard"></span><span class="date-label">Est. Go Hard:</span><span class="date-value">05/26/26</span><span class="days-badge ok">68 days</span></div><div class="key-date"><span class="dot closing"></span><span class="date-label">Est. Closing:</span><span class="date-value">06/25/26</span><span class="days-badge ok">98 days</span></div></div>
+        <div class="key-dates"><div class="key-date"><span class="dot signed"></span><span class="date-label">Est. PSA Signed:</span><span class="date-value">04/24/26</span><span class="days-badge soon">35 days</span></div><div class="key-date"><span class="dot go-hard"></span><span class="date-label">Est. Go Hard:</span><span class="date-value">05/26/26</span><span class="days-badge ok">67 days</span></div><div class="key-date"><span class="dot closing"></span><span class="date-label">Est. Closing:</span><span class="date-value">06/25/26</span><span class="days-badge ok">97 days</span></div></div>
         
         
       </div>
@@ -776,12 +495,12 @@
         <span class="deal-pp">$150.2M</span>
       </div>
       <div class="deal-card-body">
-        <div class="deal-meta"><div class="meta-item"><div class="meta-label">Address</div><div class="meta-value">2120 McCarter Hwy, 76 Central Ave, 251 Monroe</div></div><div class="meta-item"><div class="meta-label">Seller</div><div class="meta-value">Criterion/Meadow</div></div><div class="meta-item"><div class="meta-label">Deal Lead</div><div class="meta-value">Chenying Zhao</div></div><div class="meta-item"><div class="meta-label">Deal Support</div><div class="meta-value">Harry Zhang</div></div><div class="meta-item"><div class="meta-label">Usable Acres</div><div class="meta-value">46.26</div></div><div class="meta-item"><div class="meta-label">Gross Yr 3 YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">Untrended YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">IRR</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">$/Usable Acre</div><div class="meta-value">$3.2M</div></div></div>
+        <div class="deal-meta"><div class="meta-item"><div class="meta-label">Address</div><div class="meta-value">2120 McCarter Hwy, 76 Central Ave, 251 Monroe</div></div><div class="meta-item"><div class="meta-label">Seller</div><div class="meta-value">Criterion/Meadow</div></div><div class="meta-item"><div class="meta-label">Deal Lead</div><div class="meta-value">Chenying Zhao</div></div><div class="meta-item"><div class="meta-label">Deal Support</div><div class="meta-value">Harry Zhang</div></div><div class="meta-item"><div class="meta-label">Usable Acres</div><div class="meta-value">46.26</div></div><div class="meta-item"><div class="meta-label">Gross Yr 3 YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">Untrended YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">IRR</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">$/Usable Acre</div><div class="meta-value">$3.2M</div></div><div class="meta-item"><div class="meta-label">EM Deposit</div><div class="meta-value">$500K</div></div></div>
         <div class="key-dates"></div>
         
         
       </div>
-    </div><div class="region-banner central"><span>&#127966;</span> Central Region<span class="region-total">6 deals &middot; $161.7M</span></div>
+    </div><div class="region-banner central"><span>&#127966;</span> Central Region<span class="region-total">5 deals &middot; $127.3M</span></div>
     <div class="deal-card" data-stage="under-contract">
       <div class="deal-card-header" onclick="toggleCard(this)">
         <span class="stage-badge under-contract">UNDER CONTRACT</span>
@@ -790,21 +509,8 @@
       </div>
       <div class="deal-card-body">
         <div class="deal-meta"><div class="meta-item"><div class="meta-label">Address</div><div class="meta-value">6750 Bender Rd, Humble, TX 77396</div></div><div class="meta-item"><div class="meta-label">Seller</div><div class="meta-value">Outour</div></div><div class="meta-item"><div class="meta-label">Deal Lead</div><div class="meta-value">Rob Brandt</div></div><div class="meta-item"><div class="meta-label">Deal Support</div><div class="meta-value">Daniel Luo</div></div><div class="meta-item"><div class="meta-label">Dev Lead</div><div class="meta-value">Taylor Nelson</div></div><div class="meta-item"><div class="meta-label">Usable Acres</div><div class="meta-value">27.00</div></div><div class="meta-item"><div class="meta-label">Gross Yr 3 YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">Untrended YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">IRR</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">$/Usable Acre</div><div class="meta-value">$602K</div></div><div class="meta-item"><div class="meta-label">EM Deposit</div><div class="meta-value">$180K</div></div></div>
-        <div class="key-dates"><div class="key-date"><span class="dot signed"></span><span class="date-label">PSA Signed:</span><span class="date-value">03/06/26</span></div><div class="key-date"><span class="dot go-hard"></span><span class="date-label">Go Hard:</span><span class="date-value">03/30/26</span><span class="days-badge urgent">11 days</span></div><div class="key-date"><span class="dot closing"></span><span class="date-label">Closing:</span><span class="date-value">04/20/26</span><span class="days-badge soon">32 days</span></div></div>
-        <div class="action-items"><h4>Action Items</h4><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Review DD items once received - delayed receipt</span></div><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Schedule tenant interviews with site visit - AM to lead</span></div><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Follow through on any debt facility requirements</span></div></div>
-        
-      </div>
-    </div>
-    <div class="deal-card" data-stage="negotiating-loi">
-      <div class="deal-card-header" onclick="toggleCard(this)">
-        <span class="stage-badge negotiating-loi">LOI SUBMITTED</span>
-        <span class="deal-name">1200 S Congress</span>
-        <span class="deal-pp">$34.4M</span>
-      </div>
-      <div class="deal-card-body">
-        <div class="deal-meta"><div class="meta-item"><div class="meta-label">Address</div><div class="meta-value">1200 S Congress, Palm Springs, FL</div></div><div class="meta-item"><div class="meta-label">Seller</div><div class="meta-value">Private Seller</div></div><div class="meta-item"><div class="meta-label">Deal Lead</div><div class="meta-value">Rob Brandt</div></div><div class="meta-item"><div class="meta-label">Deal Support</div><div class="meta-value">Daniel Luo</div></div><div class="meta-item"><div class="meta-label">Usable Acres</div><div class="meta-value">12.00</div></div><div class="meta-item"><div class="meta-label">Gross Yr 3 YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">Untrended YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">IRR</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">$/Usable Acre</div><div class="meta-value">$2.9M</div></div><div class="meta-item"><div class="meta-label">EM Deposit</div><div class="meta-value">$344K</div></div></div>
-        <div class="key-dates"></div>
-        <div class="action-items"><h4>Action Items</h4><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>$34,410,000 - Seller will not sell below a 5% cap rate.</span></div></div>
+        <div class="key-dates"><div class="key-date"><span class="dot signed"></span><span class="date-label">PSA Signed:</span><span class="date-value">03/06/26</span></div><div class="key-date"><span class="dot go-hard"></span><span class="date-label">Go Hard:</span><span class="date-value">03/30/26</span><span class="days-badge urgent">10 days</span></div><div class="key-date"><span class="dot closing"></span><span class="date-label">Closing:</span><span class="date-value">04/20/26</span><span class="days-badge soon">31 days</span></div></div>
+        <div class="action-items"><h4>Action Items</h4><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>DD received, reviewing</span></div><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Schedule tenant interviews with site visit - AM to lead</span></div><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Follow through on any debt facility requirements</span></div><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Appraisal completed</span></div></div>
         
       </div>
     </div>
@@ -856,7 +562,7 @@
       <div class="deal-card-body">
         <div class="deal-meta"><div class="meta-item"><div class="meta-label">Address</div><div class="meta-value">14405 NW 112th Ave, Hialeah Gardens, FL</div></div><div class="meta-item"><div class="meta-label">Seller</div><div class="meta-value">Private Seller</div></div><div class="meta-item"><div class="meta-label">Deal Lead</div><div class="meta-value">Rob Brandt</div></div><div class="meta-item"><div class="meta-label">Deal Support</div><div class="meta-value">Daniel Luo</div></div><div class="meta-item"><div class="meta-label">Usable Acres</div><div class="meta-value">7.70</div></div><div class="meta-item"><div class="meta-label">Gross Yr 3 YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">Untrended YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">IRR</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">$/Usable Acre</div><div class="meta-value">$2.6M</div></div><div class="meta-item"><div class="meta-label">EM Deposit</div><div class="meta-value">$202K</div></div></div>
         <div class="key-dates"></div>
-        <div class="action-items"><h4>Action Items</h4><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>$20,150,000 - Awaiting response.</span></div></div>
+        
         
       </div>
     </div><div class="region-banner westcoast"><span>&#127795;</span> West Coast Region<span class="region-total">3 deals &middot; $122.9M</span></div>
@@ -868,8 +574,8 @@
       </div>
       <div class="deal-card-body">
         <div class="deal-meta"><div class="meta-item"><div class="meta-label">Address</div><div class="meta-value">19615 S Susana Rd, Compton, CA 90221</div></div><div class="meta-item"><div class="meta-label">Seller</div><div class="meta-value">International Paper</div></div><div class="meta-item"><div class="meta-label">Deal Lead</div><div class="meta-value">Nick Rini</div></div><div class="meta-item"><div class="meta-label">Deal Support</div><div class="meta-value">Nick Beardslee</div></div><div class="meta-item"><div class="meta-label">Dev Lead</div><div class="meta-value">Jessica Carralero</div></div><div class="meta-item"><div class="meta-label">Usable Acres</div><div class="meta-value">12.68</div></div><div class="meta-item"><div class="meta-label">Gross Yr 3 YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">Untrended YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">IRR</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">$/Usable Acre</div><div class="meta-value">$3.9M</div></div><div class="meta-item"><div class="meta-label">EM Deposit</div><div class="meta-value">$500K</div></div></div>
-        <div class="key-dates"><div class="key-date"><span class="dot signed"></span><span class="date-label">PSA Signed:</span><span class="date-value">02/19/26</span></div><div class="key-date"><span class="dot go-hard"></span><span class="date-label">Go Hard:</span><span class="date-value">04/06/26</span><span class="days-badge soon">18 days</span></div><div class="key-date"><span class="dot closing"></span><span class="date-label">Closing:</span><span class="date-value">05/04/26</span><span class="days-badge ok">46 days</span></div></div>
-        <div class="action-items"><h4>Action Items</h4><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Work through due diligence. Phase 2 is being scheduled</span></div><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Push Arco back for capex budget</span></div></div>
+        <div class="key-dates"><div class="key-date"><span class="dot signed"></span><span class="date-label">PSA Signed:</span><span class="date-value">02/19/26</span></div><div class="key-date"><span class="dot go-hard"></span><span class="date-label">Go Hard:</span><span class="date-value">04/06/26</span><span class="days-badge soon">17 days</span></div><div class="key-date"><span class="dot closing"></span><span class="date-label">Closing:</span><span class="date-value">05/04/26</span><span class="days-badge soon">45 days</span></div></div>
+        <div class="action-items"><h4>Action Items</h4><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Work through due diligence. Phase 2 is scheduled</span></div><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Push Arco / Parkway for capex pricing</span></div><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Finalize IC memo by 3/27 and schedule IC for the following week</span></div></div>
         
       </div>
     </div>
@@ -881,8 +587,8 @@
       </div>
       <div class="deal-card-body">
         <div class="deal-meta"><div class="meta-item"><div class="meta-label">Address</div><div class="meta-value">3635 S 43rd Rd Ave, Phoenix, AZ 85009</div></div><div class="meta-item"><div class="meta-label">Seller</div><div class="meta-value">Local Family</div></div><div class="meta-item"><div class="meta-label">Deal Lead</div><div class="meta-value">Nick Rini</div></div><div class="meta-item"><div class="meta-label">Deal Support</div><div class="meta-value">Nick Beardslee</div></div><div class="meta-item"><div class="meta-label">Usable Acres</div><div class="meta-value">70.00</div></div><div class="meta-item"><div class="meta-label">Gross Yr 3 YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">Untrended YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">IRR</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">$/Usable Acre</div><div class="meta-value">$811K</div></div><div class="meta-item"><div class="meta-label">EM Deposit</div><div class="meta-value">$500K</div></div></div>
-        <div class="key-dates"><div class="key-date"><span class="dot signed"></span><span class="date-label">Est. PSA Signed:</span><span class="date-value">04/06/26</span><span class="days-badge soon">18 days</span></div><div class="key-date"><span class="dot go-hard"></span><span class="date-label">Est. Go Hard:</span><span class="date-value">06/05/26</span><span class="days-badge ok">78 days</span></div><div class="key-date"><span class="dot closing"></span><span class="date-label">Est. Closing:</span><span class="date-value">07/05/26</span><span class="days-badge ok">108 days</span></div></div>
-        <div class="action-items"><h4>Action Items</h4><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Begin PSA negotiations again with parceling off the mine portion. Easement needed to access mine</span></div><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Continue leasing efforts with prospective tenants</span></div><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Confirm viability of a covered land play and industrial development</span></div></div>
+        <div class="key-dates"><div class="key-date"><span class="dot signed"></span><span class="date-label">Est. PSA Signed:</span><span class="date-value">04/06/26</span><span class="days-badge soon">17 days</span></div><div class="key-date"><span class="dot go-hard"></span><span class="date-label">Est. Go Hard:</span><span class="date-value">06/05/26</span><span class="days-badge ok">77 days</span></div><div class="key-date"><span class="dot closing"></span><span class="date-label">Est. Closing:</span><span class="date-value">07/05/26</span><span class="days-badge ok">107 days</span></div></div>
+        <div class="action-items"><h4>Action Items</h4><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Finalize PSA negotiations confirming details of parceling off the mine portion and the easement</span></div><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Continue leasing efforts with prospective tenants</span></div><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Confirm viability of a covered land play and future industrial development</span></div></div>
         
       </div>
     </div>
@@ -894,32 +600,44 @@
       </div>
       <div class="deal-card-body">
         <div class="deal-meta"><div class="meta-item"><div class="meta-label">Address</div><div class="meta-value">826 E 9th St, San Bernardino, CA 92410</div></div><div class="meta-item"><div class="meta-label">Seller</div><div class="meta-value">First Student / Private Equity</div></div><div class="meta-item"><div class="meta-label">Deal Lead</div><div class="meta-value">Nick Rini</div></div><div class="meta-item"><div class="meta-label">Deal Support</div><div class="meta-value">Nick Beardslee</div></div><div class="meta-item"><div class="meta-label">Usable Acres</div><div class="meta-value">12.06</div></div><div class="meta-item"><div class="meta-label">Gross Yr 3 YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">Untrended YOC</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">IRR</div><div class="meta-value">-</div></div><div class="meta-item"><div class="meta-label">$/Usable Acre</div><div class="meta-value">$1.3M</div></div><div class="meta-item"><div class="meta-label">EM Deposit</div><div class="meta-value">$162K</div></div></div>
-        <div class="key-dates"><div class="key-date"><span class="dot signed"></span><span class="date-label">Est. PSA Signed:</span><span class="date-value">03/19/26</span></div><div class="key-date"><span class="dot go-hard"></span><span class="date-label">Est. Go Hard:</span><span class="date-value">05/18/26</span><span class="days-badge ok">60 days</span></div><div class="key-date"><span class="dot closing"></span><span class="date-label">Est. Closing:</span><span class="date-value">06/17/26</span><span class="days-badge ok">90 days</span></div></div>
-        <div class="action-items"><h4>Action Items</h4><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Finalize and sign PSA</span></div><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Continue to pursue a lease with Amazon / Maersk</span></div><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Kick off DD and confirm Amazon use with the city</span></div></div>
+        <div class="key-dates"><div class="key-date"><span class="dot signed"></span><span class="date-label">Est. PSA Signed:</span><span class="date-value">03/23/26</span><span class="days-badge urgent">3 days</span></div><div class="key-date"><span class="dot go-hard"></span><span class="date-label">Est. Go Hard:</span><span class="date-value">05/22/26</span><span class="days-badge ok">63 days</span></div><div class="key-date"><span class="dot closing"></span><span class="date-label">Est. Closing:</span><span class="date-value">06/21/26</span><span class="days-badge ok">93 days</span></div></div>
+        <div class="action-items"><h4>Action Items</h4><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Finalize and sign PSA</span></div><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Continue to pursue a lease with Amazon / Maersk</span></div><div class="action-item"><input type="checkbox" onchange="toggleCompleted(this)"><span>Kick off DD and work through zoning constraints</span></div></div>
         
       </div>
     </div>
   </div>
   <div id="inv-tab-weekly-report" class="inv-tab-panel">
-    <h2 style="font-size:18px;font-weight:700;margin-bottom:12px;"><span class="stage-badge under-contract" style="font-size:13px;vertical-align:middle;margin-right:8px;">UNDER CONTRACT</span>4 Deals &middot; $227.2M</h2><div class="em-table-wrapper" style="margin-bottom:32px;"><table class="em-table"><thead><tr><th>#</th><th>Property</th><th>Address</th><th>Seller</th><th>Deal Lead</th><th>Deal Support</th><th>Dev Lead</th><th style="text-align:right">PP</th><th style="text-align:right">Usable Acres</th><th style="text-align:right">Gross Yr 3 YOC</th><th style="text-align:right">Untrended YOC</th><th style="text-align:right">IRR</th><th style="text-align:right">$/Usable Acre</th><th style="text-align:right">EM Deposit</th><th>PSA Signed</th><th style="text-align:center">DD Period</th><th>Go Hard</th><th>Closing</th></tr></thead><tbody><tr><td>1</td><td><strong>New Jersey - 704 Doremus</strong></td><td>704 Doremus Ave, Newark, NJ 07105</td><td>Claremont</td><td>Chenying Zhao</td><td>Harry Zhang</td><td>Sam Penny</td><td style="text-align:right"><strong>$85,000,000</strong></td><td style="text-align:right">12.65</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$6,719,368</td><td style="text-align:right">$1,000,000</td><td>10/28/25</td><td style="text-align:center">127.0</td><td>03/04/26</td><td>03/25/26</td></tr><tr><td>2</td><td><strong>New Jersey - 7708 RT 440</strong></td><td>7708 NJ-440, Jersey City, NJ 07305</td><td>Gallium Real Estate</td><td>Chenying Zhao</td><td>Harry Zhang</td><td>Sam Penny</td><td style="text-align:right"><strong>$75,950,000</strong></td><td style="text-align:right">16.10</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$4,717,391</td><td style="text-align:right">$759,500</td><td>01/15/26</td><td style="text-align:center">106.0</td><td>05/01/26</td><td>03/03/27</td></tr><tr><td>3</td><td><strong>Compton, CA - Susana 2</strong></td><td>19615 S Susana Rd, Compton, CA 90221</td><td>International Paper</td><td>Nick Rini</td><td>Nick Beardslee</td><td>Jessica Carralero</td><td style="text-align:right"><strong>$50,000,000</strong></td><td style="text-align:right">12.68</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$3,943,218</td><td style="text-align:right">$500,000</td><td>02/19/26</td><td style="text-align:center">45.0</td><td>04/06/26</td><td>05/04/26</td></tr><tr><td>4</td><td><strong>Houston - 6750 Bender</strong></td><td>6750 Bender Rd, Humble, TX 77396</td><td>Outour</td><td>Rob Brandt</td><td>Daniel Luo</td><td>Taylor Nelson</td><td style="text-align:right"><strong>$16,250,000</strong></td><td style="text-align:right">27.00</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$601,852</td><td style="text-align:right">$180,000</td><td>03/06/26</td><td style="text-align:center">21.0</td><td>03/30/26</td><td>04/20/26</td></tr><tr class="total-row"><td></td><td><strong>Total</strong></td><td></td><td></td><td></td><td></td><td></td><td style="text-align:right"><strong>$227,200,000</strong></td><td style="text-align:right"><strong>68.43</strong></td><td style="text-align:right"><strong>-</strong></td><td style="text-align:right"><strong>-</strong></td><td style="text-align:right"><strong>-</strong></td><td style="text-align:right"><strong>$5,001,642</strong></td><td style="text-align:right"><strong>$2,439,500</strong></td><td></td><td></td><td></td><td></td></tr></tbody></table></div><h2 style="font-size:18px;font-weight:700;margin-bottom:12px;"><span class="stage-badge negotiating-psa" style="font-size:13px;vertical-align:middle;margin-right:8px;">NEGOTIATING PSA</span>3 Deals &middot; $106.4M</h2><div class="em-table-wrapper" style="margin-bottom:32px;"><table class="em-table"><thead><tr><th>#</th><th>Property</th><th>Address</th><th>Seller</th><th>Deal Lead</th><th>Deal Support</th><th>Dev Lead</th><th style="text-align:right">PP</th><th style="text-align:right">Usable Acres</th><th style="text-align:right">Gross Yr 3 YOC</th><th style="text-align:right">Untrended YOC</th><th style="text-align:right">IRR</th><th style="text-align:right">$/Usable Acre</th><th style="text-align:right">EM Deposit</th><th>Est. PSA Signed</th><th style="text-align:center">DD Period</th><th>Est. Go Hard</th><th>Est. Closing</th></tr></thead><tbody><tr><td>1</td><td><strong>New Jersey - 100 N Hackensack</strong></td><td>100 N Hackensack, Kearny, NJ 07032</td><td>Epstein Family Trust</td><td>Chenying Zhao</td><td>Harry Zhang</td><td>Sam Penny</td><td style="text-align:right"><strong>$33,500,000</strong></td><td style="text-align:right">6.50</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$5,153,846</td><td style="text-align:right">$500,000</td><td>03/27/26</td><td style="text-align:center">60.0</td><td>05/26/26</td><td>06/25/26</td></tr><tr><td>2</td><td><strong>Phoenix - S 43rd</strong></td><td>3635 S 43rd Rd Ave, Phoenix, AZ 85009</td><td>Local Family</td><td>Nick Rini</td><td>Nick Beardslee</td><td>&ndash;</td><td style="text-align:right"><strong>$56,750,000</strong></td><td style="text-align:right">70.00</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$810,714</td><td style="text-align:right">$500,000</td><td>04/06/26</td><td style="text-align:center">60.0</td><td>06/05/26</td><td>07/05/26</td></tr><tr><td>3</td><td><strong>San Bernardino - 826 E Ninth</strong></td><td>826 E 9th St, San Bernardino, CA 92410</td><td>First Student / Private Equity</td><td>Nick Rini</td><td>Nick Beardslee</td><td>&ndash;</td><td style="text-align:right"><strong>$16,150,000</strong></td><td style="text-align:right">12.06</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$1,339,138</td><td style="text-align:right">$161,500</td><td>03/19/26</td><td style="text-align:center">60.0</td><td>05/18/26</td><td>06/17/26</td></tr><tr class="total-row"><td></td><td><strong>Total</strong></td><td></td><td></td><td></td><td></td><td></td><td style="text-align:right"><strong>$106,400,000</strong></td><td style="text-align:right"><strong>88.56</strong></td><td style="text-align:right"><strong>-</strong></td><td style="text-align:right"><strong>-</strong></td><td style="text-align:right"><strong>-</strong></td><td style="text-align:right"><strong>$2,258,355</strong></td><td style="text-align:right"><strong>$1,161,500</strong></td><td></td><td></td><td></td><td></td></tr></tbody></table></div><h2 style="font-size:18px;font-weight:700;margin-bottom:12px;"><span class="stage-badge negotiating-loi" style="font-size:13px;vertical-align:middle;margin-right:8px;">LOI SUBMITTED</span>6 Deals &middot; $295.7M</h2><div class="em-table-wrapper" style="margin-bottom:32px;"><table class="em-table"><thead><tr><th>#</th><th>Property</th><th>Address</th><th>Seller</th><th>Deal Lead</th><th>Deal Support</th><th>Dev Lead</th><th style="text-align:right">PP</th><th style="text-align:right">Usable Acres</th><th style="text-align:right">Gross Yr 3 YOC</th><th style="text-align:right">Untrended YOC</th><th style="text-align:right">IRR</th><th style="text-align:right">$/Usable Acre</th><th style="text-align:right">EM Deposit</th><th>Est. PSA Signed</th><th style="text-align:center">DD Period</th><th>Est. Go Hard</th><th>Est. Closing</th></tr></thead><tbody><tr><td>1</td><td><strong>NJ - Criterion/Meadow Portfolio</strong></td><td>2120 McCarter Hwy, 76 Central Ave, 251 Monroe</td><td>Criterion/Meadow</td><td>Chenying Zhao</td><td>Harry Zhang</td><td>&ndash;</td><td style="text-align:right"><strong>$150,250,000</strong></td><td style="text-align:right">46.26</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$3,247,946</td><td style="text-align:right">$0</td><td>TBD</td><td style="text-align:center"></td><td>TBD</td><td>TBD</td></tr><tr><td>2</td><td><strong>1200 S Congress</strong></td><td>1200 S Congress, Palm Springs, FL</td><td>Private Seller</td><td>Rob Brandt</td><td>Daniel Luo</td><td>&ndash;</td><td style="text-align:right"><strong>$34,410,000</strong></td><td style="text-align:right">12.00</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$2,867,500</td><td style="text-align:right">$344,100</td><td>TBD</td><td style="text-align:center"></td><td>TBD</td><td>TBD</td></tr><tr><td>3</td><td><strong>Charleston High Country</strong></td><td>428 & 447 High Country Dr, Summerville, SC 29483</td><td>Capital Development Partners</td><td>Rob Brandt</td><td>Daniel Luo</td><td>&ndash;</td><td style="text-align:right"><strong>$47,000,000</strong></td><td style="text-align:right">21.50</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$2,186,047</td><td style="text-align:right">$470,000</td><td>TBD</td><td style="text-align:center"></td><td>TBD</td><td>TBD</td></tr><tr><td>4</td><td><strong>Miami - 2201 NW 37th Ave</strong></td><td>2201 NW 37th Ave, Miami, FL</td><td>Private Seller</td><td>Rob Brandt</td><td>Daniel Luo</td><td>&ndash;</td><td style="text-align:right"><strong>$25,150,000</strong></td><td style="text-align:right">3.73</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$6,742,627</td><td style="text-align:right">$2,000,000</td><td>TBD</td><td style="text-align:center"></td><td>TBD</td><td>TBD</td></tr><tr><td>5</td><td><strong>Nashville - 1116 Polk Ave</strong></td><td>1116 Polk Ave, Nashville, TN</td><td>Private Seller</td><td>Rob Brandt</td><td>Daniel Luo</td><td>&ndash;</td><td style="text-align:right"><strong>$18,750,000</strong></td><td style="text-align:right">12.57</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$1,491,647</td><td style="text-align:right">$375,000</td><td>TBD</td><td style="text-align:center"></td><td>TBD</td><td>TBD</td></tr><tr><td>6</td><td><strong>Miami - 14405 NW 112th Ave</strong></td><td>14405 NW 112th Ave, Hialeah Gardens, FL</td><td>Private Seller</td><td>Rob Brandt</td><td>Daniel Luo</td><td>&ndash;</td><td style="text-align:right"><strong>$20,150,000</strong></td><td style="text-align:right">7.70</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$2,616,883</td><td style="text-align:right">$201,500</td><td>TBD</td><td style="text-align:center"></td><td>TBD</td><td>TBD</td></tr><tr class="total-row"><td></td><td><strong>Total</strong></td><td></td><td></td><td></td><td></td><td></td><td style="text-align:right"><strong>$295,710,000</strong></td><td style="text-align:right"><strong>103.76</strong></td><td style="text-align:right"><strong>-</strong></td><td style="text-align:right"><strong>-</strong></td><td style="text-align:right"><strong>-</strong></td><td style="text-align:right"><strong>$3,177,757</strong></td><td style="text-align:right"><strong>$3,390,600</strong></td><td></td><td></td><td></td><td></td></tr></tbody></table></div>
+    <h2 style="font-size:14px;font-weight:700;margin-bottom:12px;color:var(--inv-text);text-transform:uppercase;letter-spacing:0.03em;"><span class="stage-badge under-contract" style="font-size:11px;vertical-align:middle;margin-right:8px;">UNDER CONTRACT</span>4 Deals &middot; $227.2M</h2><div class="em-table-wrapper" style="margin-bottom:32px;"><table class="em-table"><thead><tr><th>#</th><th>Property</th><th>Address</th><th>Seller</th><th>Deal Lead</th><th>Deal Support</th><th>Dev Lead</th><th style="text-align:right">PP</th><th style="text-align:right">Usable Acres</th><th style="text-align:right">Gross Yr 3 YOC</th><th style="text-align:right">Untrended YOC</th><th style="text-align:right">IRR</th><th style="text-align:right">$/Usable Acre</th><th style="text-align:right">EM Deposit</th><th>PSA Signed</th><th style="text-align:center">DD Period</th><th>Go Hard</th><th>Closing</th></tr></thead><tbody><tr><td>1</td><td><strong>New Jersey - 704 Doremus</strong></td><td>704 Doremus Ave, Newark, NJ 07105</td><td>Claremont</td><td>Chenying Zhao</td><td>Harry Zhang</td><td>Sam Penny</td><td style="text-align:right"><strong>$85,000,000</strong></td><td style="text-align:right">12.65</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$6,719,368</td><td style="text-align:right">$4,250,000</td><td>10/28/25</td><td style="text-align:center">127.0</td><td>03/04/26</td><td>03/25/26</td></tr><tr><td>2</td><td><strong>New Jersey - 7708 RT 440</strong></td><td>7708 NJ-440, Jersey City, NJ 07305</td><td>Gallium Real Estate</td><td>Chenying Zhao</td><td>Harry Zhang</td><td>Sam Penny</td><td style="text-align:right"><strong>$75,950,000</strong></td><td style="text-align:right">16.10</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$4,717,391</td><td style="text-align:right">$759,500</td><td>01/15/26</td><td style="text-align:center">106.0</td><td>05/01/26</td><td>03/03/27</td></tr><tr><td>3</td><td><strong>Compton, CA - Susana 2</strong></td><td>19615 S Susana Rd, Compton, CA 90221</td><td>International Paper</td><td>Nick Rini</td><td>Nick Beardslee</td><td>Jessica Carralero</td><td style="text-align:right"><strong>$50,000,000</strong></td><td style="text-align:right">12.68</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$3,943,218</td><td style="text-align:right">$500,000</td><td>02/19/26</td><td style="text-align:center">45.0</td><td>04/06/26</td><td>05/04/26</td></tr><tr><td>4</td><td><strong>Houston - 6750 Bender</strong></td><td>6750 Bender Rd, Humble, TX 77396</td><td>Outour</td><td>Rob Brandt</td><td>Daniel Luo</td><td>Taylor Nelson</td><td style="text-align:right"><strong>$16,250,000</strong></td><td style="text-align:right">27.00</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$601,852</td><td style="text-align:right">$180,000</td><td>03/06/26</td><td style="text-align:center">21.0</td><td>03/30/26</td><td>04/20/26</td></tr><tr class="total-row"><td></td><td><strong>Total</strong></td><td></td><td></td><td></td><td></td><td></td><td style="text-align:right"><strong>$227,200,000</strong></td><td style="text-align:right"><strong>68.43</strong></td><td style="text-align:right"><strong>-</strong></td><td style="text-align:right"><strong>-</strong></td><td style="text-align:right"><strong>-</strong></td><td style="text-align:right"><strong>$5,001,642</strong></td><td style="text-align:right"><strong>$5,689,500</strong></td><td></td><td></td><td></td><td></td></tr></tbody></table></div><h2 style="font-size:14px;font-weight:700;margin-bottom:12px;color:var(--inv-text);text-transform:uppercase;letter-spacing:0.03em;"><span class="stage-badge negotiating-psa" style="font-size:11px;vertical-align:middle;margin-right:8px;">NEGOTIATING PSA</span>3 Deals &middot; $106.4M</h2><div class="em-table-wrapper" style="margin-bottom:32px;"><table class="em-table"><thead><tr><th>#</th><th>Property</th><th>Address</th><th>Seller</th><th>Deal Lead</th><th>Deal Support</th><th>Dev Lead</th><th style="text-align:right">PP</th><th style="text-align:right">Usable Acres</th><th style="text-align:right">Gross Yr 3 YOC</th><th style="text-align:right">Untrended YOC</th><th style="text-align:right">IRR</th><th style="text-align:right">$/Usable Acre</th><th style="text-align:right">EM Deposit</th><th>Est. PSA Signed</th><th style="text-align:center">DD Period</th><th>Est. Go Hard</th><th>Est. Closing</th></tr></thead><tbody><tr><td>1</td><td><strong>New Jersey - 100 N Hackensack</strong></td><td>100 N Hackensack, Kearny, NJ 07032</td><td>Epstein Family Trust</td><td>Chenying Zhao</td><td>Harry Zhang</td><td>Sam Penny</td><td style="text-align:right"><strong>$33,500,000</strong></td><td style="text-align:right">6.50</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$5,153,846</td><td style="text-align:right">$500,000</td><td>04/24/26</td><td style="text-align:center">60.0</td><td>05/26/26</td><td>06/25/26</td></tr><tr><td>2</td><td><strong>Phoenix - S 43rd</strong></td><td>3635 S 43rd Rd Ave, Phoenix, AZ 85009</td><td>Local Family</td><td>Nick Rini</td><td>Nick Beardslee</td><td>&ndash;</td><td style="text-align:right"><strong>$56,750,000</strong></td><td style="text-align:right">70.00</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$810,714</td><td style="text-align:right">$500,000</td><td>04/06/26</td><td style="text-align:center">60.0</td><td>06/05/26</td><td>07/05/26</td></tr><tr><td>3</td><td><strong>San Bernardino - 826 E Ninth</strong></td><td>826 E 9th St, San Bernardino, CA 92410</td><td>First Student / Private Equity</td><td>Nick Rini</td><td>Nick Beardslee</td><td>&ndash;</td><td style="text-align:right"><strong>$16,150,000</strong></td><td style="text-align:right">12.06</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$1,339,138</td><td style="text-align:right">$161,500</td><td>03/23/26</td><td style="text-align:center">60.0</td><td>05/22/26</td><td>06/21/26</td></tr><tr class="total-row"><td></td><td><strong>Total</strong></td><td></td><td></td><td></td><td></td><td></td><td style="text-align:right"><strong>$106,400,000</strong></td><td style="text-align:right"><strong>88.56</strong></td><td style="text-align:right"><strong>-</strong></td><td style="text-align:right"><strong>-</strong></td><td style="text-align:right"><strong>-</strong></td><td style="text-align:right"><strong>$2,258,355</strong></td><td style="text-align:right"><strong>$1,161,500</strong></td><td></td><td></td><td></td><td></td></tr></tbody></table></div><h2 style="font-size:14px;font-weight:700;margin-bottom:12px;color:var(--inv-text);text-transform:uppercase;letter-spacing:0.03em;"><span class="stage-badge negotiating-loi" style="font-size:11px;vertical-align:middle;margin-right:8px;">LOI SUBMITTED</span>5 Deals &middot; $261.3M</h2><div class="em-table-wrapper" style="margin-bottom:32px;"><table class="em-table"><thead><tr><th>#</th><th>Property</th><th>Address</th><th>Seller</th><th>Deal Lead</th><th>Deal Support</th><th>Dev Lead</th><th style="text-align:right">PP</th><th style="text-align:right">Usable Acres</th><th style="text-align:right">Gross Yr 3 YOC</th><th style="text-align:right">Untrended YOC</th><th style="text-align:right">IRR</th><th style="text-align:right">$/Usable Acre</th><th style="text-align:right">EM Deposit</th><th>Est. PSA Signed</th><th style="text-align:center">DD Period</th><th>Est. Go Hard</th><th>Est. Closing</th></tr></thead><tbody><tr><td>1</td><td><strong>NJ - Criterion/Meadow Portfolio</strong></td><td>2120 McCarter Hwy, 76 Central Ave, 251 Monroe</td><td>Criterion/Meadow</td><td>Chenying Zhao</td><td>Harry Zhang</td><td>&ndash;</td><td style="text-align:right"><strong>$150,250,000</strong></td><td style="text-align:right">46.26</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$3,247,946</td><td style="text-align:right">$500,000</td><td>TBD</td><td style="text-align:center"></td><td>TBD</td><td>TBD</td></tr><tr><td>2</td><td><strong>Charleston High Country</strong></td><td>428 & 447 High Country Dr, Summerville, SC 29483</td><td>Capital Development Partners</td><td>Rob Brandt</td><td>Daniel Luo</td><td>&ndash;</td><td style="text-align:right"><strong>$47,000,000</strong></td><td style="text-align:right">21.50</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$2,186,047</td><td style="text-align:right">$470,000</td><td>TBD</td><td style="text-align:center"></td><td>TBD</td><td>TBD</td></tr><tr><td>3</td><td><strong>Miami - 2201 NW 37th Ave</strong></td><td>2201 NW 37th Ave, Miami, FL</td><td>Private Seller</td><td>Rob Brandt</td><td>Daniel Luo</td><td>&ndash;</td><td style="text-align:right"><strong>$25,150,000</strong></td><td style="text-align:right">3.73</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$6,742,627</td><td style="text-align:right">$2,000,000</td><td>TBD</td><td style="text-align:center"></td><td>TBD</td><td>TBD</td></tr><tr><td>4</td><td><strong>Nashville - 1116 Polk Ave</strong></td><td>1116 Polk Ave, Nashville, TN</td><td>Private Seller</td><td>Rob Brandt</td><td>Daniel Luo</td><td>&ndash;</td><td style="text-align:right"><strong>$18,750,000</strong></td><td style="text-align:right">12.57</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$1,491,647</td><td style="text-align:right">$375,000</td><td>TBD</td><td style="text-align:center"></td><td>TBD</td><td>TBD</td></tr><tr><td>5</td><td><strong>Miami - 14405 NW 112th Ave</strong></td><td>14405 NW 112th Ave, Hialeah Gardens, FL</td><td>Private Seller</td><td>Rob Brandt</td><td>Daniel Luo</td><td>&ndash;</td><td style="text-align:right"><strong>$20,150,000</strong></td><td style="text-align:right">7.70</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right">$2,616,883</td><td style="text-align:right">$201,500</td><td>TBD</td><td style="text-align:center"></td><td>TBD</td><td>TBD</td></tr><tr class="total-row"><td></td><td><strong>Total</strong></td><td></td><td></td><td></td><td></td><td></td><td style="text-align:right"><strong>$261,300,000</strong></td><td style="text-align:right"><strong>91.76</strong></td><td style="text-align:right"><strong>-</strong></td><td style="text-align:right"><strong>-</strong></td><td style="text-align:right"><strong>-</strong></td><td style="text-align:right"><strong>$3,218,614</strong></td><td style="text-align:right"><strong>$3,546,500</strong></td><td></td><td></td><td></td><td></td></tr></tbody></table></div>
   </div>
   <div id="inv-tab-em-forecast" class="inv-tab-panel">
     <div class="kpi-grid">
-      <div class="kpi-card"><div class="label">Total Initial EM</div><div class="value">$7.0M</div><div class="sub">Across 12 deals</div></div>
+      <div class="kpi-card"><div class="label">Total Initial EM</div><div class="value">$10.4M</div><div class="sub">Across 12 deals</div></div>
       <div class="kpi-card"><div class="label">Additional EM</div><div class="value">-</div><div class="sub">0 deals with additional deposits</div></div>
-      <div class="kpi-card"><div class="label">Combined EM Exposure</div><div class="value" style="color:#4f46e5">$7.0M</div><div class="sub">Initial + Additional</div></div>
+      <div class="kpi-card"><div class="label">Combined EM Exposure</div><div class="value" style="color:#4f46e5">$10.4M</div><div class="sub">Initial + Additional</div></div>
     </div>
-    <h2 style="font-size:18px;font-weight:700;margin-bottom:16px;">EM Forecast by Property</h2><div class="em-table-wrapper"><table class="em-table"><thead><tr><th>Property</th><th>Confidence</th><th>Initial EM</th><th>Additional EM</th><th>PSA Signed</th><th>Go Hard Date</th></tr></thead><tbody><tr><td><strong>New Jersey - 704 Doremus</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$1,000,000</td><td>N/A</td><td>10/28/25</td><td>03/04/26</td></tr><tr><td><strong>New Jersey - 7708 RT 440</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$759,500</td><td>N/A</td><td>01/15/26</td><td>05/01/26</td></tr><tr><td><strong>Compton, CA - Susana 2</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$500,000</td><td>N/A</td><td>02/19/26</td><td>04/06/26</td></tr><tr><td><strong>Houston - 6750 Bender</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$180,000</td><td>N/A</td><td>03/06/26</td><td>03/30/26</td></tr><tr><td><strong>New Jersey - 100 N Hackensack</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$500,000</td><td>N/A</td><td>03/27/26</td><td>05/26/26</td></tr><tr><td><strong>Phoenix - S 43rd</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$500,000</td><td>N/A</td><td>04/06/26</td><td>06/05/26</td></tr><tr><td><strong>San Bernardino - 826 E Ninth</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$161,500</td><td>N/A</td><td>03/19/26</td><td>05/18/26</td></tr><tr><td><strong>1200 S Congress</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$344,100</td><td>N/A</td><td>TBD</td><td>TBD</td></tr><tr><td><strong>Charleston High Country</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$470,000</td><td>N/A</td><td>TBD</td><td>TBD</td></tr><tr><td><strong>Miami - 2201 NW 37th Ave</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$2,000,000</td><td>N/A</td><td>TBD</td><td>TBD</td></tr><tr><td><strong>Nashville - 1116 Polk Ave</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$375,000</td><td>N/A</td><td>TBD</td><td>TBD</td></tr><tr><td><strong>Miami - 14405 NW 112th Ave</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$201,500</td><td>N/A</td><td>TBD</td><td>TBD</td></tr></tbody><tfoot><tr class="total-row"><td><strong>Total</strong></td><td></td><td><strong>$6,991,600</strong></td><td><strong>N/A</strong></td><td></td><td></td></tr></tfoot></table></div>
+    <h2 style="font-size:18px;font-weight:700;margin-bottom:16px;">EM Forecast by Property</h2><div class="em-table-wrapper"><table class="em-table"><thead><tr><th>Property</th><th>Confidence</th><th>Initial EM</th><th>Additional EM</th><th>PSA Signed</th><th>Go Hard Date</th></tr></thead><tbody><tr><td><strong>New Jersey - 704 Doremus</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$4,250,000</td><td>N/A</td><td>10/28/25</td><td>03/04/26</td></tr><tr><td><strong>New Jersey - 7708 RT 440</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$759,500</td><td>N/A</td><td>01/15/26</td><td>05/01/26</td></tr><tr><td><strong>Compton, CA - Susana 2</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$500,000</td><td>N/A</td><td>02/19/26</td><td>04/06/26</td></tr><tr><td><strong>Houston - 6750 Bender</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$180,000</td><td>N/A</td><td>03/06/26</td><td>03/30/26</td></tr><tr><td><strong>New Jersey - 100 N Hackensack</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$500,000</td><td>N/A</td><td>04/24/26</td><td>05/26/26</td></tr><tr><td><strong>Phoenix - S 43rd</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$500,000</td><td>N/A</td><td>04/06/26</td><td>06/05/26</td></tr><tr><td><strong>San Bernardino - 826 E Ninth</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$161,500</td><td>N/A</td><td>03/23/26</td><td>05/22/26</td></tr><tr><td><strong>NJ - Criterion/Meadow Portfolio</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$500,000</td><td>N/A</td><td>TBD</td><td>TBD</td></tr><tr><td><strong>Charleston High Country</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$470,000</td><td>N/A</td><td>TBD</td><td>TBD</td></tr><tr><td><strong>Miami - 2201 NW 37th Ave</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$2,000,000</td><td>N/A</td><td>TBD</td><td>TBD</td></tr><tr><td><strong>Nashville - 1116 Polk Ave</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$375,000</td><td>N/A</td><td>TBD</td><td>TBD</td></tr><tr><td><strong>Miami - 14405 NW 112th Ave</strong></td><td><div class="confidence-bar"><div class="bar"><div class="bar-fill" style="width:100%;background:var(--inv-green)"></div></div>100%</div></td><td>$201,500</td><td>N/A</td><td>TBD</td><td>TBD</td></tr></tbody><tfoot><tr class="total-row"><td><strong>Total</strong></td><td></td><td><strong>$10,397,500</strong></td><td><strong>N/A</strong></td><td></td><td></td></tr></tfoot></table></div>
   </div>
   <div id="inv-tab-asset-mgmt" class="inv-tab-panel">
-    <h2 style="font-size:18px;font-weight:700;color:var(--inv-text);margin-bottom:16px;">Asset Management</h2>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;"><div style="background:var(--inv-card,#fff);border:1px solid var(--inv-border,#e4e7ef);border-radius:10px;padding:16px;"><h3 style="font-size:15px;font-weight:700;margin-bottom:10px;color:var(--inv-amber,#d97706);">Site Update</h3><div class="action-items"><div class="action-item" style="color:var(--inv-text,#111827);"><input type="checkbox" onchange="toggleCompleted(this)"><span><strong style="color:var(--inv-text,#111827);">DTW1</strong> &ndash; Status update</span></div><div class="action-item" style="color:var(--inv-text,#111827);"><input type="checkbox" onchange="toggleCompleted(this)"><span><strong style="color:var(--inv-text,#111827);">SAV1</strong> &ndash; Status update</span></div><div class="action-item" style="color:var(--inv-text,#111827);"><input type="checkbox" onchange="toggleCompleted(this)"><span><strong style="color:var(--inv-text,#111827);">LAS5</strong> &ndash; Status update</span></div><div class="action-item" style="color:var(--inv-text,#111827);"><input type="checkbox" onchange="toggleCompleted(this)"><span><strong style="color:var(--inv-text,#111827);">San Bernardino via EV Realty</strong> &ndash; Status update</span></div></div></div><div style="background:var(--inv-card,#fff);border:1px solid var(--inv-border,#e4e7ef);border-radius:10px;padding:16px;"><h3 style="font-size:15px;font-weight:700;margin-bottom:10px;color:var(--inv-amber,#d97706);">Hold/Sell Analysis</h3><div class="action-items"><div class="action-item" style="color:var(--inv-text,#111827);"><input type="checkbox" onchange="toggleCompleted(this)"><span><strong style="color:var(--inv-text,#111827);">Hold/Sell Analysis</strong> &ndash; Hold/Sell analysis discussion</span></div></div></div><div style="background:var(--inv-card,#fff);border:1px solid var(--inv-border,#e4e7ef);border-radius:10px;padding:16px;"><h3 style="font-size:15px;font-weight:700;margin-bottom:10px;color:var(--inv-amber,#d97706);">Internal Sales Deck</h3><div class="action-items"><div class="action-item" style="color:var(--inv-text,#111827);"><input type="checkbox" onchange="toggleCompleted(this)"><span><strong style="color:var(--inv-text,#111827);">Internal Sales Deck</strong> &ndash; Internal sales deck review</span></div></div></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;"><div style="background:var(--inv-card);border:1px solid var(--inv-border);padding:16px 18px;"><h3 style="font-size:10px;font-weight:700;margin-bottom:10px;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;">Site Update</h3><div class="action-items"><div class="action-item" style="color:var(--inv-text);"><input type="checkbox" onchange="toggleCompleted(this)"><span><strong style="color:var(--inv-text);">DTW1</strong> &ndash; Status update</span></div><div class="action-item" style="color:var(--inv-text);"><input type="checkbox" onchange="toggleCompleted(this)"><span><strong style="color:var(--inv-text);">SAV1</strong> &ndash; Status update</span></div><div class="action-item" style="color:var(--inv-text);"><input type="checkbox" onchange="toggleCompleted(this)"><span><strong style="color:var(--inv-text);">LAS5</strong> &ndash; Status update</span></div><div class="action-item" style="color:var(--inv-text);"><input type="checkbox" onchange="toggleCompleted(this)"><span><strong style="color:var(--inv-text);">San Bernardino via EV Realty</strong> &ndash; Status update</span></div></div></div><div style="background:var(--inv-card);border:1px solid var(--inv-border);padding:16px 18px;"><h3 style="font-size:10px;font-weight:700;margin-bottom:10px;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;">Hold/Sell Analysis</h3><div class="action-items"><div class="action-item" style="color:var(--inv-text);"><input type="checkbox" onchange="toggleCompleted(this)"><span><strong style="color:var(--inv-text);">Hold/Sell Analysis</strong> &ndash; Hold/Sell analysis discussion</span></div></div></div><div style="background:var(--inv-card);border:1px solid var(--inv-border);padding:16px 18px;"><h3 style="font-size:10px;font-weight:700;margin-bottom:10px;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;">Internal Sales Deck</h3><div class="action-items"><div class="action-item" style="color:var(--inv-text);"><input type="checkbox" onchange="toggleCompleted(this)"><span><strong style="color:var(--inv-text);">Internal Sales Deck</strong> &ndash; Internal sales deck review</span></div></div></div></div>
+  </div>
+  <div id="inv-tab-dead-deals" class="inv-tab-panel">
+    <div class="kpi-grid" style="margin-bottom:24px;">
+      <div class="kpi-card"><div class="label">Dead / Passed Deals</div><div class="value">29</div><div class="sub">Total deals tracked</div></div>
+      <div class="kpi-card"><div class="label">Total Acreage (Lost)</div><div class="value" style="color:var(--red);">0.0</div><div class="sub">Across 29 deals</div></div>
+      <div class="kpi-card"><div class="label">LOIs Submitted</div><div class="value">5</div><div class="sub">Deals where LOI was submitted</div></div>
+    </div><h2 style="font-size:14px;font-weight:700;margin-bottom:12px;color:var(--inv-text);text-transform:uppercase;letter-spacing:0.03em;"><span class="stage-badge" style="background:var(--red-bg);color:var(--red);font-size:11px;vertical-align:middle;margin-right:8px;">DEAD / PASSED</span>29 Deals</h2><div class="em-table-wrapper" style="margin-bottom:32px;width:100%;"><table class="em-table" style="width:100%;table-layout:auto;"><thead><tr><th>#</th><th>Property</th><th>Location</th><th>Market</th><th style="text-align:right">Acreage</th><th>Broker</th><th>Brokerage</th><th>Status</th><th>LOI?</th><th>Reason</th><th>Date Died</th><th style="width:28px;"></th></tr></thead><tbody><tr><td>3.0</td><td><strong>175 Tubeway Dr</strong></td><td>Forest Park, GA</td><td>Atlanta</td><td style="text-align:right">0.0</td><td>David Warren / Isaac Setton</td><td>KSR</td><td>Passed</td><td>Yes</td><td>Negative leverage + undisclosed 3% buyer-side fee</td><td>03/17/26</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-1');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-1" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Dan Luo, David Warren (KSR), Isaac Setton (KSR)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">Low-coverage industrial, TW Metals tenant. NOI $532K, lease exp 10/31/2030. Seller had $16M competing offer. LOI submitted same day. KSR then revealed seller not paying broker fee; demanded 3% buyer-side (not disclosed upfront). Rob called deal 'incredibly tight' with negative leverage, offered 1%. KSR refused. Rob passed.</div></td></tr><tr><td>1.0</td><td><strong>2201 NW 37th Ave (Gumberg Site)</strong></td><td>Miami, FL</td><td>South Florida</td><td style="text-align:right">0.0</td><td>Wayne Ramoski</td><td>Cushman & Wakefield</td><td>Lost to competitor</td><td>Yes (3 rounds)</td><td>Seller's $25M floor; outbid after 3 LOI rounds</td><td>03/15/26</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-2');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-2" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Dan Luo, Pat McBride (ComReal), Wayne Ramoski (C&W), Josh Neill</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">Airport-core IOS site in MIC submarket with long-standing Avis history. Extreme supply constraints. Outpost submitted 3 LOI rounds (Feb 10, 12, 19/20), escalating after meeting with Josh Neill. Final LOI Feb 27 doubled EMD from $1M to $2M. Seller chose another buyer on March 15.</div></td></tr><tr><td>4.0</td><td><strong>2051 Griffin Rd (Dania Beach Marina)</strong></td><td>Dania Beach, FL</td><td>Broward</td><td style="text-align:right">0.0</td><td>Greg Carett</td><td>Smith CRE</td><td>Passed</td><td>No</td><td>Unrealistic rents (~$23K/ac/mo); ~$4-5M pricing gap</td><td>03/13/26</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-3');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-3" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Dan Luo, Greg Carett (Smith CRE), Santiago Moscoso (Smith CRE)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">Waterfront industrial with ~1,300 LF seawall and I-95 frontage. Current NOI ~$1.2M. Broker projected $2M+ NOI. Rob passed immediately, noting $2M NOI implies $23K/ac/mo rents, unrealistic even for central Miami. Outpost at ~$15M vs seller's $19-20M range. Rob declined to formally offer to protect Outpost's reputation.</div></td></tr><tr><td>2.0</td><td><strong>York Creek IOS</strong></td><td>New Braunfels, TX</td><td>Central TX</td><td style="text-align:right">0.0</td><td>Kyle Mueller</td><td>JLL</td><td>Lost to competitor</td><td>Yes (2 rounds)</td><td>Another buyer at $14M; Outpost held firm on pricing</td><td>03/11/26</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-4');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-4" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Dan Luo, Kyle Mueller (JLL), Rob Ellwood (JLL), Patrick McCord (JLL)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">IOS between Austin and San Antonio. Walmart anchor on short-term gross renewals. No competing inventory in pocket. LOI Jan 23, revised Jan 30 with adjacent land. Seller negotiated Walmart extension to extract value. Outpost held firm. Another buyer agreed at $14M.</div></td></tr><tr><td>5.0</td><td><strong>7605 Factory Shoals Rd SW</strong></td><td>GA</td><td>Atlanta</td><td style="text-align:right">0.0</td><td>Shivam Whadwa</td><td>KSR</td><td>Passed</td><td>No</td><td>Only 2.62 usable acres on 9-acre lot</td><td>03/10/26</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-5');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-5" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Dan Luo, Shivam Whadwa (KSR)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">Marketed as Class A Low Coverage/IOS on 9-acre lot but tenant only occupied 2.62 usable acres. Rob passed immediately.</div></td></tr><tr><td>6.0</td><td><strong>Gateway Growth Portfolio</strong></td><td>Charlotte, NC area</td><td>Southeast</td><td style="text-align:right">0.0</td><td>Michael Scarnato</td><td>JLL</td><td>Passed</td><td>No</td><td>Pricing unchanged from Sep 2025; previously passed</td><td>03/05/26</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-6');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-6" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Dan Luo, Michael Scarnato (JLL)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">Off-market IOS portfolio sold a la carte. Outpost saw it in Sep/Oct 2025 via broker named Gray and passed on pricing. Resurfaced March 2026 with unchanged guidance (~$26M / 6.75% cap on 3300 Westinghouse). Rob passed again.</div></td></tr><tr><td>7.0</td><td><strong>14405 NW 112 Ave</strong></td><td>Hialeah Gardens, FL</td><td>South Florida</td><td style="text-align:right">0.0</td><td>Pat McBride / Chris Spear</td><td>ComReal</td><td>Stalled</td><td>Yes</td><td>LOI submitted; no seller response</td><td>02/23/26</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-7');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-7" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Dan Luo, Pat McBride (ComReal), Chris Spear (ComReal)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">F&C Trucking site. LOI submitted Feb 23 via ComReal. No seller response or follow-up visible in email trail. Likely stalled alongside 1200 S Congress.</div></td></tr><tr><td>9.0</td><td><strong>Averitt IOS Portfolio</strong></td><td>7 States</td><td>Multi-market</td><td style="text-align:right">0.0</td><td>Emil Shabot</td><td>KSR</td><td>Passed</td><td>No</td><td>Quick pass</td><td>02/16/26</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-8');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-8" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Tres Teschke, Dan Luo, Emil Shabot (KSR)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">Multi-state IOS portfolio with Averitt as tenant. Individual acquisitions available. Rob passed quickly. No further context given.</div></td></tr><tr><td>10.0</td><td><strong>Jacksonville Sites (Old Soutel / Old Kings)</strong></td><td>Jacksonville, FL</td><td>Jacksonville</td><td style="text-align:right">0.0</td><td>Jimmy Ullrich / Michael Macchia</td><td>Colliers</td><td>Passed</td><td>No</td><td>At market; seller wanted portfolio sale; Outpost wanted 1-2 sites</td><td>02/13/26</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-9');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-9" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Dan Luo, Jimmy Ullrich (Colliers), Michael Macchia (Colliers)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">Rob expressed interest in Jacksonville market but noted both sites were at market (sellers had unlocked value). Seller preferred portfolio sale, Outpost only wanted 1-2 sites. Backed out Feb 13.</div></td></tr><tr><td>8.0</td><td><strong>1200 S Congress Ave</strong></td><td>FL</td><td>South Florida</td><td style="text-align:right">0.0</td><td>Miguel Alcivar</td><td>Cushman & Wakefield</td><td>Stalled</td><td>Yes</td><td>LOI submitted to IC; seller non-responsive despite follow-ups</td><td>02/12/26</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-10');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-10" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Dan Luo, Miguel Alcivar (C&W)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">LOI submitted Feb 12. Presented to IC, Outpost wanted to continue. Rob followed up Feb 24, offered to visit seller in Palm Beach. Broker scheduling call with seller. As of March 5, Rob still working to engage, asking about 1031 needs and offering creative structuring (extended look period). No seller response.</div></td></tr><tr><td>11.0</td><td><strong>1601 Tater Peeler Rd</strong></td><td>Nashville, TN</td><td>Nashville</td><td style="text-align:right">0.0</td><td>Jared Young / Ben Worley</td><td>Canopy Rep</td><td>Passed</td><td>No</td><td>Truck parking not strategic priority</td><td>02/12/26</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-11');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-11" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Dan Luo, Jared Young (Canopy Rep), Ben Worley (Canopy Rep)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">Rob passed same day: 'Truck parking isn't the favored son at the moment.' Strategy mismatch; Outpost deprioritizing pure truck parking plays.</div></td></tr><tr><td>12.0</td><td><strong>7205 Rose Ave</strong></td><td>Orlando, FL</td><td>Orlando</td><td style="text-align:right">0.0</td><td>Christopher Griffith</td><td>Lee & Associates</td><td>Passed</td><td>No</td><td>Numbers didn't work at $165K rent</td><td>02/12/26</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-12');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-12" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Dan Luo, Christopher Griffith (Lee), Ryan Griffith (Lee)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">Rob engaged briefly, requested tenant CFO info. CFO confirmed $165K rent. Rob passed after reviewing numbers. Broker pivoted to Hermit Smith Rd (also passed).</div></td></tr><tr><td>13.0</td><td><strong>136 Hermit Smith Rd</strong></td><td>Apopka, FL</td><td>Orlando</td><td style="text-align:right">0.0</td><td>Christopher Griffith</td><td>Lee & Associates</td><td>Passed</td><td>No</td><td>Quick pass</td><td>02/12/26</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-13');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-13" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Dan Luo, Christopher Griffith (Lee), Ryan Griffith (Lee)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">Brought by same Lee & Associates broker after Rose Ave pass. Rob passed quickly. Limited detail.</div></td></tr><tr><td>14.0</td><td><strong>Groveland Truck Parking</strong></td><td>Groveland, FL</td><td>Central FL</td><td style="text-align:right">0.0</td><td>Donald Shapiro</td><td>Compass</td><td>Passed</td><td>No</td><td>Not for us even at reduced $8.7M</td><td>02/08/26</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-14');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-14" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Dan Luo, Donald Shapiro (Compass)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">Initially offered higher, broker came back Feb 5 at $8.7M. Rob passed: 'Not for us, thanks Donald.'</div></td></tr><tr><td>15.0</td><td><strong>12905 NW 32 Ave</strong></td><td>Opa Locka, FL</td><td>South Florida</td><td style="text-align:right">0.0</td><td>Roberto Susi</td><td>Axiom Capital</td><td>Passed</td><td>No</td><td>Pricing gap; tenant leaving (would UW as vacant)</td><td>01/30/26</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-15');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-15" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Dan Luo, Tres Teschke, Roberto Susi (Axiom), Eli Sasson (Axiom)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">Tenant expressed desire to leave, meaning Outpost would underwrite as vacant. Broker acknowledged pricing likely high. After a few days of back-and-forth, Rob passed stating sides were too far apart.</div></td></tr><tr><td>17.0</td><td><strong>4 Telfair Pl</strong></td><td>Savannah, GA</td><td>Savannah</td><td style="text-align:right">0.0</td><td>Zachary Zakas</td><td>Elmwood</td><td>Lost to Dalfen</td><td>Yes</td><td>Dalfen bid $11.25M net; Outpost firm at $11M</td><td>01/16/26</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-16');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-16" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Tres Teschke, Dan Luo, Zachary Zakas (Elmwood)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">Despite Savannah vacancy concerns, site was leased at attractive entry cap (~7.5%, yr 3 ~8%). LOI at $11M on Jan 14. Dalfen competing at $11.25M net ($11.59M total w/ 3% buy-side fee to Lee). Rob held firm at $11M. Deal likely went to Dalfen.</div></td></tr><tr><td>20.0</td><td><strong>16891-16821 NW 122 Ave</strong></td><td>Hialeah, FL</td><td>South Florida</td><td style="text-align:right">0.0</td><td>Ovy Anghel</td><td>Apex Capital Realty</td><td>Passed</td><td>No</td><td>Price too high; duplicate sourcing</td><td>07/31/25</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-17');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-17" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Tres Teschke, Dan Luo, Ovy Anghel (Apex Capital Realty)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">Rob passed same day: price too high. Also noted someone else had already sent the deal to Outpost.</div></td></tr><tr><td>21.0</td><td><strong>2900 NW 36 ST</strong></td><td>Miami, FL</td><td>South Florida</td><td style="text-align:right">0.0</td><td>Nico Palazzo</td><td>Cushman & Wakefield</td><td>Passed</td><td>No</td><td>$17M ask = $4.3M/ac; too rich even at $900K NNN renewal</td><td>07/16/25</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-18');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-18" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Dan Luo, Nico Palazzo (C&W), Andrew Fernandez (C&W)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">Off-market. $17M ask = $4.3M/acre. Rob noted tough to pencil even at $900K NNN renewal. Suggested ~$14M as starting point. Broker cautioned re: approaching seller carefully. Conversation ended. No emails after July 16.</div></td></tr><tr><td>22.0</td><td><strong>Wintergreen I-45</strong></td><td>Houston, TX</td><td>Houston</td><td style="text-align:right">0.0</td><td>Elliott Dow</td><td>CBRE</td><td>Passed</td><td>No</td><td>7.5% cap not competitive; stronger offers in hand</td><td>07/16/25</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-19');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-19" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Dan Luo, Elliott Dow (CBRE), Nathan Wynne (CBRE)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">Class A+ IOS, 100% leased, 20K SF building. Rob offered 7.5% cap. Broker indicated stronger offers existed. Rob sat it out.</div></td></tr><tr><td>29.0</td><td><strong>13271 Veterans Memorial Hwy</strong></td><td>Douglasville, GA</td><td>Atlanta</td><td style="text-align:right">0.0</td><td>Guillermo de Nicolas</td><td>Panther Capital Group</td><td>Passed</td><td>No</td><td>Location concerns</td><td>07/14/25</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-20');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-20" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Dan Luo, Guillermo de Nicolas (Panther CG)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">Follow-up site proposed by Panther CG broker after Telephone Rd fell through. Rob passed: 'Not for us, don't love the location.'</div></td></tr><tr><td>23.0</td><td><strong>4050 Telephone Rd</strong></td><td>Dallas, TX</td><td>DFW</td><td style="text-align:right">0.0</td><td>Guillermo de Nicolas</td><td>Panther Capital Group</td><td>Withdrawn by Outpost</td><td>Yes (signed at $12.5M)</td><td>SUP required (5-6 mo timeline, no guarantee of approval)</td><td>07/11/25</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-21');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-21" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Tres Teschke, Dan Luo, Nick Beardslee, Guillermo de Nicolas (Panther CG)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">Signed LOI at $12.5M delivered June 25. Site had 4K SF shop, crushed concrete, ~$55K/mo revenue. Development team engaged City of Dallas re: SUP. City required new SUP, 5-6 month timeline, no guarantee. Outpost withdrew July 11 citing time, costs, uncertainty. Broker disappointed. Rob also passed on follow-up site (13271 Veterans Memorial, Douglasville GA) for location.</div></td></tr><tr><td>24.0</td><td><strong>Sunrise Dev Opp (~13.56 ac)</strong></td><td>Sunrise, FL</td><td>South Florida</td><td style="text-align:right">0.0</td><td>N/A (internal)</td><td>N/A</td><td>Passed</td><td>No</td><td>Too many development hurdles</td><td>07/08/25</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-22');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-22" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Dan Luo</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">Forwarded internally July 8. Rob had already spoken with a contact named Brian. Passed immediately: too many hurdles.</div></td></tr><tr><td>25.0</td><td><strong>SE Terminal Portfolio (Atlanta)</strong></td><td>Atlanta, GA</td><td>Atlanta</td><td style="text-align:right">0.0</td><td>Nick Murphy / Justin Kundrak</td><td>Eastdil Secured</td><td>Lost (presumed)</td><td>Yes (revised LOI)</td><td>LOI submitted; went silent after best-and-final</td><td>07/08/25</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-23');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-23" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Chenying Zhao, Clayton Knavel, Nick Beardslee, Dan Luo, Nick Murphy (Eastdil), Justin Kundrak (Eastdil)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">SE truck terminal portfolio. Active engagement from June 2025: data room, leases, surveys, roof reports, zoning. Chenying Zhao managed DD with Clayton Knavel. Revised LOI for Atlanta property submitted July 8 after morning call. Broker confirmed receipt. Complete silence after. Labeled 'Retired' in Gmail.</div></td></tr><tr><td>26.0</td><td><strong>Hialeah IOS (CBRE)</strong></td><td>Hialeah, FL</td><td>South Florida</td><td style="text-align:right">0.0</td><td>Eli Havlik / Larry Genet</td><td>CBRE</td><td>Dead</td><td>Yes</td><td>LOI submitted; seller never responded</td><td>06/16/25</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-24');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-24" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Tres Teschke, Dan Luo, Eli Havlik (CBRE), Larry Genet (CBRE)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">LOI submitted June 16. Rob offered to meet both sellers, requested a call. Broker confirmed LOIs submitted, waiting to hear back. No further communication. Labeled 'Retired' in Gmail.</div></td></tr><tr><td>16.0</td><td><strong>Interstate Drop Yards</strong></td><td>Memphis, TN</td><td>Memphis</td><td style="text-align:right">0.0</td><td>Ben Ricketts</td><td>Colliers</td><td>Stalled / Dead</td><td>Yes (revised)</td><td>LOI exchanged; trips canceled; went silent</td><td>~2026-01-26</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-25');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-25" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Dan Luo, Tres Teschke, Sam Penny, Ben Ricketts (Colliers)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">Fleet as operator/seller. LOI submitted and revised after seller/counsel tweaks. ARCO site review and Memphis day trip both canceled late Jan 2026. No further communication. Quietly died.</div></td></tr><tr><td>18.0</td><td><strong>Triten Portfolio (OP LOI)</strong></td><td>DFW / Multi-market</td><td>DFW</td><td style="text-align:right">0.0</td><td>Direct (Zach Dobin)</td><td>Triten Real Estate Partners</td><td>Stalled / Dead</td><td>Yes ($50.4M portfolio)</td><td>$50.4M portfolio LOI; revised on Fulghum; seller went silent</td><td>~2025-09-11</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-26');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-26" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Dan Luo, Chenying Zhao, Clayton Knavel, Josh Neill, Trent Cameron, Zach Dobin (Triten), Justin Horowitz (Cooper Horowitz)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">Portfolio LOI excl. Baltimore submitted Aug 18, 2025. Presented to IC with Josh/Trent. Seller rejected portfolio but open to individual DFW assets. Focused on Fulghum and Sunridge. Revised Fulghum offer Sep 10. Seller said 'we'll review' Sep 11. No response since.</div></td></tr><tr><td>19.0</td><td><strong>Binford Supply</strong></td><td>San Antonio, TX</td><td>San Antonio</td><td style="text-align:right">0.0</td><td>Andrew Alizzi</td><td>Partners Real Estate</td><td>Stalled / Dead</td><td>Yes (drafted)</td><td>LOI drafted; went silent after submission</td><td>~2025-09</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-27');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-27" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Dan Luo, Taylor Nelson, Mitch Violett, Clayton Knavel, Sam Penny, Andrew Alizzi (Partners)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">LOI drafted ~Sep 4, 2025. Rob noted it wouldn't leave much room for a counter. Multiple team members involved. No follow-up after September.</div></td></tr><tr><td>27.0</td><td><strong>4450 NE Buffalo</strong></td><td>Houston, TX</td><td>Houston</td><td style="text-align:right">0.0</td><td>N/A (direct)</td><td>N/A (West Coast deal)</td><td>Dead</td><td>Yes (under contract)</td><td>Pricing gap ($11.75M offer vs $14.25M counter); franchise taxes</td><td>~2025-05</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-28');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-28" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Nick Rini, Dan Luo, Tres Teschke, Josh Neill, Taylor Nelson, Clayton Knavel, Jessica Carralero</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">Originally under contract at $16.25M. Cost basis analysis benchmarked vs Marine deal, concluded $11.75M (~$750K/ac) needed. Seller preferred to hold at that price. Countered $14.25M. Returns compressed especially after 4.6% franchise taxes. Weekly calls through May 20 then ceased. Labeled 'Retired' in Gmail.</div></td></tr><tr><td>28.0</td><td><strong>Albany Road</strong></td><td>Tampa, FL</td><td>Tampa</td><td style="text-align:right">0.0</td><td>Jackson O'Neill / Cody Conti</td><td>Lee & Associates Tampa</td><td>Stalled</td><td>TBD</td><td>Previously pursued; JLL and Lee both circling same deal</td><td>Fall 2025</td><td style="text-align:center;cursor:pointer;font-size:14px;color:var(--inv-accent);" onclick="var el=document.getElementById('dead-narrative-29');el.style.display=el.style.display==='none'?'table-row':'none';this.textContent=el.style.display==='none'?'\u25B6':'\u25BC'">&#9654;</td></tr><tr id="dead-narrative-29" style="display:none;"><td colspan="12" style="padding:16px 24px;background:var(--surface);border-bottom:2px solid var(--inv-border);"><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Key Participants: <span style="text-transform:none;font-weight:500;">Rob Brandt, Tres Teschke, Dan Luo, Jackson O'Neill (Lee Tampa), Cody Conti (Lee Tampa)</span></div><div style="font-size:10px;font-weight:700;color:var(--inv-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Full Narrative</div><div style="font-size:13px;color:var(--inv-text);line-height:1.75;white-space:pre-wrap;">Pursued in fall 2025. JLL re-approached in early 2026. Jackson O'Neill at Lee also flagged in March 2026. Rob confirmed prior pursuit. Noted Outpost 'definitely needs to plant a flag in Tampa.' May still be available.</div></td></tr><tr class="total-row"><td></td><td><strong>Total (29)</strong></td><td></td><td></td><td style="text-align:right"><strong>0.0</strong></td><td></td><td></td><td></td><td><strong>5</strong></td><td></td><td></td><td></td></tr></tbody></table></div>
+  </div>
+  <div id="inv-tab-activity" class="inv-tab-panel">
+    <div class="kpi-grid" style="margin-bottom:24px;">
+      <div class="kpi-card"><div class="label">Total Deals Scanned</div><div class="value">22</div><div class="sub">All teams, all weeks</div></div>
+      <div class="kpi-card"><div class="label">Total Underwritten</div><div class="value">4</div><div class="sub">All teams, all weeks</div></div>
+      <div class="kpi-card"><div class="label">Total LOIs Submitted</div><div class="value">1</div><div class="sub">All teams, all weeks</div></div>
+    </div><h2 style="font-size:14px;font-weight:700;margin-bottom:12px;color:var(--inv-text);text-transform:uppercase;letter-spacing:0.03em;">Week of 03/16/26</h2><div class="em-table-wrapper" style="margin-bottom:24px;width:100%;"><table class="em-table" style="width:100%;"><thead><tr><th>Team</th><th style="text-align:right">Deals Scanned</th><th style="text-align:right">Deals Underwritten</th><th style="text-align:right">LOIs Submitted</th><th>Notes</th></tr></thead><tbody><tr><td><strong>West Coast Team</strong></td><td style="text-align:right">5</td><td style="text-align:right">1</td><td style="text-align:right">0</td><td></td></tr><tr><td><strong>Northeast Team</strong></td><td style="text-align:right">6</td><td style="text-align:right">1</td><td style="text-align:right">0</td><td></td></tr><tr><td><strong>Southeast Team</strong></td><td style="text-align:right">11</td><td style="text-align:right">2</td><td style="text-align:right">1</td><td></td></tr><tr class="total-row"><td><strong>Total</strong></td><td style="text-align:right"><strong>22</strong></td><td style="text-align:right"><strong>4</strong></td><td style="text-align:right"><strong>1</strong></td><td></td></tr></tbody></table></div>
   </div>
   </div>
 </div>
 <div id="tab-development" class="dept-section">
-  <div class="placeholder"><div class="placeholder-icon">&#128679;</div>
-  <p>Development dashboard data is sourced from separate Smartsheet workspaces.<br><strong>Integration coming soon.</strong></p></div>
+  <iframe src="development-dashboard.html" style="width:100%;height:calc(100vh - 52px);border:none;display:block;"></iframe>
 </div>
 <script>
   /* ── GANTT RENDERER ── */
@@ -1221,6 +939,29 @@
   const fmt = d => d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'})+' · '+d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
   document.getElementById('as-of-date').textContent = fmt(now);
   document.getElementById('ts-dev').textContent = 'Live · '+fmt(now);
+
+  // Dark/Light mode toggle
+  function toggleTheme() {
+    var body = document.body;
+    var btn = document.getElementById('theme-toggle');
+    body.classList.toggle('light-mode');
+    if (body.classList.contains('light-mode')) {
+      btn.innerHTML = '&#9790; Dark';
+      localStorage.setItem('outpost-theme', 'light');
+    } else {
+      btn.innerHTML = '&#9788; Light';
+      localStorage.setItem('outpost-theme', 'dark');
+    }
+  }
+  // Restore saved theme on load
+  (function() {
+    var saved = localStorage.getItem('outpost-theme');
+    if (saved === 'light') {
+      document.body.classList.add('light-mode');
+      var btn = document.getElementById('theme-toggle');
+      if (btn) btn.innerHTML = '&#9790; Dark';
+    }
+  })();
 </script>
 </body>
 </html>
