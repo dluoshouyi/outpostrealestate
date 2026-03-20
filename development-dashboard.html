@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outpost — Internal Dashboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Barlow:wght@400;500;600;700;800&display=swap');
+
+  /* ── OUTPOST BRAND — extracted from logo ── */
+  :root {
+    /* Backgrounds — logo background navy */
+    --bg:         #001623;
+    --bg-mid:     #001e32;
+    --surface:    #002438;
+    --surface2:   #002d46;
+    --surface3:   #003555;
+    --border:     #0a3a52;
+    --border-lt:  #0f4a68;
+
+    /* Brand blue — logo icon color */
+    --blue:       #8cc8dc;
+    --blue-dim:   #2a6a84;
+    --blue-glow:  rgba(140,200,220,0.10);
+    --blue-deep:  rgba(140,200,220,0.06);
+
+    /* White — wordmark */
+    --white:      #ffffff;
+    --white-90:   #e8f0f5;
+    --white-60:   #7a9eb4;
+    --white-30:   #2e5570;
+    --white-15:   #183346;
+
+    /* Status — adapted to navy palette */
+    --green:      #3ecf8e;
+    --green-bg:   rgba(62,207,142,0.08);
+    --red:        #e85555;
+    --red-bg:     rgba(232,85,85,0.08);
+    --amber:      #f5b942;
+    --amber-bg:   rgba(245,185,66,0.08);
+
+    /* Text */
+    --text-1: #e8f4f8;
+    --text-2: #7ab4cc;
+    --text-3: #2e6882;
+    --text-4: #1a4a62;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text-1);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    height: 60px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-mid);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo-img {
+    height: 32px;
+    width: auto;
+    display: block;
+  }
+
+  .logo-lockup {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo-divider {
+    width: 1px;
+    height: 22px;
+    background: var(--border-lt);
+  }
+
+  .logo-sub {
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  /* ── TABS ── */
+  .tabs { display: flex; gap: 2px; }
+  .tab-btn {
+    padding: 6px 18px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-3);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.12s;
+  }
+  .tab-btn:hover { color: var(--text-2); background: var(--blue-deep); }
+  .tab-btn.active { color: var(--white-90); background: var(--surface); border-color: var(--border); }
+  .tab-btn.active[data-tab="development"] { color: var(--blue); border-color: var(--blue-dim); background: var(--blue-glow); }
+  .tab-btn.active[data-tab="investments"] { color: var(--amber); border-color: rgba(245,185,66,0.3); background: var(--amber-bg); }
+  .tab-btn.active[data-tab="investments"] { color: var(--amber); border-color: rgba(245,185,66,0.3); background: var(--amber-bg); }
+
+  .as-of { font-size: 11px; color: var(--text-4); font-variant-numeric: tabular-nums; }
+
+  /* ── DEPT SECTIONS ── */
+  .dept-section { display: none; padding: 28px 32px; max-width: 1400px; margin: 0 auto; }
+  .dept-section.active { display: block; }
+
+  /* ── DEPT HEADER ── */
+  .dept-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .dept-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+  .dept-title {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 800;
+    font-size: 28px;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+  .dept-title.blue   { color: var(--blue); }
+  .dept-title.amber  { color: var(--amber); }
+  .dept-title.green  { color: var(--green); }
+  .dept-title.white  { color: var(--white-90); }
+
+  /* ── LIVE BADGE ── */
+  .live-badge {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    color: var(--text-3);
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--surface);
+    letter-spacing: 0.02em;
+  }
+  .live-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+    animation: blink 2.5s infinite;
+    flex-shrink: 0;
+  }
+  .static-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--amber); flex-shrink: 0; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  /* ── STAT CARDS ── */
+  .cards-row { display: grid; gap: 12px; margin-bottom: 24px; }
+  .cols-4 { grid-template-columns: repeat(4,1fr); }
+  .cols-3 { grid-template-columns: repeat(3,1fr); }
+  .cols-2 { grid-template-columns: repeat(2,1fr); }
+
+  .stat-card {
+    background: #ffffff;
+    border: 1px solid #ccdde8;
+    border-radius: 8px;
+    padding: 16px 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  }
+  .stat-card.blue::before   { background: var(--blue); }
+  .stat-card.green::before  { background: var(--green); }
+  .stat-card.amber::before  { background: var(--amber); }
+  .stat-card.red::before    { background: var(--red); }
+  .stat-card.none::before   { display: none; }
+
+  .stat-label {
+    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: #6b8fa3; margin-bottom: 8px; font-weight: 500;
+  }
+  .stat-value {
+    font-family: 'Barlow', sans-serif;
+    font-size: 30px; font-weight: 700; line-height: 1;
+    letter-spacing: -0.01em; color: #0f2a3a;
+  }
+  .stat-value.sm    { font-size: 18px; }
+  .stat-value.blue  { color: var(--blue); }
+  .stat-value.amber { color: var(--amber); }
+  .stat-value.green { color: var(--green); }
+  .stat-value.red   { color: var(--red); }
+  .stat-sub { font-size: 11px; color: #6b8fa3; margin-top: 6px; }
+
+  /* ── SECTION LABELS ── */
+  .section-label {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 12px; margin-top: 32px;
+  }
+  .section-label-text {
+    font-family: 'Barlow', sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-2); white-space: nowrap;
+  }
+  .section-label-line { flex: 1; height: 1px; background: var(--border); }
+  .section-tag {
+    font-size: 10px; padding: 2px 8px; border-radius: 3px;
+    font-weight: 500; letter-spacing: 0.04em; white-space: nowrap;
+  }
+  .tag-blue  { background: var(--blue-glow); color: var(--blue); border: 1px solid var(--blue-dim); }
+  .tag-green { background: var(--green-bg);  color: var(--green); border: 1px solid rgba(62,207,142,0.2); }
+  .tag-amber { background: var(--amber-bg);  color: var(--amber); border: 1px solid rgba(245,185,66,0.2); }
+  .tag-dim   { background: var(--surface2);  color: var(--text-3); border: 1px solid var(--border); }
+
+  /* ── PILLS ── */
+  .pill {
+    display: inline-flex; align-items: center; padding: 3px 8px;
+    border-radius: 4px; font-size: 10px; font-weight: 600;
+    letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap;
+  }
+  .pill.complete   { background: var(--green-bg);  color: var(--green);  border: 1px solid rgba(62,207,142,0.2); }
+  .pill.inprogress { background: var(--blue-glow); color: var(--blue);   border: 1px solid var(--blue-dim); }
+  .pill.notstarted { background: var(--surface3);  color: var(--text-3); border: 1px solid var(--border); }
+  .pill.update     { background: var(--blue-glow); color: var(--blue);   border: 1px solid var(--blue-dim); }
+  .pill.decision   { background: var(--amber-bg);  color: var(--amber);  border: 1px solid rgba(245,185,66,0.2); }
+  .pill.risk       { background: var(--red-bg);    color: var(--red);    border: 1px solid rgba(232,85,85,0.2); }
+  .pill.dd         { background: var(--blue-glow); color: var(--blue);   border: 1px solid var(--blue-dim); }
+
+  /* ── SUBSECTION ── */
+  .subsection { background: #ffffff; border: 1px solid #ccdde8; border-radius: 10px; overflow: hidden; margin-bottom: 14px; }
+  .subsection-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 13px 20px; border-bottom: 1px solid #dce8f0; background: #f0f7fb;
+    cursor: pointer; user-select: none;
+  }
+  .subsection-header:hover { background: #e4f0f8; }
+  .subsection-title {
+    font-family: 'Barlow', sans-serif; font-size: 13px; font-weight: 700;
+    letter-spacing: 0.02em; display: flex; align-items: center; gap: 8px; color: #0f2a3a;
+  }
+  .subsection-meta { font-size: 11px; color: #6b8fa3; }
+  .subsection-chevron { flex-shrink: 0; margin-left: 16px; color: #6b8fa3; transition: transform 0.2s ease; line-height: 1; }
+  .subsection.collapsed .subsection-chevron { transform: rotate(-90deg); }
+  .subsection.collapsed .subsection-header { border-bottom-color: transparent; }
+  .subsection.collapsed .subsection-body { display: none; }
+
+  /* ── MEETING TABLE ── */
+  .meeting-table-wrap { overflow-x: auto; }
+  table.meeting { width: 100%; border-collapse: collapse; font-size: 12px; }
+  table.meeting thead th {
+    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-3); font-weight: 600; text-align: left;
+    padding: 10px 14px; border-bottom: 1px solid var(--border);
+    white-space: nowrap; background: var(--surface2);
+  }
+  table.meeting thead th.num { text-align: right; }
+  table.meeting tbody tr { border-bottom: 1px solid var(--surface2); transition: background 0.08s; }
+  table.meeting tbody tr:last-child { border-bottom: none; }
+  table.meeting tbody tr:hover { background: var(--surface2); }
+  table.meeting tbody td { padding: 11px 14px; vertical-align: top; color: var(--text-1); }
+  table.meeting tbody td.dim { color: var(--text-2); }
+  table.meeting tbody td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  table.meeting tbody td.notes-cell { font-size: 11px; color: var(--text-2); line-height: 1.55; max-width: 320px; }
+
+  .budget-ok   { color: var(--green); }
+  .budget-warn { color: var(--amber); }
+  .budget-over { color: var(--red); }
+
+  /* ── DETAIL CARDS GRID ── */
+  .const-grid {
+    display: grid; grid-template-columns: repeat(2,1fr);
+    gap: 1px; background: var(--border);
+    border-radius: 10px; overflow: hidden; border: 1px solid var(--border);
+  }
+  .const-proj { background: #ffffff; padding: 20px; }
+  .const-proj-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+  .const-proj-code {
+    font-family: 'Barlow', sans-serif; font-size: 14px; font-weight: 700;
+    color: #0f2a3a; letter-spacing: 0.01em;
+  }
+  .const-proj-loc { font-size: 11px; color: #6b8fa3; margin-top: 2px; }
+  .const-metrics { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px; }
+  .const-metric-label { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: #6b8fa3; margin-bottom: 3px; }
+  .const-metric-value { font-family: 'Barlow', sans-serif; font-size: 15px; font-weight: 700; color: #0f2a3a; }
+  .budget-bar-wrap { margin: 0 0 10px; }
+  .budget-bar-labels { display: flex; justify-content: space-between; font-size: 10px; color: #6b8fa3; margin-bottom: 4px; }
+  .budget-bar { height: 4px; background: #e2ecf2; border-radius: 2px; overflow: hidden; }
+  .budget-fill { height: 100%; border-radius: 2px; }
+  .fill-ok   { background: var(--green); }
+  .fill-warn { background: var(--amber); }
+  .fill-over { background: var(--red); }
+  .dates-row { display: flex; gap: 20px; margin-bottom: 12px; font-size: 11px; }
+  .date-label { font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: #6b8fa3; }
+  .date-value { color: #1e4a62; margin-top: 1px; }
+  .date-value.late { color: var(--red); }
+  .const-notes { font-size: 11px; color: #3a6070; line-height: 1.55; border-top: 1px solid #dce8f0; padding-top: 12px; }
+  .const-notes ul { padding-left: 14px; }
+  .const-notes li { margin-bottom: 3px; }
+
+  /* ── BUDGET BREAKDOWN (hard / soft) ── */
+  .budget-breakdown { padding: 0 14px 12px; }
+  .budget-breakdown-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .budget-breakdown-table thead th {
+    font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: #6b8fa3; font-weight: 600; padding: 4px 6px;
+    text-align: right; border-bottom: 1px solid #dce8f0;
+  }
+  .budget-breakdown-table thead th:first-child { text-align: left; }
+  .budget-breakdown-table tbody tr { border-bottom: 1px solid #eef4f8; }
+  .budget-breakdown-table tbody td {
+    padding: 5px 6px; text-align: right;
+    color: #1e4a62; font-variant-numeric: tabular-nums;
+  }
+  .budget-breakdown-table tbody td:first-child { text-align: left; color: #6b8fa3; font-weight: 500; }
+  .budget-breakdown-table tfoot td {
+    padding: 6px 6px; text-align: right; font-weight: 700; font-size: 11px;
+    color: #0f2a3a; border-top: 1px solid #dce8f0; font-variant-numeric: tabular-nums;
+  }
+  .budget-breakdown-table tfoot td:first-child { text-align: left; color: #6b8fa3; text-transform: uppercase; letter-spacing: 0.06em; font-size: 10px; }
+
+  /* ── CALLOUT ── */
+  .callout {
+    background: #eef6fb;
+    border-left: 3px solid var(--blue-dim);
+    padding: 10px 14px; margin-bottom: 16px;
+    font-size: 11px; color: #3a6070; line-height: 1.55;
+    border-radius: 0 4px 4px 0;
+  }
+
+  /* ── COMPANY MINI CARDS ── */
+  .company-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 24px; }
+  .mini-dept { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .mini-dept-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .mini-dept-name { font-family: 'Barlow', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+  .mini-dept-body { padding: 14px 16px; }
+  .mini-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--surface2); font-size: 11px; }
+  .mini-row:last-child { border-bottom: none; }
+  .mini-row .lbl { color: var(--text-2); }
+  .mini-row .val { font-weight: 500; }
+
+  /* ── PLACEHOLDER ── */
+  .placeholder {
+    background: var(--surface); border: 1px dashed var(--border);
+    border-radius: 8px; padding: 40px 24px; text-align: center; margin-bottom: 20px;
+  }
+  .placeholder-icon { font-size: 30px; margin-bottom: 10px; opacity: 0.2; }
+  .placeholder p { font-size: 12px; color: var(--text-3); line-height: 1.6; }
+  .placeholder strong { color: var(--text-2); }
+
+  /* ── SETUP TABLE ── */
+  table.setup { width: 100%; border-collapse: collapse; font-size: 12px; }
+  table.setup th { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--border); font-weight: 600; }
+  table.setup td { padding: 9px 14px; border-bottom: 1px solid var(--surface2); color: var(--text-2); }
+  table.setup tr:last-child td { border-bottom: none; }
+  table.setup tr:hover td { background: var(--surface2); }
+
+  /* ── COL MAP ── */
+  .col-map { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; margin-bottom: 20px; }
+  .col-map-title { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 12px; font-weight: 600; }
+  .col-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(170px,1fr)); gap: 8px; }
+  .col-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 7px 10px; }
+  .col-name { font-size: 11px; font-weight: 500; color: var(--text-1); }
+  .col-type { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+
+  /* ── SOURCE NOTE ── */
+  .source-note { display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--text-4); padding-top: 16px; margin-top: 16px; border-top: 1px solid var(--border); }
+
+  /* ── CONTRACT DETAIL ROW ── */
+  .contract-detail-footer {
+    display: grid; grid-template-columns: repeat(4,1fr);
+    border-top: 1px solid var(--border);
+  }
+  .cdf-item { padding: 12px 20px; }
+  .cdf-item:not(:last-child) { border-right: 1px solid var(--border); }
+
+  /* ── GANTT CHART ── */
+  .gantt-wrap { padding: 20px 20px 0; }
+  .gantt-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .gantt-title { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); font-weight: 600; }
+  .gantt-legend { display: flex; gap: 14px; font-size: 10px; color: var(--text-3); }
+  .gantt-legend-item { display: flex; align-items: center; gap: 5px; }
+  .gantt-legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+  .gantt-chart { position: relative; overflow-x: auto; }
+  .gantt-inner { min-width: 600px; }
+  .gantt-month-row { display: flex; border-bottom: 1px solid var(--border); }
+  .gantt-label-col { width: 160px; flex-shrink: 0; }
+  .gantt-month-cell { flex: 1; text-align: center; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-3); font-weight: 600; padding: 6px 0; border-left: 1px solid var(--border); }
+
+  .gantt-row { display: flex; align-items: center; min-height: 38px; border-bottom: 1px solid rgba(10,58,82,0.5); position: relative; }
+  .gantt-row:last-child { border-bottom: none; }
+  .gantt-row:hover { background: rgba(140,200,220,0.03); }
+  .gantt-label { width: 160px; flex-shrink: 0; padding: 0 12px 0 0; }
+  .gantt-label-name { font-size: 11px; font-weight: 500; color: var(--text-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .gantt-label-sub { font-size: 9px; color: var(--text-4); margin-top: 2px; }
+  .gantt-track { flex: 1; position: relative; height: 38px; display: flex; align-items: center; }
+
+  .gantt-bar {
+    position: absolute; height: 14px; border-radius: 3px;
+    display: flex; align-items: center; cursor: default;
+  }
+  .gantt-bar-fill { height: 100%; width: 100%; border-radius: 3px; }
+  .gantt-bar.complete  .gantt-bar-fill { background: var(--green); }
+  .gantt-bar.prog      .gantt-bar-fill { background: var(--blue); opacity: 0.85; }
+  .gantt-bar.pending   .gantt-bar-fill { background: var(--surface3); border: 1px solid var(--border-lt); }
+  .gantt-bar.psa       .gantt-bar-fill { background: var(--amber); }
+  .gantt-bar.dd-exp    .gantt-bar-fill { background: var(--red); opacity: 0.7; }
+
+  .gantt-diamond {
+    position: absolute; width: 10px; height: 10px;
+    transform: rotate(45deg); border-radius: 2px;
+    top: 50%; margin-top: -5px; z-index: 4;
+  }
+  .gantt-diamond.amber { background: var(--amber); }
+  .gantt-diamond.red   { background: var(--red); }
+  .gantt-diamond.blue  { background: var(--blue); }
+
+  .gantt-today-line {
+    position: absolute; top: 0; bottom: 0; width: 2px;
+    background: rgba(140,200,220,0.5); z-index: 3; pointer-events: none;
+  }
+  .gantt-col-line {
+    position: absolute; top: 0; bottom: 0; width: 1px;
+    background: var(--border); opacity: 0.5; pointer-events: none;
+  }
+  .gantt-today-label {
+    position: absolute; top: 4px; font-size: 9px; color: var(--blue);
+    letter-spacing: 0.06em; transform: translateX(-50%); white-space: nowrap;
+    background: var(--surface); padding: 1px 4px; border-radius: 2px; z-index: 5;
+  }
+
+  /* ── INVESTMENT PIPELINE ── */
+  .inv-funnel { display: flex; flex-direction: column; gap: 6px; }
+  .inv-funnel-stage { width: var(--stage-w); min-width: 220px; }
+  .inv-funnel-bar {
+    background: var(--stage-color); border-radius: 4px;
+    padding: 9px 14px; display: flex; justify-content: space-between;
+    align-items: center; transition: opacity 0.15s;
+  }
+  .inv-funnel-bar:hover { opacity: 0.85; }
+  .inv-funnel-label { font-family: 'Barlow', sans-serif; font-size: 12px; font-weight: 700;
+    color: var(--white); letter-spacing: 0.04em; }
+  .inv-funnel-count { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.75); }
+  .inv-funnel-meta { font-size: 10px; color: var(--text-3); padding: 4px 4px 0;
+    letter-spacing: 0.03em; }
+
+  /* investment table */
+  .inv-table-wrap { overflow-x: auto; }
+  .inv-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .inv-table th {
+    padding: 8px 10px; background: var(--surface2); color: var(--text-3);
+    font-size: 9px; letter-spacing: 0.09em; text-transform: uppercase;
+    font-weight: 600; border-bottom: 1px solid var(--border);
+    white-space: nowrap; text-align: left;
+  }
+  .inv-table th.num { text-align: right; }
+  .inv-table td { padding: 9px 10px; border-bottom: 1px solid rgba(10,58,82,0.4);
+    color: var(--text-2); vertical-align: top; }
+  .inv-table tr:last-child td { border-bottom: none; }
+  .inv-table tr:hover td { background: rgba(140,200,220,0.03); }
+  .inv-table td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .inv-table td.dim { color: var(--text-3); font-size: 10px; }
+  .inv-table td.fw { font-weight: 600; color: var(--white-90); }
+  .inv-deal-name { font-weight: 600; color: var(--white-90); font-size: 11px; white-space: nowrap; }
+  .inv-deal-sub { font-size: 9px; color: var(--text-3); margin-top: 2px; }
+  .inv-lead { font-size: 10px; color: var(--blue); font-weight: 500; white-space: nowrap; }
+  .inv-table tfoot td { background: var(--surface2); border-top: 1px solid var(--border);
+    border-bottom: none; padding: 8px 10px; font-size: 11px; }
+  .date-cell { white-space: nowrap; font-size: 10px; color: var(--text-2); }
+  .date-cell.urgent { color: var(--amber); font-weight: 600; }
+  .report-section-label { padding: 14px 20px 6px; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #6b8fa3; font-weight: 600; border-top: 1px solid #dce8f0; }
+  .report-cards { padding: 6px 14px 18px; display: flex; flex-direction: column; gap: 8px; }
+  .report-card { background: #f8fbfd; border: 1px solid #dce8f0; border-radius: 7px; overflow: hidden; }
+  .report-card-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border-bottom: 1px solid #dce8f0;
+    cursor: pointer; user-select: none;
+  }
+  .report-card-header:hover { background: #eef6fb; }
+  .report-num { font-family: 'Barlow', sans-serif; font-size: 10px; font-weight: 700; color: #6b8fa3; width: 14px; flex-shrink: 0; }
+  .report-name { font-size: 12px; font-weight: 600; color: #0f2a3a; flex: 1; }
+  .report-dates { font-size: 10px; color: #6b8fa3; white-space: nowrap; margin-right: 8px; }
+  .report-card-body { padding: 12px 14px; }
+  .report-summary { font-size: 11px; color: #3a6070; line-height: 1.7; margin-bottom: 12px; }
+  .report-link {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 10px;
+    font-weight: 600; letter-spacing: 0.04em; color: var(--blue); text-decoration: none;
+    padding: 5px 11px; background: var(--blue-glow); border: 1px solid var(--blue-dim);
+    border-radius: 4px; transition: all 0.12s;
+  }
+  .report-link:hover { background: rgba(140,200,220,0.18); border-color: var(--blue); }
+  .report-link.no-file { color: #6b8fa3; background: #eef6fb; border-color: #dce8f0; pointer-events: none; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 960px) {
+    .const-grid { grid-template-columns: 1fr; }
+    .company-grid { grid-template-columns: 1fr; }
+    .cols-4 { grid-template-columns: repeat(2,1fr); }
+    .cols-3 { grid-template-columns: 1fr; }
+    .topbar { height: auto; padding: 12px 20px; flex-wrap: wrap; gap: 10px; }
+    .dept-section { padding: 20px 16px; }
+  }
+
+  /* ══ INVESTMENTS / PIPELINE DASHBOARD STYLES ══ */
+  :root {
+    --inv-green: #059669; --inv-green-bg: #ecfdf5;
+    --inv-amber: #d97706; --inv-amber-bg: #fffbeb;
+    --inv-blue: #2563eb;  --inv-blue-bg: #eff6ff;
+    --inv-purple: #7c3aed; --inv-purple-bg: #f5f3ff;
+    --inv-red: #dc2626;   --inv-red-bg: #fef2f2;
+    --inv-orange: #ea580c;
+    --inv-card: #ffffff;
+    --inv-border: #e4e7ef;
+    --inv-text: #111827;
+    --inv-text-muted: #6b7280;
+    --inv-bg: #f0f2f7;
+    --inv-accent: #4f46e5;
+    --inv-accent-light: #eef2ff;
+    --inv-shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --inv-shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+    --inv-radius: 14px;
+  }
+
+  /* Investment sub-tabs */
+  .inv-subtab-bar {
+    display: flex; gap: 0; background: var(--inv-card);
+    border-bottom: 1px solid var(--inv-border); padding: 0 32px;
+    box-shadow: var(--inv-shadow-sm);
+  }
+  .inv-subtab {
+    padding: 14px 24px; font-family: 'Inter', sans-serif;
+    font-size: 13px; font-weight: 600; color: var(--inv-text-muted);
+    background: none; border: none; border-bottom: 2.5px solid transparent;
+    margin-bottom: -1px; cursor: pointer; transition: all 0.2s;
+  }
+  .inv-subtab:hover { color: var(--inv-text); background: #fafbfc; }
+  .inv-subtab.active { color: var(--inv-accent); border-bottom-color: var(--inv-accent); background: var(--inv-accent-light); }
+  .inv-tab-panel { display: none; }
+  .inv-tab-panel.active { display: block; }
+
+  /* KPI grid */
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; margin-bottom: 36px; }
+  .kpi-card { background: var(--inv-card); border: 1px solid var(--inv-border); border-radius: var(--inv-radius); padding: 22px 24px; box-shadow: var(--inv-shadow-sm); transition: all 0.2s; }
+  .kpi-card:hover { box-shadow: var(--inv-shadow-md); transform: translateY(-1px); }
+  .kpi-card .label { font-size: 11px; color: var(--inv-text-muted); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+  .kpi-card .value { font-size: 30px; font-weight: 800; margin-top: 6px; letter-spacing: -0.5px; color: var(--inv-text); }
+  .kpi-card .sub { font-size: 12px; color: var(--inv-text-muted); margin-top: 4px; }
+
+  /* Filter bar */
+  .filter-bar { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; align-items: center; }
+  .filter-btn { padding: 8px 20px; border-radius: 24px; border: 1px solid var(--inv-border); background: var(--inv-card); font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; box-shadow: var(--inv-shadow-sm); }
+  .filter-btn:hover { border-color: var(--inv-accent); color: var(--inv-accent); }
+  .filter-btn.active { background: var(--inv-accent); color: white; border-color: var(--inv-accent); }
+
+  /* Section headers */
+  .section-header { display: flex; align-items: center; gap: 12px; margin: 36px 0 18px; cursor: pointer; user-select: none; padding: 8px 0; }
+  .section-header h2 { font-size: 18px; font-weight: 700; letter-spacing: -0.2px; color: var(--inv-text); }
+  .section-header .toggle { margin-left: auto; font-size: 16px; color: var(--inv-text-muted); transition: transform 0.25s; }
+  .section-header .toggle.collapsed { transform: rotate(-90deg); }
+
+  /* Region banners */
+  .region-banner { padding: 16px 24px; border-radius: 12px; margin-bottom: 18px; font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 12px; box-shadow: var(--inv-shadow-sm); }
+  .region-banner .region-total { margin-left: auto; font-size: 13px; font-weight: 500; opacity: 0.75; }
+  .region-banner.northeast { background: linear-gradient(135deg, #dbeafe, #e0f2fe); color: #1e40af; }
+  .region-banner.central { background: linear-gradient(135deg, #fef3c7, #fef9c3); color: #92400e; }
+  .region-banner.westcoast { background: linear-gradient(135deg, #d1fae5, #ccfbf1); color: #065f46; }
+
+  /* Deal cards */
+  .deal-card { background: var(--inv-card); border: 1px solid var(--inv-border); border-radius: var(--inv-radius); margin-bottom: 14px; overflow: hidden; transition: all 0.2s; box-shadow: var(--inv-shadow-sm); }
+  .deal-card:hover { box-shadow: var(--inv-shadow-md); border-color: #d1d5db; }
+  .deal-card-header { display: flex; align-items: center; padding: 18px 24px; gap: 16px; cursor: pointer; transition: background 0.15s; }
+  .deal-card-header:hover { background: #fafbfd; }
+  .deal-card-header .deal-name { font-weight: 600; font-size: 15px; flex: 1; color: var(--inv-text); }
+  .deal-card-header .deal-pp { font-weight: 800; font-size: 15px; color: var(--inv-text); }
+  .deal-card-body { padding: 0 24px 22px; display: none; }
+  .deal-card.open .deal-card-body { display: block; }
+
+  .stage-badge { font-size: 10.5px; font-weight: 700; padding: 4px 12px; border-radius: 8px; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
+  .stage-badge.under-contract { background: var(--inv-green-bg); color: var(--inv-green); }
+  .stage-badge.negotiating-psa { background: var(--inv-amber-bg); color: var(--inv-amber); }
+  .stage-badge.negotiating-loi { background: var(--inv-purple-bg); color: var(--inv-purple); }
+
+  .deal-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; padding: 16px 0; border-bottom: 1px solid #f1f5f9; }
+  .meta-item .meta-label { font-size: 10.5px; color: var(--inv-text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .meta-item .meta-value { font-size: 14px; font-weight: 600; margin-top: 3px; color: var(--inv-text); }
+
+  .key-dates { display: flex; gap: 20px; padding: 16px 0; border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; }
+  .key-date { display: flex; align-items: center; gap: 8px; font-size: 13px; background: #f8fafc; padding: 6px 14px; border-radius: 8px; }
+  .key-date .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dot.signed { background: var(--inv-green); }
+  .dot.go-hard { background: var(--inv-amber); }
+  .dot.closing { background: var(--inv-red); }
+  .key-date .date-label { color: var(--inv-text-muted); font-weight: 500; }
+  .key-date .date-value { font-weight: 700; color: var(--inv-text); }
+  .days-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 6px; white-space: nowrap; }
+  .days-badge.urgent { background: var(--inv-red-bg); color: var(--inv-red); }
+  .days-badge.soon { background: var(--inv-amber-bg); color: var(--inv-amber); }
+  .days-badge.ok { background: var(--inv-green-bg); color: var(--inv-green); }
+  .days-badge.past { background: #f1f5f9; color: var(--inv-text-muted); }
+
+  .action-items { padding: 16px 0 0; }
+  .action-items h4 { font-size: 11px; font-weight: 700; color: var(--inv-text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; }
+  .action-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 14px; font-size: 13.5px; border-radius: 8px; margin-bottom: 4px; transition: background 0.15s; color: var(--inv-text); }
+  .action-item:hover { background: #f8fafc; }
+  .action-item input[type="checkbox"] { margin-top: 3px; accent-color: var(--inv-accent); width: 17px; height: 17px; flex-shrink: 0; cursor: pointer; }
+  .action-item.completed span { text-decoration: line-through; color: #9ca3af; }
+  .key-date-item { font-size: 13px; padding: 8px 0; display: flex; align-items: center; gap: 8px; color: var(--inv-text); }
+  .key-date-item .kd-label { color: var(--inv-text-muted); font-weight: 500; }
+  .key-date-item .kd-value { font-weight: 700; }
+
+  /* EM Table */
+  .em-table-wrapper { overflow-x: auto; background: var(--inv-card); border: 1px solid var(--inv-border); border-radius: var(--inv-radius); margin-top: 8px; box-shadow: var(--inv-shadow-sm); }
+  .em-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .em-table th { text-align: left; padding: 14px 18px; background: linear-gradient(180deg, #f8fafc, #f1f5f9); font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--inv-text-muted); border-bottom: 1px solid var(--inv-border); }
+  .em-table td { padding: 12px 18px; border-bottom: 1px solid #f1f5f9; color: var(--inv-text); }
+  .em-table tbody tr:hover { background: #fafbfd; }
+  .em-table tr:last-child td { border-bottom: none; }
+  .em-table .total-row { font-weight: 800; background: linear-gradient(180deg, #f8fafc, #f1f5f9); }
+  .confidence-bar { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: var(--inv-text); }
+  .confidence-bar .bar { width: 56px; height: 7px; background: #e5e7eb; border-radius: 4px; overflow: hidden; }
+  .confidence-bar .bar-fill { height: 100%; border-radius: 4px; }
+
+  /* Gantt (investments) */
+  .gantt-container { margin-top: 8px; background: var(--inv-card); border: 1px solid var(--inv-border); border-radius: var(--inv-radius); padding: 20px 24px; box-shadow: var(--inv-shadow-sm); overflow-x: auto; }
+  .gantt-grid { display: grid; gap: 0; min-width: 800px; }
+  .gantt-header-label { font-size: 11px; font-weight: 700; color: var(--inv-text-muted); text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 12px; border-bottom: 2px solid var(--inv-border); background: var(--inv-bg); border-radius: 8px 0 0 0; }
+  .gantt-header-dates { display: grid; border-bottom: 2px solid var(--inv-border); background: var(--inv-bg); border-radius: 0 8px 0 0; }
+  .gantt-header-dates > div { font-size: 10px; font-weight: 700; color: var(--inv-text-muted); text-transform: uppercase; padding: 8px 4px; text-align: center; border-left: 1px solid var(--inv-border); }
+  .gantt-header-dates > div.today-col { background: rgba(79,70,229,0.08); color: var(--inv-accent); }
+  .gantt-row-label { font-size: 12.5px; font-weight: 600; color: var(--inv-text); padding: 10px 12px; border-bottom: 1px solid var(--inv-border); display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+  .gantt-row-label .deal-region { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
+  .gantt-row-label .deal-region.ne { background: #eef2ff; color: var(--inv-accent); }
+  .gantt-row-label .deal-region.ce { background: var(--inv-green-bg); color: var(--inv-green); }
+  .gantt-row-label .deal-region.wc { background: var(--inv-amber-bg); color: var(--inv-amber); }
+  .gantt-row-bars { display: grid; border-bottom: 1px solid var(--inv-border); position: relative; }
+  .gantt-row-bars > div { border-left: 1px solid #f0f0f0; min-height: 40px; }
+  .gantt-marker { position: absolute; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 4px; z-index: 2; cursor: default; }
+  .gantt-dot { width: 14px; height: 14px; border-radius: 50%; border: 2.5px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.2); flex-shrink: 0; }
+  .gantt-label { font-size: 9.5px; font-weight: 600; white-space: nowrap; padding: 2px 6px; border-radius: 4px; line-height: 1; }
+  .gantt-today-line { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--inv-accent); z-index: 3; opacity: 0.6; }
+  .gantt-today-label { position: absolute; top: -18px; transform: translateX(-50%); font-size: 9px; font-weight: 700; color: var(--inv-accent); background: var(--inv-accent-light); padding: 1px 6px; border-radius: 4px; }
+  .gantt-legend { display: flex; gap: 20px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--inv-border); justify-content: center; }
+  .gantt-legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--inv-text-muted); font-weight: 500; }
+  .gantt-legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .collapsible-content { transition: max-height 0.3s ease-out; overflow: hidden; }
+  .collapsible-content.collapsed { max-height: 0 !important; }
+
+  /* BD/AM sections */
+  .bd-header-bar { background: linear-gradient(135deg, #0ea5e9, #2563eb); color: white; padding: 14px 24px; border-radius: var(--inv-radius); margin-bottom: 20px; font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+  .insight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 18px; }
+  .insight-card { background: #f8fafc; border: 1px solid var(--inv-border); border-radius: 10px; padding: 18px 20px; transition: all 0.15s; }
+  .insight-card:hover { background: #f1f5f9; transform: translateY(-1px); box-shadow: var(--inv-shadow-sm); }
+  .insight-card h4 { font-size: 13px; font-weight: 700; color: var(--inv-accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .insight-card p, .insight-card li { font-size: 13.5px; color: var(--inv-text); line-height: 1.6; }
+  .insight-card ul { list-style: none; padding: 0; }
+  .insight-card ul li { padding: 4px 0 4px 16px; position: relative; }
+  .insight-card ul li::before { content: '▸'; position: absolute; left: 0; color: var(--inv-accent); font-weight: 700; }
+  .travel-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .travel-chip { background: var(--inv-blue-bg); color: var(--inv-blue); font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 20px; white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo-lockup">
+    <img class="logo-img" src="data:image/webp;base64,UklGRgQtAABXRUJQVlA4TPcsAAAvrEPrAFWP2rZtGOv/s9MzJVtETIBuHWAAtw1X/SuazQdicv9/+Rw5p2m122FuZmZmZmZmZmZmZmZmZmZmcAUNDQv/4fs8j/3/P8HfBWwp1CUNz3jIZyipNh7wtukCbcleNEp8j1pUB2r7X9QJAgNNFXgazhFyLSx51VB3sBQaaBp6LtFYwSGfoZZ/WSpL1YseOkUsVS/JfYraBL6WyptA3aLB23DyXCGcNLkk19ZnCFiqzZD7GuHEQ5Z8htrUpqUnUL3wPdrSgL3w8Ph3gYHahipQ52iyVHa46QRD29DK0tAJGuxAS09L1vC4LxDoJffSZxioQEVKk6V/LXyHcGzJXobkMACYpun/V4phCxhFQplR2LYNGto6xv5PAN5p25fLkfPX7IgHJQ0zCIdRzNLwjGhI1BpmZmYmQYta3L0N8299P53f7/u+s6YvN7P9L+AxM7O9bLanzcz0mZmX28wMbWamTtqOF8+ousoM0YRmZnbEzMzQZoZFvclyOFPLDIra3KEZu5aULUa8ZliG17QoBUO9g5FBE5mZYTEygyIzY1fPCRRZjpa3yw4XzczMDDEeM7OtldmW1sz2MsjYqZmZMZtqd5UyTzRLXRM5Yy9GZnbPmJnxmJmZFkyyj9lLZj5mZmeKzapa6o1MM111agiCALBwpP9/ayOuVphG1FXsTxgGQNo2ekGjuID2fwJKOJ74n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J8oNMh5le4Xar8Q+wU9r5LzpFJB9ldPy4Et+3RsI25CqfA9q/6iyhXuk5ZAaesY2bs7a+VBwACWyhmsur435W/jZtTdUPvIamaUtJU21TCiI7pJKkO+86D7deqErpXfJJBupCJcR7Uzgu8nWQr9RarYuVBAachk1Ie7TunSpAk3IFEKuV/jubKhgOWAVjXOlCYF2a+BmqaGwDIHKlLLSvaTJlX75eZtlFlYKEd9q5ITKEkOsaM3f8DSGpz8KRUS3bXSolA72qYBlnYd0Ib9ArnGGkd2c121MyVFIXck5rZjYQ3q8WJ5JF5+B3SGlGmkRMFOxJGyB4aa/iwbqlATqtjR4jM5lSCz0aKlQ+qG3uzPUcMik1F8KX/knmmCXKZWANBUbulQnSO7u9YKBAzzKrX4dKU7kKurv+FBAQAGsFRJhaqZr10aC/UDyw4iK9+BxJp69unPBsQxxz+2lETINdmvLEHAsn97lX+BxOD7O1sNcANPXSsJCrq/aAXnCywzWYX+HhJ1aWNDPrNo1ddKEhShZTZNYPlyDTQgsVBCaci3oY00QfeTANU8sl97wDKHUpPSKkKQE1EKcioqAH07lpf+TKmre4FlHuVib4Jcbd29rtUGrEgu9HXppD5VrNdGnJWycOmYtsYRSKx1oqtwlkqgqNxV4PQlPiH2S8KTEwUMNb14heupJoT9sk1qcyAobh+jtLTHNk6ujEYyi4yaDVcEINe9ee7caKDUtBn34SU9kRv6sScDw7zKTeTSIVd3uLmUgPokInVIeIzT7yIssNS3QYPkOnpkMgR6ubk8IdeT7lS1wiStzMJK/f9ciBR2Rm/ugGWvnlOS7Pi/pzcwlHv2DL0DiQ4/CSzNldKmrWKFVMcYs5QfsOzX8SONhJIpfgssDZ2GrWEmSnWHOAlgeRKxBIWQW6iZ3B4shu/RX10DWqlOrSP7cgcsx0/MVel6yNXGEKQ3lBnI/Vs2WBGAEt0w3+vqPj2LcaZc1UokRmrxJ3pg6NEsd7D9UKJ7n63H8QaGmu78nQESq/0weCCwlO2nXPuATpJT6JPMtIChPKBhhA4k+vyUBli79OwvdmkHlVZqE/REYy8GsgSW2ZAxSiFR1QTjYYHP+ZukqbflGagkNbbhBnq+CCxPpHkeJDdWcv7A84l0d10zXJFbhl5PLZ2ZUqfhNCxc0qQOtoM07gD2gP+VPmg7tAkzahsIkMgUujcXYCh3QOOAxOpn9OoPhOnXi2ercaKUfHgpjDZp3osDlj1cV1sPI8Gn03uslQUCYHcS3V+X9OlaJgK2dSuM+Lc9/53hSoZze/vz3kq8zLtN4oTqvcK1qLOnkfTWedDAcq1DOCM3xPpMYj8sCFhzIpfcId0CtZMqwhxXBmwdbloJ2RVG368P+dmIZKORjlZtJLKhPuvv9W4x2ohZn+/y5IYVz0e8jbgK1Tbou62YPWL0n33oYslGIx2VdASyIT7r843OMVsIVaudUmAV7pQqrx7X7aXMfsWUTeYcmHti3on5JorOM5Fupo7xq35mz+ipqjXzTufxX45hvvymD0mUu6XftEPbdbi+PbNqne9KrcB3XMMIwl49ALDMjo4nrUOudl+yaYPA5fWbWg0W9kvlJ7u2m3LdhRdHYlqaaekfC8v8SFz2R5IkiaIoGEKXWDxe1b2qM1OSeOZWazUWaEuh3loc0LfdDtTqXeBUVa43G5fDildlajHU7ZhvNWSqJnzV5dr17c7niKl6M91iTPLXcItDDYIoSpGLoiAYQu1GKNp2qvLlyuzzqdt1n48/INQgiJK03I/USqIohL775kn/0gVmJWqB3vm8Zq7KxuHabPME7nGkOqTtye/5ZUdaqx8U792tCtG4uMOTWbz1NFyRq1vg+YEYc6M6DttAxSX4K69g3xrNrDLrEAOFXnRhkGz1uH5XOD+ZkV6foKDvzZwXaIKqFHSyv1SlR1VHd1IOS+94nirje22iLBUXWTwOaU/o9fsuE9bbikWyX8lwjbga9POlFlNowyxDuseoxmxQMHuCfWu203/2+RckCj/bQPSK1IaYtKtUTU7K4YN5AmNMKVMjYNhsHh1WPaPDMJNUAoaGDmj3ALnqOnuUAJG+ZN+O1xWh5y1NWin5bHjQRFXeh5kyapixS+d3rPbOcIqeodLxitZjVaE3r8wOxbcGM11jnC9QRt9z80NSVazWnR1W5cpt4cpxqkZgogxvM2i2elx/psI/YWXrtR7XHM1gzyK29Gnp1x7AUPOOtY1EbvFqR7RHW0osAPAn95kgY0mVr1A67tE6vWOGLpR5aa6J3h9/to8eQqk010Dsb3ORWRBSj+u+XreTKOPilE06TFGlHivm5LJhWw6VUqQsXHTyANmXf1txfNKZajlYtC9Hme4luw6bhHvPgGU6w3prIjHkzlSxjgkYyoIB8O7D0+R3MQrOwFmZyBXIjXfl0kyUldKJvTxRjR59hFLRYqDs8f2Ykv8p/ZMlykrxK9tPuY7MkE89rocqHm4zZad04hGlw/FHW07Ks2WCNnYpNzowR9sDy5zoKG9pSU1yzwZYdn1fC88UzKMkFID171m3193XagOUhl8Dvv/SbDNlrTDFX9qO+Q7n6SOULs00S0cPGG7M+HaQcqomAmWr5JGsXtfujAStOnNHJCbK2vfetG5NpnmjRNLzT/40AUOcbI+WAduNPPXCkbhAe2DZj+NHuu5/QzXTpklnZQMWCAC89fDHm0Cq6vmUg3P0nAbK5sUXD/Z5xWr1EkrfY/P4VSvTy0TcIT5bcrFEWRyR6ckd3+nNgPd/O0qUxeI0TRpyLfNDNY0YIzA3ujABw843f0HIy/NC4jmaWgPLrJon44io3oH9jyf1jhsRCoAmF3r41tLW1TFp8flsHZOyPAKTbQz9hIpFvw1MrsVOZi/K8kIHO4PJH2NO2S2e+v8yHxTkfNeVVwngMhwJ2OhbshA6D3c0SHTYdl8WFsBkT/sjWVu+jXTmykLhWin37i52hqPI3L6fcnCugdT6CaULLjToG0h59vyTKQe/0hrqkyn7p+/ypTyQ8Zv+BAD0jxpAULVHo+FN06e7cZHo1D6tARhagtqnCb0eKlrZimX04jY7yuArEAAw00qTOnxHlesF2yEaxXXmDspJizrdKPoJPaYO2yYIU12uHSknH3ZvGaIk8TekXByj6k/IvE/JFn9tBQIAWEnkDoJxTQNa8iUP/8u2hLHexQ9YXkNsKc9yiiCqSrea9gXMULJQANy687uMOga2rBaFUrneFURu0AUXaretp9CUcWXt5GvzUG6KE/+1MjUywM+k5YRwpyC+R73atQJ3pZ3fG/ZLDqoal/bgyb5pLhVyVeebwRKYGvYr1W+ilJy+syKI6kGX0XG4ChYgoQCsf0DHHY9eoBaBfJ3Rq4VSrs49UaMZPUXoP3spsNpdu8hiylWvUUhdtSsL9jiBEzRjdhPPU/l6bdHIBMiOao4r+HkcnFIH8fS8nEixLSNXV1/NTQFrzSd3FW6wHxlcEUSsdEW9DYN1GXjDskAAIJu2lwjKgE0Xk3LX5jr6Cc3TpK9gbaJN10C5G3C+kzZKhym2oRw9Li/P899+QJY3tVqC7X9X4COws3DVjofc4jXNGEPDDACWX6Ej2oS5axhZThFEx+kfbqq0l/GSQoFzFJ5POynzUA4bhi5mrZ/QzC/Rwmn4YoEcoo73ya+F6zhVRa4ENn0VvxPkP3ryB/neoQPYAw6GXC85d34evvLbkRjyxIuvFPjVm6H7tmwtTml/RRDLedYy8JrjuQkkRinBKR98N8ppzy4x9BRDU74UjZTVzDZTTs8xkFrRLJUj5eytwojndeIK1q8A5I8lmDQHy/ZwMZCZmXatI5CcMpUL8O5rmE0vngml3RVBxEl71jLyvtIZCWIagnMbk1TilnTqG/UTOvuAn0b1+44tcUscqvi7wWnkk14Eu1uybjHaS3m7jbvH2PpuIphQix0+Z6xVgcL7NX0CNtSQVZOV9wKRWDy2FAg1r1KbNIVttQpwvaKUmrUFKJC3XRdco74pk6JgCFhwYb6JjOGZBVGCo2I6P/2EbqiJWzqRwkuikCKP3cGFDILIAKVFFE0yfCWFFWz+3wdVK5/yEAGIDvEZj6NbM1AWu0+Cdg9fks2HJ+b2J9j+SC5lwQCY49+T33hS0x9cqwiiunCKZ9Mbjf+S/MxdaN6LLcAZtrEp8EYXRETr724z5rq57cHoEc1dJUeRWg1pBxieGUZ0tNO+aAgzjnYaWiy0kCemCDdwNg2Upq7ehoLbZ8nWRsxdz0JELBV2+VWmabKNAe5UX01+ZoEFGPOBspcMhxoXSyTBeFgjYgVqk843oX0iA0yAHWAs/W3cG6a5uIbeJGDolf06MTFHtxU3zPeQq62r537ZgAUEoNl82jRf++0qRRCxsh1xpDoJexO50TIPzy0wuZM7KXihhzR7VRBqKGfo9/WcApT0jQ+NIvlZAmaGcShoCSgz07ivvL5q82batWFX3WCkdASzz69uraGKU+ilmXL283oGGTUM2u8hnhIUvVyTJnwVAhFfaYmahxHfiKv5J8Ok+FJENLlZap/YAqa4JWCI3jZW+zR2NNCv5eUTsOE387Po3V24FkgctPNASxAI/eLuIzF3fTVDryinCKLqM5JxX6WpUSlmfgJ7qAdYxu4xkqOWftlfaQ9Et/k2OUoEOmEVmEL1uC7heHio+DJqnvd203WBohurUepzbbYZKjyz7Zn5UctM3WIsshjsbr7qSjz+8SJIiuavQm2t9zIHCe3wTgR2KgozYHbkEX85k9EgYPpXfhSCbeq0MoO5T9PICbPii+8YRGgJGsCpvbiJpM4xQBFEXXUzo5ZKnaZ3R29GViBHYXV8pwi1ze3CiketlYSbRGACknYI0uUQU88xALWfGufBPpeAvMYmPdyEWvu1EvKmUPR26oztp6SgDom1wsOnbQIiDFeMt7mLVTGYTfRSBKxuxHEwMLyyAyK6N8N9hSBOzTB/8lubLKkIInoVjlOqPdrHZgLVzxSU860osP1WCgLKVeuZuokIQ4u76nZyLi+gj1FTtrybUljpvGrNKAjon8oB6ryz1OR/PlBFarXz/loJgl4QzNeEnTlGKTq5d69nIzg3VpBLkQ5mE60gACfd2AtTKxCvIZN1r26TcN+uQoi6+exV89wvYMfgQwRVt+sjgKT0Pgiq1GE7D5CYy6TTYaZTgeYakFV1kFICcvg2BUGNBSQgs80x1Ph0iQFjHkM7+Q9iguyYl68xDjEbOjDH/4sDOFjFeqlT+9LB+X0UHvnmfUUEIJ9vFqMi9VeoFEHUBt/h02DNF98hqsTcQlKGLbY0E1DOyvXKMBjmuP5eB6Ln+eh2Id1jAB1hVDXbAAUeOJs/Apcjd5YhQBGZ0qnx6/hOGMPdFK2wBjM9P5EdshsMX74G0SSdLx1kMGzsLSMHC/fmxQDWMtZxAEtN+2HaiudhBZaFwZUvo2muJU9amy/iFz3ZrttpFLoQIeXNTGENrceyQmhvAcjcWbeTG3ItwWQMUeHuBSQ8FKGD9zPA0Bm7BKkKbismDA23+VE+ijbs5kWW/KAMbMBd3FvdDEJAolx+DObYzX3Aco4XcQm45FMtsUtuskAAYB/aifff53afRkUQvRqp9UxPU3EQUL669Sek1LMPACWp1Q7C9/c6EF1et8P4AlCQivtQ4IMRvgq9M3UAzT1xuCo5hwBD7cep2pjvcuX6GvksrK9hfDrIjZ6rKwfDrPh7Ax1bK/UfR+0zjYio+siUv7m9zEaBQgHwvuC57ti5BdlPEUTdupI83aPn02yE1Ic9AcldYxSCEft+3Y2B0uBEoLFI9RM3FVM0BZJuyIB1DxgijEeHKVTh5p5AlBpmHXJ8tmffMGtQMF+lfXc9HRzzdttysHT/jrIQ5Mk+ZAAStWVilXr2w1ukUAA0J3FOCaSW5KoIIvr88fH14pkD6QsAaxWQ+xCfUdiYbcZEBk2zDwBto9spjfiWgLxVZATKGcQAFvSAET4mWFU9ruefDBa554xdRiE9Id7jG/Rdg5k0QSb+Cb99zxhoOqIJ/T1CsPOaz1NRCJkNE0m7ooL+e9VkrqvLYGQNEggA5EH/Sdo0MQTVzDAqguh/KAfXLs3m1w9ZjB9FOJYjkgElsWICHwUUgUnR6c7am8IutnBWZJaRmID6eNzIxAffCoaOTZpXVeV6bRmJXCpkN3WT3zh+lcvrc71xWPE8k2P0gmxadJBX6S6CnMdBh26u9eVvkSnSOKHiunNbRhKuni7ukFAA5phJX8EWnxn3LRVBDHK+j/rIZrm693fDQwmnErWFgTYpWx4jnwIkbazTJZ+xC5BjcGQN+paAcpmYcBqmGFDSCuSqsu7zcYEp1aF55hjIPHyx6PGD+CRctElaPR28+ZAEXFJeMG/rf6aqvofURtcy/91mnCxaQgGwAe/D93dKG+MtlSKIqPrNac5HOPW5jg0j9Z/dn5FK1QDRy3U5+cyITEC3kiOLBVWHbZkJUwEB5gFfqkpuJWRGdkQuelrY9Pb4Lxj5I2O4gd49GfieLancz/HWn1Po9ZBpOdUevGxWQ6EAwPBumaxSpK5xhkKIRq1wWg51U5jAOyGjWc2BiutyLosspsBfi5GPRkphA/8EGX2UOczdCqrCNONXZQ+lVAo02/zKzcOK54tQ22Tu2dABxJMyclB9wTwNU+MIZF7+MgTENUcfcaMvnBwVEPKjBBj77jGYcZqxC9B5OluJx7t/Sh4KXa9rFYWBcroy007KcJthPDZWg53f4ckmlef9rbvMD2HoLzqmtQIxMLW6XQKGG5lNm5dVNVSB7Md9boEBaI65hadfbD6OgjN1jUFhYx7BjO/o1YBi61DFyoAtHU7tVpnKlZt4l2GL2VPwtVRkBpr8Lz/MTGuxMsKEZ15NXZmwxwlso+LIZDWaOYsfwh8ZyJ4NmM4KfE6eBNU2vHnwaCaXjodIPW9YcACQW+mZXumAPY3CCr4SKOCGzDg/HWiuAR3q2JTjVlWbMvMsHWabJQqfxUrF1E2ANlmLmRZDFYeRVlGHZ9qxjkp2F24l80K6pE8tnw7+5OB0HNz/bq/1ZWYONElTxXrI448sUgwAG+nb3b/OdHE6IVl1jwEUbnM8Zqz7eh1o7gkdir2d3YEqLwD6ZydmiiWCoXeS1SkbB7COUo8iFatV+CB0KMhAcxzPSHD85e9nZffiz4Z8TtH6T+IAKLVLXd77YkYBGXvAANqmvZTMnBVLXwrMqupYoFQuzHyjHVB6kzo0dphiG/ZRh+GLVaBW5oMw3EB+OrAAffGiOehUwBx/NoHvGL6Hmg/tzQKtIRdaLxBY/rm/FyqBfRnq+Ql9aX+jqvOAhi7G0C4sQPeWQ1mwj6b4Z19eyHYTDOCTo5ZWc4oX7cWTTTrDRgsmjXzqYgionuaS4pRem0EQudEt/2ZFWiXgsSEzIX08rieF1m5bVnUB0MWlwjLT1NUWQPsomqDxjRuJrKMRmPbhhfBM75KBDbjEf3JQuzl7FuM/lg55nfSuUR1z3R06VW39pY0zG/5mk/ipM0VBW3WHARRwQ2acB8gOlETvOMEbVU/TBGhU0tLgmHlcbqBYqLmSPJYH62hofa55IeNn+NGBJslTZ8pBVZGXZDCwuTLIb7ATE1NtKlxLRESnHedpOjd8SUYUtn83GECFVmPGbfhiQHMM6BvzTHywrCYf0CszMXPQYgswod1iaIGINZi5wmzz0kwso0Wd+SB0H9tAB1mNI7UkYG09hmfgveOu/Pg3nZuqd3e19OD4N8/Njw04ndFMUejyDUUY8yuZcbEBeoCeEW5zmzGtUO1EfwWabSANM/fxgAnYUDuUnz34Z3MOrC2wKvA+vBB+bolAOuj2PicC7osliA5OYqbOvNznd1L17HfeHFWLT/Oi792zvgoUflsxC8F4/QUzmY4AiqNfeO5TMhyqH4sUyGzzrszEiwmTu4VQAIhypWo6THG7Wy2+WGCPlM+ZF3KMWXANDEol4TYSQpx8Jgb6D/xcXlyPkaqgD+dMTdLwYdfVvYVRhI36Lgoj7FDi8YxUpFYC2kuvcHj6vVHDAbNLMPSDZSbkKyMxwZxfj2sQRHSO0XqsHcYmnXWIJ0voggvX8kK45VbTLJ8OVrVaAv7n8HRQ8eor28FHpeulTEPVZWDwHRz3duPyYA5qh6bmmVoxRFsBhv6zCyPVmqHANdlRUwDGnlVJM0T9AvvPngY1bSUkVCOuFCbcBslGYfPFhUJEnwrVvvHx3WDkss3pxYKALjH4ISw8d186uEsfgjGulAsdpLe8VzUPle14ZRrfmWg5g3d5D7v8BeatRTFeNBop0Mwdz2bk8UCCn5rO7oBJASQXhrFNHNVzeNRFqPE6ItANSxLPRLQVgFJexAAiyvmd/qAGM9/WRsxTxyK1W5qJGeGf/fmhgO/LjmLgdowEdNgdBprPDLOChyrW2x0a/dUh1/MdaUo99sCWNmCC3yKcjCjKkKGLAZltPoiR1wIFoNpsMIFACtDYpPeO2l2Q2gc1D3OcJ9AFZzFxSlqgUUjdmVEpG52d1vngdlIOV6w4A/SVvvwQ+u96KTo4tdIEY4SWp0YH+omD7o+dw2vTWIFmQPD5ShqXGUwUpWT3fr0BPJrkdkaRKv2+LsCI0f0ZsBaBnqzueBjBEsZkC/PPLlG3cJuvtJRR2ycDSWkY8F9VgHH4C2SrbArOn/rpAWCvLVcuT4S3bs9A3zHdljmoao7Lmw7M0EOxu79l0hhaT0vY8jXQWKj/3BG1J5gy9UBWM0XxHp8IhtpUrYeB/Shw+ynVfQoMzQBj3Ahm4GxWUS/J/uAi15FR++xAdF8GKlBbmMJafJsKX0tQo2Yq5UwDZDfbLMHY/ARfhE3msaODVX1S8B0cnH7nYfV08M9ezMr2bY/GHH+TOIRzy4WmMUcXQK4tirhseVM3AXpv5hz+YNY3BYrE5KIuLtDXwkSbpQMmO0allmbymGdihdUqVSMjZMVqBaCM3mBhjmvEVQDQzB3JVcw9cVPQJnyZtEO0jr42zN7X4Y38j5cB9OEvYoeWo13nczMIXHE5VlNKZ47GLUVqQtgvrdRP49bSMwRRu/+lAENTvgRKaSMmBS56ljpXoIwg8pUxdQPJEOCYbtomCQb7vMMUX2pE6IOBaAcpFaiS4eJQWGEUUn8VOSnoDn4QmCYljM0f8EZYx4j0Vgzsrv8SOOi+vDxoOshoNU1W07en2YedJuw/0O5DYm7xYRsxzTYDeV1oBZQhJ5B0ZbC6H5ZghGrNQLj9MwWVdojyjULa1+san5B+lSsv3OqU6syUDheMDPb/GtTBCYHkNmOaA8UshiptYCxeAmIaKLsAMmUTV/5o4W/vTQfDnLgjB2+3V78aOmvQM/kwKH4JP9Ik19VZgmhmmoSLUJQqfyJpJZB8/slANFHdrmEuGrqYF5B5Qlmdy8Ew9JWKdnLBRDCej4ry1e/b3ahxGPEyMh/NHMiQbC2Y1HejwFlcVA36OQx9Pgj2/XpEJpDXliOXP8KyRRjAQU+JoF3n6HTg13QuI4Xjrccr/ex7tvnsKD3Qjv/HhGlS+cUopQRMA2eTgKRTV4PI+98BFPgvL0L1IU8H8oqnXaVqEkgwD/iFKF98GdlumRmIOpxZMhzEng+g0LEUVU1dDeSYASL4YBHE1pJHUr/HczMY/rcIGOzEbzGwAb/Awyni/t+p0vTu75M9XHyBoRkqfi7Cj1Bl026wQglgYgGISnMO1OtauzJg+8/uQIEDC5o08H8akJQllTZbDVPMi8KOQxqsg/g3fVUoEHU4+CXa1eP6VAlKXKeE41VntYeht0oO8AvTNKGQ0ujVgnkkVCXnsaOD4VdLwNln1aQDfRuxBycE1DSxi0f8Rtbwy8D6hqMVEBpqRXXDF64M5ARQlG6zl7NmyuGZJQr92l1RQ/laIEo9CvhqlOFhEgUeoyrqIBh3pg4oKr02hkkzt24wbkrBi6Bay1mGAEnTNvkDrVyKGEDs+3gc+ST83CPW0MH3+xDwOr3p4E/iZng5VTMz2lsH8Nwa4NXU+r8J0QqoLqimmcoAs4ZnBqPiLEPaS1mhWt8QP6OVu4+3S/zbCRTcvI2YsiZ4nVk6oCh9coFPKR3uM/P6WrpUpDZHHAoebnO7KXWS4C+xh6I08J/f6OLt425l9Avx3fi6M3eIFLzQOup87iTBUDrfRLaL/GR1Juuq9IxQ1EBBMxbjlzBWgakVAxvw0aoIuikPTwejDD3rvCDg/WkWRvgLqmuYj1LA7BIYpdRs80ZFOr9j37ZidnznPiOTWUgUXkxwHdQ4//PhKKUe32+T+ViLQMrg7ANn6ST43bYiGKXULtmddr3PvtGLbBRAGRQ+2l+d/CnhNkPR0N/Z642V6713prW2+mHXhLvc7aYU+MkVyOWZSl7/+dKBGTpKgZGDn7spBsJMZ3nkhC+hWqZKOazz/UywM3dLoVBzeZe1mWBe/GfUTZSLizPBzt9xRQ1f8pdglNIUcwwU/pFhi20d58rcEoUWk/nzTHiOB20Dphu+R8/bJQQ7EUfKDCWOB/1NwqNSrRWVo9XFZpu5lWKQbEFaYNYf4VKKhDoKOg3xWQpuOT7OqInVxeE2M8DCFA25Rr5JG0tgoUwHFVtJ48rBj3p2vSgqVLYfIW0aqn4clQSWCjtAdoFL0oxd4qK2pnZSmm3m0FikqKtgwmMlLkVk6u91F9T43qOSShxKGsI74Zm2G4/BIKB0hn9LcIxekNFQFDNzJlwdVe+OykLeNQGXPJ+N2r9kbFLuSPfWXZRGfefhkDRO1cSyZv4thMrCHeHZyD/hR2WypoMd6pTu2VC3pL0vYW8nBt/e3SHxiGl8e7yoLND0M6dyR0hlApAfn5sz0VF3Qav2UorcOaZ22ybUMqSIF2d28OejsNEXNmA6MLRH20HY7CgQq7z/pLlTfaDSQDlHbq6Iz0dQ/9FIBY482VeXQUzPmbRN+ELtfzifxJFTLZGXcv08DZ2oNV2HI30/jTye8kBl47TciPkX7jD40DtxI89qsm6jZHfgxmILrYSUAbAO20k4IVmkVvgpY+EBrJSKvrOwpJzaVB3SKRFUss0/mQOS40e7IXTNduy44Ph4I+o26NzrExm5MM/EfjKCbm7HAcluP3fkpzDkel/ioUysQesm2Oqp2qFRJqhs/jCJbeLcEx2m8EX4U2KzL+2jglDXwXeF6+yOnCLblmbK16BvGYH//1YS24TYLYc6C/kqvJgjViZW4AMguAJtoEkapYL44uGLBbArEtNrC1ojk6dM3YRtuS+0RN0Hvfe7MpRdZpuHKr6aguBvHJvUi11LM135jT7IU1W2o/RZdxAmvZUysQIdLeESqDTJuJWMkvX5Rdnk1X/2aP7IaHDttuMIrJp9IJc36kJorM7MINnMWSQ9+VEvURDeFPcERzaFFo8RVjzyUsbDbZd2lFmNv34Q7zBHPDSVJWg0wpBUpS5JySBaPzuZOVukFf72M5Fp/3UKZGSPNGyxuMGoGyE+tAlfM3WwxnyYYl9qjYwqvgWvNLBmtoFcTjLyUw4FVwriXelATmf4y2fguVoqQ9I8hHOk0scUKB00Be3yAHYk2fihCrIw/68kFVhy6ubOyE7dAP1dNszCjmmaNOzKWkGmgx/aQcq07FhwIXpyf2Sav4nYUAHEqdFXXN2+3JMREfEUqbybyE0I35LKSv31dSgfRDQVm7aJQWJGEnJ2fKclslUuOHOHIDElCUnaT+mNbNURENGlaww7QWJGFK48U0Z25v+DJxtEZiThbr9QBiyykL+JJ5VVUwQuB7WS4xjzOkOcxHw29oLKAhRLQPgRKmvQASslROPyg3/2tdukgIrIFG5zonGqFgtCNiv1uX5C0W0iMElgoWabE133cb7IXt0B0SXHdRN9YSiUfZ7YT/8UI7LXGH+g7N/vGCDAiPY3nW/iimJByEreJsh5KZ41CGz9fofZy8U208WVrnnCERWNm0GVV2m3CQ9JV0ZJIcrJi/X/2j8ek8jToJkYkHvWIZkH/bzVWGmQ9cpLchSxPSbR2oHaCJ5ZTnzt/m3FjIusTm8LOhZpNAZKEh9qC5owioAoJ151qOIrxE4bU9QsEtPad5uxS+ETNneSkeWWyz9qRLLXPsBusQVPL0mNYO6RJfbUTX4jfUEnZKtvKlvQDlLyH1vumA4EPJ28Smst0RZt01z11nxCpN1Fqn14OMKlU1mBvZRW5N6rFfuTHYYu9pcpvzLf3ntP2eQrx68aJ1W6LjFaCFWznZLhFOSoW7Vmjo/Xx+MHj1D0NwonXcHGZoWktg+5YqjiOzw/xwe7KMhydx/Q/CYGMD+sCaOYpot+pZWQ3WIMlH24Yr/xysxTNtnbJt9GCa7Y/4R431i1Hh/kpvyZ0U65/Pn72BX/mIu3HrbYx+TK3gPGhfulLleuO7JY9vMBteI/yh+HYDSPPcYrP1ZDNf9ThQxHo8qNfhTCY1FZKKuVWuTKWaXDVaD2u6PVYObw1TJUqDa5tYyct3J7yXUq13vDPQ+/4a7XWcfJB/VGk/dLKlZblZ49f+HwaLve2ym/jJxXjGd5uzn7WMnIlzdWcBLCcNtU23Eal26g5pFX8T1k6DhozII0qZ+bKn+YFYSdpvJA6ad6FzciADPtLu5rjqv0oA7B9kOGrqc29l8+aFYjczRQe6gIbVJTHbsExHMPgWdL0Fem+m19tRy8gp3QIr12qAQZnYTLYnTH42iAZTZtJHZCR5XeSAKyuLNlZwO2UjaYaXVI+5rVfIEsdY8y0el/72tZgYC9qSapp+uoblMCsmvpDNnIx2SGTmd1xEm5/yUAGTo6TSlcR9Pcn/knwO8ATqTzo/oV6Yc6usDAYKX2FQoWi15Q7YQOGc5+0Mi9NtdG2pltBHjvy5OUVZuqZ7fSD9dk3EApj/5aXYU7vgQZT+CFDIPvGHIZc0wTu+An60GIPV8i2C6f6iqlH/MpopB+mR81WoJcyygzaWQ40b8kzPjXLsOdnxsIdW0EVwPV6Ug/pj+QvXwMAsrfq6dJuvNd7eK8kKHz9GNmFDjiyzBTXCkIeFqELdO9suRDG3HAEkzYs1ETSu/VjlbxPWdkeJ8Xnpjnn9dqv3wQ+LoJv0mXnFvyEfA1AMvvzTMZz5IqW+8+g+5nRIYOJ9Me7b7mQRtKgfDPkHC7LlSJpCUfhZLwDh2twAFZ6lROR/P7c18/iHUahPezVKIaWfLBdtJPWKbOgac+nUyaMoi4GW7CZ9hRRW4lOTF6LS5yQ5zSe9i7u2MCkccREOrttVKqmkdIS3S/WU/Lza35Kvd1pSD+hyT8sRWYykc6UtzrZOPlKnARX5kflOOFE3bGSpnGGn6dRKR42A+/nOI3V7lfWTXtQGkujtDcAz3N8lEKep971Tx3N/cevL2bDKKVP/ng6ZwILT9DNb4UxKmYm521Moh3IzObRqQWnmNSyVrClDU0WQylIFjLiOu3Uj+IUj9OxWt46FhSe4CIuBaq5SOxSCDNrCQhOM13XL/w3HZpQHMPn5g7Uk1/JI9HlV2LVEKmOWZpCJ7iC8iCcrnhmX3UmFFfDKlDBXu+SPXYpFMC2heQiGBDFfcuGN+c6E11GiZFmjilvskdKQdwplorQb1Wql48pSLah3wSQaw0ndFFvEZsqYcrO2mkVn8yVd+ehPt8bqojloqgOopgl/jyvePjKBCj1DSHDHkSmWoTSJ0azXEQnL6fqqOwkhEMtiOWIAeaD9/HPoozL3puYzkjc/8aRhTLq6RYQUKYlftK9crSEVR9TR40q4u7y+Zy1zIyxP4WrkaeHyVirz3zVeTdCENdA4XmOBYmIcGSY+8D1frdZnMTr/y3i0aBem7iuVear3ZoCbX0WIki6x+/4AJ/DyWlWzZJW1ERzR2/+d29+Je8nxaFXP4NHtuXlCoNoY6BT86XyzI7pm2w4kxRalq27bjeJLeT6N1dx+G2scD7U6PQC438gX6E5nMTHm6XSBc3szao660ZgBLUe+oojAz6bNpXchtfHvXtoioUZ5jv7eJxjAMAmyMMYc8ZvSe/J7YwLUpTpz/qqEme+uVwLRyCnA/Fe95LeomTkCFKScLIwwCM/pn7UtQfJatlq55PhSI3etZX83QsQGdD2Nz4hiLrHKoQSpvVTjGk5kOIL50mTrgeT+iM0ud/k1W4vkJG4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4n/if+J/4v8PFBMA" alt="Outpost">
+    <div class="logo-divider"></div>
+    <div class="logo-sub">Internal Dashboard</div>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="development" onclick="switchTab('development')">Development</button>
+  </div>
+  <div class="as-of" id="as-of-date"></div>
+</div>
+
+
+<!-- ══════════ DEVELOPMENT TAB -->
+<div id="tab-development" class="dept-section active">
+  <div class="dept-header">
+    <div>
+      <div class="dept-eyebrow">Smartsheet · Live Data</div>
+      <div class="dept-title white">Development</div>
+    </div>
+    <div class="live-badge"><span class="live-dot"></span>Live · Smartsheet MCP</div>
+  </div>
+
+  <div class="cards-row cols-4">
+    <div class="stat-card blue"><div class="stat-label">Under Construction</div><div class="stat-value">7</div><div class="stat-sub">Active build sites</div></div>
+    <div class="stat-card none"><div class="stat-label">Under Contract</div><div class="stat-value">2</div><div class="stat-sub">LAXx 19615 · HOUx Bender</div></div>
+    <div class="stat-card amber"><div class="stat-label">Decisions This Week</div><div class="stat-value amber">3</div><div class="stat-sub">DTW1 · LAS5 · SAT2</div></div>
+    <div class="stat-card blue"><div class="stat-label">Next Key Date</div><div class="stat-value sm blue">Mar 18</div><div class="stat-sub">LAXx 19615 Phase II Drill</div></div>
+  </div>
+
+
+  <!-- ─── UNDER CONTRACT ─── -->
+  <div class="section-label">
+    <span class="section-label-text">Under Contract</span>
+    <span class="section-label-line"></span>
+    <span class="section-tag tag-dim">Projects – Under Contract Workspace</span>
+    <span class="section-tag tag-blue">2 Sites</span>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-header" onclick="toggleSubsection(this)">
+      <div>
+        <div class="subsection-title">LAXx — 19615 S Susana Rd &nbsp;<span class="pill inprogress">DD Period</span></div>
+        <div class="subsection-meta">Compton, CA · 129 tasks · PSA Feb 19, 2026 · DD Exp Apr 5, 2026</div>
+      </div>
+      <svg class="subsection-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="subsection-body">
+
+    <!-- Gantt -->
+    <div class="gantt-wrap">
+      <div class="gantt-header">
+        <span class="gantt-title">Due Diligence Timeline — 19615 S Susana Rd</span>
+        <div class="gantt-legend">
+          <span class="gantt-legend-item"><span class="gantt-legend-dot" style="background:var(--green)"></span>Complete</span>
+          <span class="gantt-legend-item"><span class="gantt-legend-dot" style="background:var(--blue)"></span>In Progress</span>
+          <span class="gantt-legend-item"><span class="gantt-legend-dot" style="background:var(--amber)"></span>PSA</span>
+          <span class="gantt-legend-item"><span class="gantt-legend-dot" style="background:var(--red)"></span>DD Expiration</span>
+        </div>
+      </div>
+      <div id="gantt-19615" class="gantt-chart"></div>
+    </div>
+
+    <!-- Report Cards -->
+    <div class="report-section-label">Due Diligence Reports</div>
+    <div class="report-cards">
+
+      <!-- 1. Phase I ESA -->
+      <div class="report-card">
+        <div class="report-card-header">
+          <span class="report-num">01</span>
+          <span class="report-name">Phase I Environmental Site Assessment</span>
+          <span class="report-dates">Feb 4 – Feb 27, 2026 · Terracon</span>
+          <span class="pill complete">Complete</span>
+        </div>
+        <div class="report-card-body">
+          <div class="report-summary">
+            Terracon's Phase I ESA (dated Feb 27, 2026) identified <strong style="color:var(--white-90)">three Recognized Environmental Conditions (RECs)</strong>: (1) former on-site chlorinated solvent use tied to subsurface features including drains and an oil/water separator/clarifier, (2) former on-site automotive distribution operations at 2901 E. Val Verde Ct., and (3) an off-site upgradient facility (Crain Industries/Foamex) with historical chlorinated solvent use. No CRECs or significant data gaps identified. Former on-site USTs noted as HREC (prior closure/NFA history). Recommends additional investigation of RECs and a Soil Management Plan if soils will be disturbed.
+          </div>
+          <a href="https://semistowtest.sharepoint.com/:f:/s/OutpostRealEstate/IgDo3EEJhWFZQbesqFoXZVB4ATRz8biOd4eUbXeHzOQbu5I?e=gLD4hI" target="_blank" class="report-link">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            View Report — SharePoint
+          </a>
+        </div>
+      </div>
+
+      <!-- 2. Phase II ESA -->
+      <div class="report-card" style="border-left:2px solid var(--amber);">
+        <div class="report-card-header">
+          <span class="report-num">02</span>
+          <span class="report-name">Phase II Environmental Site Assessment</span>
+          <span class="report-dates">Triggered — Scope TBD</span>
+          <span class="pill decision">Triggered</span>
+        </div>
+        <div class="report-card-body">
+          <div class="report-summary">
+            Phase II triggered by RECs from Phase I. Scope includes four temporary monitoring wells and ~8 shallow soil borings (approx. two days drilling/sampling) for collection of soil and groundwater samples, with analysis of TPH, VOCs, and metals. <strong style="color:var(--white-90)">Estimated fee: $23,000–$25,000 (LSI).</strong> Drilling schedule and firm TBD.
+          </div>
+          <span class="report-link no-file">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Report Pending — Scheduling Underway
+          </span>
+        </div>
+      </div>
+
+      <!-- 3. Geotechnical -->
+      <div class="report-card">
+        <div class="report-card-header">
+          <span class="report-num">03</span>
+          <span class="report-name">Geotechnical Investigation</span>
+          <span class="report-dates">Feb 4 – Mar 9, 2026</span>
+          <span class="pill inprogress">In Progress</span>
+        </div>
+        <div class="report-card-body">
+          <div class="report-summary">
+            Subsurface investigation for bearing capacity, settlement characteristics, and groundwater conditions to support site development. Report expected by March 9, 2026.
+          </div>
+          <span class="report-link no-file">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Report Pending — In Progress
+          </span>
+        </div>
+      </div>
+
+      <!-- 4. Property Condition Assessment -->
+      <div class="report-card">
+        <div class="report-card-header">
+          <span class="report-num">04</span>
+          <span class="report-name">Property Condition Assessment</span>
+          <span class="report-dates">Feb 4 – Mar 6, 2026</span>
+          <span class="pill inprogress">In Progress</span>
+        </div>
+        <div class="report-card-body">
+          <div class="report-summary">
+            Assessment of existing building and site conditions including structural, mechanical, electrical, and life-safety systems. Report expected by March 6, 2026.
+          </div>
+          <span class="report-link no-file">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Report Pending — In Progress
+          </span>
+        </div>
+      </div>
+
+    </div><!-- /report-cards -->
+    </div><!-- /subsection-body -->
+  </div><!-- /subsection -->
+
+
+  <!-- ─── HOUx — 6750 Bender Rd ─── -->
+  <div class="subsection" style="margin-top:24px;">
+    <div class="subsection-header" onclick="toggleSubsection(this)">
+      <div>
+        <div class="subsection-title">HOUx — 6750 Bender Rd &nbsp;<span class="pill inprogress">DD Period</span></div>
+        <div class="subsection-meta">Houston, TX · 34.79 acres (28 usable) · Under contract · DD Period underway</div>
+      </div>
+      <svg class="subsection-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="subsection-body">
+
+    <div class="callout" style="margin:14px 20px 0;">
+      <strong style="color:var(--white-90);">Status:</strong> Under contract and in due diligence period. DD reports in progress.
+    </div>
+    <div class="report-section-label" style="margin:16px 20px 8px;">Due Diligence Reports</div>
+    <div class="report-cards" style="padding:0 20px 20px;">
+
+      <div class="report-card">
+        <div class="report-card-header">
+          <span class="report-num">01</span>
+          <span class="report-name">Phase I Environmental Site Assessment</span>
+          <span class="report-dates">Oct 9 – Oct 21, 2025</span>
+          <span class="pill complete">Complete</span>
+        </div>
+        <div class="report-card-body">
+          <div class="report-summary">Preliminary Phase I review identified historical industrial use across the site and several areas of potential environmental concern, including surficial staining, historical metals impacts, and prior petroleum handling. <strong style="color:var(--white-90);">RECs appear localized</strong> — primarily associated with past operations in the historically investigated area and the southern portion of the property. No widespread groundwater impact identified. Findings point to a site with manageable, industrial-typical impacts, pending targeted soil remediation and confirmation sampling for TCEQ C/I closure.</div>
+          <a href="https://drive.google.com/open?id=1R6FNyvnxkYrIXf7O5fTy-lt9pfEE0U8o&usp=drive_fs" target="_blank" class="report-link"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>View Report — Google Drive</a>
+        </div>
+      </div>
+
+      <div class="report-card">
+        <div class="report-card-header">
+          <span class="report-num">02</span>
+          <span class="report-name">Phase II Environmental Site Assessment</span>
+          <span class="report-dates">Oct 29 – Nov 21, 2025</span>
+          <span class="pill complete">Complete</span>
+        </div>
+        <div class="report-card-body">
+          <div class="report-summary">Soil and groundwater sampling identified localized exceedances of <strong style="color:var(--white-90);">TPH in shallow soils</strong> (southern portion) and limited metals exceedances (Lead, trace Mercury) slightly above Texas C/I PCLs. Groundwater largely clean — well TMW-6 showed minor Lead and TCE exceedances, no sitewide migration. <strong style="color:var(--white-90);">Seller transitioning from VCP to TCEQ Corrective Action Program (CAP)</strong> for remaining delineation, remediation, and C/I closure. Additional delineation expected in southern area. Impacts are discrete and compatible with C/I land use.</div>
+          <span class="report-link no-file"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>Complete · TCEQ CAP Pathway</span>
+        </div>
+      </div>
+
+      <div class="report-card">
+        <div class="report-card-header">
+          <span class="report-num">03</span>
+          <span class="report-name">Geotechnical / Subsurface Investigation</span>
+          <span class="report-dates">Oct 6 – Nov 5, 2025 · Terracon</span>
+          <span class="pill complete">Complete</span>
+        </div>
+        <div class="report-card-body">
+          <div class="report-summary">Ten borings to 5 ft revealed variable subsurface — sandy lean clay, silty sand, and sandy fat clay (Beaumont / Lissie formations). DCP tests showed <strong style="color:var(--white-90);">poor to good subgrade stiffness (0.9–46 ksi)</strong>; weak subgrade areas present. Existing 12" granular pavement showing distress — resurfacing or full-depth reconstruction recommended in localized areas. For new pavements: 6" cement-treated subgrade with 2" asphalt over 8" base (flexible) or 12" granular base. No groundwater observed.</div>
+          <a href="https://drive.google.com/open?id=1j8szaXhrXnAjPnCSV_qdbU7bL_dNd_M5&usp=drive_fs" target="_blank" class="report-link"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>View Report — Google Drive</a>
+        </div>
+      </div>
+
+      <div class="report-card">
+        <div class="report-card-header">
+          <span class="report-num">04</span>
+          <span class="report-name">Wetland Delineation</span>
+          <span class="report-dates">Oct 9 – Oct 31, 2025 · Roux</span>
+          <span class="pill complete">Complete</span>
+        </div>
+        <div class="report-card-body">
+          <div class="report-summary">Wetland delineation completed by Roux (Oct 9–31, 2025). Sensitive lands, Corps of Engineers, and threatened/endangered species items marked N/A — no issues identified.</div>
+          <a href="https://semistowtest.sharepoint.com/:f:/s/OutpostRealEstate/EgxPL1wt7mlLtmR3XKKfqdcB78ItXluqJR8mPWORG3PXEQ?e=IaPeeO" target="_blank" class="report-link"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>View Report — SharePoint</a>
+        </div>
+      </div>
+
+      <div class="report-card">
+        <div class="report-card-header">
+          <span class="report-num">05</span>
+          <span class="report-name">Property Condition Assessment</span>
+          <span class="report-dates">Oct 2 – Oct 31, 2025</span>
+          <span class="pill complete">Complete</span>
+        </div>
+        <div class="report-card-body">
+          <div class="report-summary">±61,600 SF, 5-building industrial complex (1970–2014) in generally fair condition with deferred maintenance. <strong style="color:var(--white-90);">Immediate repairs: $10,000</strong> (septic eval + electrical panel). 10-yr capital reserves estimated at <strong style="color:var(--white-90);">$678,000 ($1.10/SF/yr)</strong>. Key risks: no fire-sprinkler system, no sanitary sewer (septic), Flood Zone D designation, unpermitted 2025 storage addition to Bldg A, and ADA upgrades required (~$2,900).</div>
+          <a href="https://drive.google.com/open?id=1RNnZ4o_61Oo4vNpdiwpZlSmKGJqUZ_oS&usp=drive_fs" target="_blank" class="report-link"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>View Report — Google Drive</a>
+        </div>
+      </div>
+
+      <div class="report-card" style="border-left:2px solid var(--blue-dim);">
+        <div class="report-card-header">
+          <span class="report-num">06</span>
+          <span class="report-name">Civil / Drainage Design</span>
+          <span class="report-dates">Dynamic Engineering</span>
+          <span class="pill inprogress">In Progress</span>
+        </div>
+        <div class="report-card-body">
+          <div class="report-summary">Dynamic Engineering preparing conceptual drainage design drawing. City meeting (Jan 26, 2026) held to discuss replat process. Paving, Grading &amp; Drainage permits required — estimated <strong style="color:var(--white-90);">9–12 month approval timeline</strong>. Guard shack confirmed at 100' from ROW on site plan.</div>
+          <span class="report-link no-file"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Conceptual Design In Progress — Dynamic Engineering</span>
+        </div>
+      </div>
+
+    </div><!-- /report-cards -->
+    </div><!-- /subsection-body -->
+  </div><!-- /HOUx subsection -->
+
+
+  <!-- ─── UNDER CONSTRUCTION ─── -->
+  <div class="section-label" style="margin-top:36px;">
+    <span class="section-label-text">Under Construction</span>
+    <span class="section-label-line"></span>
+    <span class="section-tag tag-dim">Dev Team Productivity Hub · Smartsheet · 2026.03.17</span>
+    <span class="section-tag tag-blue">7 Projects</span>
+  </div>
+
+  <!-- Project Execution cards -->
+  <div class="section-label" style="margin-top:8px;">
+    <span class="section-label-text">Project Execution</span>
+    <span class="section-label-line"></span>
+    <span class="section-tag tag-blue"><span class="live-dot" style="display:inline-block;vertical-align:middle;margin-right:4px;"></span>Live · Smartsheet + SharePoint</span>
+    <span class="section-tag tag-dim">Budget from SUMMARY PASTED.xlsx · Live Budgets</span>
+  </div>
+
+  <div class="const-grid">
+    <div class="const-proj">
+      <div class="const-proj-header"><div><div class="const-proj-code">DFW4 — 1501 N Walton Walker Blvd</div><div class="const-proj-loc">Dallas, TX</div></div><span class="pill update">Update</span></div>
+      <div class="budget-breakdown">
+        <table class="budget-breakdown-table">
+          <thead><tr><th>Category</th><th>Budget</th><th>Spent</th><th>Remaining</th></tr></thead>
+          <tbody>
+            <tr><td>Total</td><td>$2,605,839</td><td style="color:var(--green)">$1,930,410</td><td style="color:var(--green)">$631,487</td></tr>
+          </tbody>
+          <tfoot><tr><td>Total</td><td>$2,605,839</td><td style="color:var(--green)">$1,930,410</td><td style="color:var(--green)">$631,487</td></tr></tfoot>
+        </table>
+        <div class="budget-bar-wrap" style="margin-top:8px;"><div class="budget-bar-labels"><span>Spend</span><span>74%</span></div><div class="budget-bar"><div class="budget-fill fill-ok" style="width:74%"></div></div></div>
+      </div>
+      <div class="dates-row"><div><div class="date-label">Current Est.</div><div class="date-value">Apr 1, 2026</div></div><div><div class="date-label">Prior Est.</div><div class="date-value">Jul 25, 2025</div></div></div>
+      <div class="const-notes"><ul><li>Submitted CO for Commercial Motor Vehicle use (February 2026)</li></ul></div>
+    </div>
+    <div class="const-proj">
+      <div class="const-proj-header"><div><div class="const-proj-code">DTW1 — 12155 Southfield Fwy</div><div class="const-proj-loc">Detroit, MI</div></div><span class="pill decision">Decision</span></div>
+      <div class="budget-breakdown">
+        <table class="budget-breakdown-table">
+          <thead><tr><th>Category</th><th>Budget</th><th>Spent</th><th>Remaining</th></tr></thead>
+          <tbody>
+            <tr><td>Total</td><td>$2,457,500</td><td style="color:var(--green)">$381,244</td><td style="color:var(--green)">$2,076,256</td></tr>
+          </tbody>
+          <tfoot><tr><td>Total</td><td>$2,457,500</td><td style="color:var(--green)">$381,244</td><td style="color:var(--green)">$2,076,256</td></tr></tfoot>
+        </table>
+        <div class="budget-bar-wrap" style="margin-top:8px;"><div class="budget-bar-labels"><span>Spend</span><span>16%</span></div><div class="budget-bar"><div class="budget-fill fill-ok" style="width:16%"></div></div></div>
+      </div>
+      <div class="dates-row"><div><div class="date-label">Current Est.</div><div class="date-value">Dec 1, 2026</div></div><div><div class="date-label">Prior Est.</div><div class="date-value">Dec 1, 2026</div></div></div>
+      <div class="const-notes"><ul><li>Landscaping and painting of shipping containers TBD</li><li>Proposal received from Giffles Webster for stormwater improvements plan to reduce storm bill</li></ul></div>
+    </div>
+    <div class="const-proj">
+      <div class="const-proj-header"><div><div class="const-proj-code">LAS5 — 3950 Bruce St</div><div class="const-proj-loc">Las Vegas, NV</div></div><span class="pill decision">Decision</span></div>
+      <div class="budget-breakdown">
+        <table class="budget-breakdown-table">
+          <thead><tr><th>Category</th><th>Budget</th><th>Spent</th><th>Remaining</th></tr></thead>
+          <tbody>
+            <tr><td>Total</td><td>$9,460,347</td><td style="color:var(--green)">$4,802,923</td><td style="color:var(--green)">$4,657,424</td></tr>
+          </tbody>
+          <tfoot><tr><td>Total</td><td>$9,460,347</td><td style="color:var(--green)">$4,802,923</td><td style="color:var(--green)">$4,657,424</td></tr></tfoot>
+        </table>
+        <div class="budget-bar-wrap" style="margin-top:8px;"><div class="budget-bar-labels"><span>Spend</span><span>51%</span></div><div class="budget-bar"><div class="budget-fill fill-ok" style="width:51%"></div></div></div>
+      </div>
+      <div class="dates-row"><div><div class="date-label">Current Est.</div><div class="date-value late">Feb 16, 2026</div></div><div><div class="date-label">Prior Est.</div><div class="date-value">Dec 25, 2025</div></div></div>
+      <div class="const-notes"><ul><li>No updates this week</li></ul></div>
+    </div>
+    <div class="const-proj">
+      <div class="const-proj-header"><div><div class="const-proj-code">MIA1 — 3200 NW 67th Ave</div><div class="const-proj-loc">Miami, FL</div></div><span class="pill update">Update</span></div>
+      <div class="budget-breakdown">
+        <table class="budget-breakdown-table">
+          <thead><tr><th>Category</th><th>Budget</th><th>Spent</th><th>Remaining</th></tr></thead>
+          <tbody>
+            <tr><td>Total</td><td>$561,657</td><td style="color:var(--green)">$49,781</td><td style="color:var(--green)">$511,876</td></tr>
+          </tbody>
+          <tfoot><tr><td>Total</td><td>$808,403</td><td style="color:var(--green)">$316,964</td><td style="color:var(--green)">$491,439</td></tr></tfoot>
+        </table>
+        <div class="budget-bar-wrap" style="margin-top:8px;"><div class="budget-bar-labels"><span>Spend</span><span>9%</span></div><div class="budget-bar"><div class="budget-fill fill-ok" style="width:9%"></div></div></div>
+      </div>
+      <div class="dates-row"><div><div class="date-label">Current Est.</div><div class="date-value">—</div></div></div>
+      <div class="const-notes"><ul><li>Permit expediter working with MDC to review comments</li><li>Received KHA conceptual design for build to suit concept</li><li>Beginning process for notification to DERM regarding contamination found on site</li></ul></div>
+    </div>
+    <div class="const-proj">
+      <div class="const-proj-header"><div><div class="const-proj-code">ONT4 — 11081 Cherry Ave</div><div class="const-proj-loc">Ontario, CA</div></div><span class="pill notstarted">—</span></div>
+      <div class="budget-breakdown">
+        <table class="budget-breakdown-table">
+          <thead><tr><th>Category</th><th>Budget</th><th>Spent</th><th>Remaining</th></tr></thead>
+          <tbody>
+            <tr><td>Hard Cost</td><td>$1,505,603</td><td style="color:var(--green)">$544,213</td><td style="color:var(--green)">$961,390</td></tr>
+            <tr><td>Soft Cost</td><td>$330,654</td><td style="color:var(--amber)">$312,749</td><td style="color:var(--amber)">$17,905</td></tr>
+          </tbody>
+          <tfoot><tr><td>Total</td><td>$1,836,257</td><td style="color:var(--green)">$856,962</td><td style="color:var(--green)">$979,295</td></tr></tfoot>
+        </table>
+        <div class="budget-bar-wrap" style="margin-top:8px;"><div class="budget-bar-labels"><span>Spend</span><span>47%</span></div><div class="budget-bar"><div class="budget-fill fill-ok" style="width:47%"></div></div></div>
+      </div>
+      <div class="dates-row"><div><div class="date-label">Current Est.</div><div class="date-value">Oct 25, 2025</div></div><div><div class="date-label">Prior Est.</div><div class="date-value">Oct 26, 2025</div></div></div>
+      <div class="const-notes"><ul><li>Building permit approved, pending signed drawings</li><li>Camera location approved by tech team, Sam moving forward with power install</li></ul></div>
+    </div>
+    <div class="const-proj">
+      <div class="const-proj-header"><div><div class="const-proj-code">ONT5 — 517 S Benson Ave</div><div class="const-proj-loc">Ontario, CA</div></div><span class="pill notstarted">—</span></div>
+      <div class="budget-breakdown">
+        <table class="budget-breakdown-table">
+          <thead><tr><th>Category</th><th>Budget</th><th>Spent</th><th>Remaining</th></tr></thead>
+          <tbody>
+            <tr><td>Hard Cost</td><td>$7,895,409</td><td style="color:var(--text-3)">$0</td><td style="color:var(--green)">$7,895,409</td></tr>
+            <tr><td>Soft Cost</td><td>$695,309</td><td style="color:var(--green)">$256,588</td><td style="color:var(--green)">$438,721</td></tr>
+          </tbody>
+          <tfoot><tr><td>Total</td><td>$8,590,718</td><td style="color:var(--green)">$256,588</td><td style="color:var(--green)">$8,334,130</td></tr></tfoot>
+        </table>
+        <div class="budget-bar-wrap" style="margin-top:8px;"><div class="budget-bar-labels"><span>Spend</span><span>3%</span></div><div class="budget-bar"><div class="budget-fill fill-ok" style="width:3%"></div></div></div>
+      </div>
+      <div class="dates-row"><div><div class="date-label">Current Est.</div><div class="date-value">Oct 1, 2027</div></div><div><div class="date-label">Prior Est.</div><div class="date-value">Feb 1, 2028</div></div></div>
+      <div class="const-notes"><ul><li>Drawings being reviewed by City</li></ul></div>
+    </div>
+    <div class="const-proj">
+      <div class="const-proj-header"><div><div class="const-proj-code">PDX4 — 110 N Marine Dr</div><div class="const-proj-loc">Portland, OR</div></div><span class="pill update">Update</span></div>
+      <div class="budget-breakdown">
+        <table class="budget-breakdown-table">
+          <thead><tr><th>Category</th><th>Budget</th><th>Spent</th><th>Remaining</th></tr></thead>
+          <tbody>
+            <tr><td>Total</td><td>$907,278</td><td style="color:var(--green)">$591,017</td><td style="color:var(--green)">$316,261</td></tr>
+          </tbody>
+          <tfoot><tr><td>Total</td><td>$907,278</td><td style="color:var(--green)">$591,017</td><td style="color:var(--green)">$316,261</td></tr></tfoot>
+        </table>
+        <div class="budget-bar-wrap" style="margin-top:8px;"><div class="budget-bar-labels"><span>Spend</span><span>65%</span></div><div class="budget-bar"><div class="budget-fill fill-ok" style="width:65%"></div></div></div>
+      </div>
+      <div class="dates-row"><div><div class="date-label">Current Est.</div><div class="date-value late">Apr 17, 2026</div></div><div><div class="date-label">Prior Est.</div><div class="date-value">Oct 30, 2025</div></div></div>
+      <div class="const-notes"><ul><li>Tank decommissioning ongoing</li></ul></div>
+    </div>
+    <div class="const-proj">
+      <div class="const-proj-header"><div><div class="const-proj-code">SAT2 — 647 N WW White Rd</div><div class="const-proj-loc">San Antonio, TX</div></div><span class="pill decision">Decision</span></div>
+      <div class="budget-breakdown">
+        <table class="budget-breakdown-table">
+          <thead><tr><th>Category</th><th>Budget</th><th>Spent</th><th>Remaining</th></tr></thead>
+          <tbody>
+            <tr><td>Total</td><td>$4,593,865</td><td style="color:var(--green)">$713,807</td><td style="color:var(--green)">$3,713,586</td></tr>
+          </tbody>
+          <tfoot><tr><td>Total</td><td>$4,593,865</td><td style="color:var(--green)">$713,807</td><td style="color:var(--green)">$3,713,586</td></tr></tfoot>
+        </table>
+        <div class="budget-bar-wrap" style="margin-top:8px;"><div class="budget-bar-labels"><span>Spend</span><span>16%</span></div><div class="budget-bar"><div class="budget-fill fill-ok" style="width:16%"></div></div></div>
+      </div>
+      <div class="dates-row"><div><div class="date-label">Current Est.</div><div class="date-value late">Jun 30, 2026</div></div><div><div class="date-label">Prior Est.</div><div class="date-value">Apr 25, 2025</div></div></div>
+      <div class="const-notes"><ul><li>Contractor provided pricing reducing project cost by $1M; Pending Josh approval</li></ul></div>
+    </div>
+  </div>
+
+  <div class="source-note">
+    <span><span class="live-dot" style="display:inline-block;vertical-align:middle;margin-right:5px;"></span>Project notes: live via Smartsheet MCP &nbsp;·&nbsp; Budget: SUMMARY PASTED.xlsx · Live Budgets / SharePoint · Accounting &amp; Finance · Updated 2026.03.24</span>
+    <span id="ts-dev"></span>
+  </div>
+</div>
+
+<script>
+  /* ── GANTT RENDERER ── */
+  function buildGantt(containerId, config) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    const { startMs, endMs, rows, milestones, todayMs, ddExpMs } = config;
+    const totalMs = endMs - startMs;
+
+    function pct(ms) { return Math.max(0, Math.min(100, ((ms - startMs) / totalMs) * 100)); }
+    function d(y,m,day) { return Date.UTC(y,m-1,day); }
+
+    // collect month columns
+    const months = [];
+    let cur = new Date(startMs);
+    while (cur.getTime() <= endMs) {
+      months.push({ y: cur.getUTCFullYear(), m: cur.getUTCMonth() });
+      cur.setUTCMonth(cur.getUTCMonth() + 1);
+    }
+    const MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const todayPct = pct(todayMs);
+    const ddExpPct  = pct(ddExpMs);
+
+    function colLines() {
+      return months.map(mn => {
+        const p = pct(Date.UTC(mn.y, mn.m, 1));
+        return `<div class="gantt-col-line" style="left:${p}%"></div>`;
+      }).join('');
+    }
+
+    // header row
+    let html = '<div class="gantt-month-row">';
+    html += '<div class="gantt-label-col"></div>';
+    months.forEach(mn => { html += `<div class="gantt-month-cell">${MN[mn.m]} '${String(mn.y).slice(2)}</div>`; });
+    html += '</div>';
+
+    // data rows
+    rows.forEach(row => {
+      html += '<div class="gantt-row">';
+      html += `<div class="gantt-label"><div class="gantt-label-name" title="${row.name}">${row.name}</div><div class="gantt-label-sub">${row.sub||''}</div></div>`;
+      html += '<div class="gantt-track">';
+      html += colLines();
+      html += `<div class="gantt-today-line" style="left:${todayPct}%;background:rgba(140,200,220,0.35);"></div>`;
+      html += `<div class="gantt-today-line" style="left:${ddExpPct}%;background:var(--red);opacity:0.7;"></div>`;
+
+      if (row.start && row.end) {
+        const left = pct(row.start);
+        const width = Math.max(0.8, pct(row.end) - left);
+        html += `<div class="gantt-bar ${row.cls}" style="left:${left}%;width:${width}%"><div class="gantt-bar-fill"></div></div>`;
+      }
+
+      if (milestones) {
+        milestones.filter(m => m.row === row.id).forEach(m => {
+          const lp = pct(m.date);
+          html += `<div class="gantt-diamond ${m.color}" style="left:calc(${lp}% - 5px)" title="${m.label}"></div>`;
+        });
+      }
+      html += '</div></div>';
+    });
+
+    // label strip — today (blue, dimmed) + DD expiration (red)
+    const todayStrip = `<div style="position:relative;height:20px;margin-bottom:0;">
+      <div style="position:absolute;left:${todayPct}%;top:0;bottom:0;width:2px;background:rgba(140,200,220,0.35);"></div>
+      <div style="position:absolute;left:${todayPct}%;top:3px;transform:translateX(-50%);font-size:9px;color:var(--text-3);letter-spacing:0.07em;background:var(--surface);padding:1px 5px;border-radius:2px;white-space:nowrap;">TODAY</div>
+      <div style="position:absolute;left:${ddExpPct}%;top:0;bottom:0;width:2px;background:var(--red);opacity:0.7;"></div>
+      <div style="position:absolute;left:${ddExpPct}%;top:3px;transform:translateX(-50%);font-size:9px;color:var(--red);letter-spacing:0.07em;background:var(--surface);padding:1px 5px;border-radius:2px;white-space:nowrap;">DD EXP</div>
+    </div>`;
+
+    el.innerHTML = todayStrip + html;
+  }
+
+  // ── LAXX 19615 data ──  })();
+
+  // ── LAXX 19615 data ──
+  (function(){
+    const d = (y,m,day) => Date.UTC(y,m-1,day);
+    buildGantt('gantt-19615', {
+      startMs: d(2026,2,1),
+      endMs:   d(2026,5,15),
+      todayMs: d(2026,3,4),
+      ddExpMs: d(2026,4,5),
+      rows: [
+        { id:'psa',  name:'PSA Signing',                sub:'Feb 19, 2026',     cls:'psa',     start:d(2026,2,19), end:d(2026,2,20) },
+        { id:'ph1',  name:'Phase I ESA',                sub:'Complete',         cls:'complete',start:d(2026,2,4),  end:d(2026,2,27) },
+        { id:'geo',  name:'Geotechnical',               sub:'In Progress',      cls:'prog',    start:d(2026,2,4),  end:d(2026,3,9)  },
+        { id:'pca',  name:'Prop. Condition Assessment', sub:'In Progress',      cls:'prog',    start:d(2026,2,4),  end:d(2026,3,6)  },
+        { id:'ph2',  name:'Phase II ESA',               sub:'Triggered · TBD',  cls:'prog',    start:d(2026,3,4),  end:d(2026,3,28) },
+      ],
+      milestones: [
+        { row:'psa', date:d(2026,2,19), color:'amber', label:'PSA Signed — Feb 19, 2026' },
+        { row:'ph2', date:d(2026,3,18), color:'amber', label:'Drill Date — Mar 18, 2026'  },
+      ]
+    });
+  })();
+
+  function switchTab(n) {
+    document.querySelectorAll('.dept-section').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('tab-'+n).classList.add('active');
+    document.querySelector('[data-tab="'+n+'"]').classList.add('active');
+    window.location.hash = n==='all' ? '' : n;
+  }
+  function routeFromHash() {
+    const h = window.location.hash.replace('#','');
+    const valid = ['development','all'];
+    switchTab(valid.includes(h) ? h : 'development');
+  }
+  window.addEventListener('hashchange', routeFromHash);
+  routeFromHash();
+
+  // Investments sub-tab switcher
+  function switchInvTab(name, btn) {
+    document.querySelectorAll('.inv-tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.inv-subtab').forEach(b => b.classList.remove('active'));
+    document.getElementById('inv-tab-' + name).classList.add('active');
+    btn.classList.add('active');
+    if (name === 'pipeline') buildInvGantt();
+    if (name === 'em-forecast') buildEmGantt();
+  }
+
+  function toggleCard(header) { header.closest('.deal-card').classList.toggle('open'); }
+  function toggleSection(id) {
+    const el = document.getElementById(id);
+    const toggle = document.getElementById(id + '-toggle');
+    el.classList.toggle('collapsed');
+    toggle.classList.toggle('collapsed');
+  }
+  function filterStage(stage, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.deal-card').forEach(card => {
+      card.style.display = (stage === 'all' || card.dataset.stage === stage) ? '' : 'none';
+    });
+  }
+  function toggleAll(open) {
+    document.querySelectorAll('.deal-card').forEach(card => {
+      if (open) card.classList.add('open'); else card.classList.remove('open');
+    });
+  }
+  function toggleCompleted(checkbox) { checkbox.closest('.action-item').classList.toggle('completed', checkbox.checked); }
+
+  /* ── INVESTMENTS PIPELINE GANTT ── */
+  function buildInvGantt() {
+    const deals = [
+      { name: 'San Bernardino', region: 'wc', events: [{ date: '2026-03-13', type: 'psa', label: 'PSA 3/13' }, { date: '2026-06-11', type: 'gohard', label: 'GH 6/11' }] },
+      { name: '100 N Hackensack', region: 'ne', events: [{ date: '2026-03-20', type: 'psa', label: 'PSA 3/20' }, { date: '2026-05-19', type: 'gohard', label: 'GH 5/19' }, { date: '2026-06-18', type: 'closing', label: 'Close 6/18' }] },
+      { name: 'Phoenix – S 43rd', region: 'wc', events: [{ date: '2026-03-20', type: 'psa', label: 'PSA 3/20' }, { date: '2026-05-19', type: 'gohard', label: 'GH 5/19' }] },
+      { name: '7708 RT 440', region: 'ne', events: [{ date: '2026-03-24', type: 'hearing', label: 'PB 3/24' }, { date: '2026-04-10', type: 'gohard', label: 'GH 4/10' }, { date: '2026-11-10', type: 'closing', label: 'Close 11/10' }] },
+      { name: '704 Doremus', region: 'ne', events: [{ date: '2026-03-25', type: 'closing', label: 'Close 3/25' }] },
+      { name: 'Houston – Bender', region: 'ce', events: [{ date: '2026-03-27', type: 'gohard', label: 'GH 3/27' }, { date: '2026-04-17', type: 'closing', label: 'Close 4/17' }] },
+      { name: 'Susana 2 (19615)', region: 'wc', events: [{ date: '2026-04-05', type: 'gohard', label: 'GH 4/5' }, { date: '2026-05-01', type: 'closing', label: 'Close 5/1' }] },
+    ];
+    const startDate = new Date(2026, 2, 9);
+    const endDate = new Date(2026, 6, 6);
+    const today = new Date(); today.setHours(0,0,0,0);
+    const weeks = [];
+    let d = new Date(startDate);
+    while (d < endDate) { weeks.push(new Date(d)); d.setDate(d.getDate() + 7); }
+    const totalDays = (endDate - startDate) / 86400000;
+    function dayOffset(dateStr) { const dt = new Date(dateStr + 'T00:00:00'); return (dt - startDate) / 86400000; }
+    const container = document.getElementById('inv-gantt-chart');
+    if (!container || container._built) return; container._built = true;
+    const numCols = weeks.length;
+    const colTemplate = '200px repeat(' + numCols + ', 1fr)';
+    const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    let html = '<div class="gantt-grid" style="grid-template-columns:' + colTemplate + '">';
+    html += '<div class="gantt-header-label">Deal</div>';
+    html += '<div class="gantt-header-dates" style="grid-column:2/-1;display:grid;grid-template-columns:repeat(' + numCols + ',1fr);">';
+    weeks.forEach(function(w) {
+      var wEnd = new Date(w); wEnd.setDate(wEnd.getDate() + 6);
+      var isToday = today >= w && today <= wEnd;
+      html += '<div' + (isToday ? ' class="today-col"' : '') + '>' + monthNames[w.getMonth()] + ' ' + w.getDate() + '</div>';
+    });
+    html += '</div>';
+    deals.forEach(function(deal) {
+      html += '<div class="gantt-row-label"><span class="deal-region ' + deal.region + '">' + deal.region.toUpperCase() + '</span>' + deal.name + '</div>';
+      html += '<div class="gantt-row-bars" style="grid-column:2/-1;display:grid;grid-template-columns:repeat(' + numCols + ',1fr);position:relative;">';
+      for (var i = 0; i < numCols; i++) html += '<div></div>';
+      if (deal.events.length > 1) {
+        var fp = (dayOffset(deal.events[0].date) / totalDays) * 100;
+        var lp = (dayOffset(deal.events[deal.events.length-1].date) / totalDays) * 100;
+        fp = Math.max(0, Math.min(100, fp)); lp = Math.max(0, Math.min(100, lp));
+        html += '<div style="position:absolute;top:50%;left:' + fp + '%;width:' + (lp-fp) + '%;height:3px;background:linear-gradient(90deg,var(--inv-border),var(--inv-text-muted),var(--inv-border));border-radius:2px;transform:translateY(-50%);z-index:1;opacity:0.35;"></div>';
+      }
+      deal.events.forEach(function(ev) {
+        var pct = (dayOffset(ev.date) / totalDays) * 100;
+        if (pct >= -2 && pct <= 102) {
+          var clamp = Math.max(0, Math.min(98, pct));
+          var dotColor = ev.type === 'psa' ? 'var(--inv-blue)' : ev.type === 'gohard' ? 'var(--inv-amber)' : ev.type === 'closing' ? 'var(--inv-red)' : 'var(--inv-purple)';
+          var lblBg = ev.type === 'psa' ? 'background:var(--inv-blue-bg);color:var(--inv-blue)' : ev.type === 'gohard' ? 'background:var(--inv-amber-bg);color:var(--inv-amber)' : ev.type === 'closing' ? 'background:var(--inv-red-bg);color:var(--inv-red)' : 'background:var(--inv-purple-bg);color:var(--inv-purple)';
+          html += '<div class="gantt-marker" style="left:' + clamp + '%;" title="' + ev.label + '">';
+          html += '<div class="gantt-dot" style="background:' + dotColor + ';"></div>';
+          html += '<span class="gantt-label" style="' + lblBg + '">' + ev.label + '</span></div>';
+        }
+      });
+      var todayPct = ((today - startDate) / 86400000 / totalDays) * 100;
+      if (todayPct >= 0 && todayPct <= 100) html += '<div class="gantt-today-line" style="left:' + todayPct + '%;"></div>';
+      html += '</div>';
+    });
+    html += '</div>';
+    var tpg = ((today - startDate) / 86400000 / totalDays) * 100;
+    if (tpg >= 0 && tpg <= 100) html += '<div style="position:relative;height:0;margin-left:200px;"><div class="gantt-today-label" style="left:' + tpg + '%;position:absolute;top:-4px;">TODAY</div></div>';
+    container.innerHTML = html;
+  }
+  buildInvGantt();
+
+  /* ── EM FORECAST GANTT ── */
+  function buildEmGantt() {
+    const deals = [
+      { name: '704 Doremus', em: '$1.0M + $3.3M', conf: 100, events: [{ date: '2025-10-28', type: 'psa', label: 'PSA 10/28' }, { date: '2025-10-31', type: 'fund', label: 'Fund 10/31' }, { date: '2026-03-04', type: 'gohard', label: 'GH 3/4' }] },
+      { name: '7708 RT 440', em: '$760K + $3.0M', conf: 100, events: [{ date: '2026-01-15', type: 'psa', label: 'PSA 1/15' }, { date: '2026-01-23', type: 'fund', label: 'Fund 1/23' }, { date: '2026-04-10', type: 'gohard', label: 'GH 4/10' }] },
+      { name: 'Susana 2', em: '$500K', conf: 100, events: [{ date: '2026-02-19', type: 'psa', label: 'PSA 2/19' }, { date: '2026-02-20', type: 'fund', label: 'Fund 2/20' }, { date: '2026-04-05', type: 'gohard', label: 'GH 4/5' }] },
+      { name: 'Houston – Bender', em: '$180K', conf: 99, events: [{ date: '2026-03-06', type: 'psa', label: 'PSA 3/6' }, { date: '2026-03-27', type: 'gohard', label: 'GH 3/27' }] },
+      { name: '100 N Hackensack', em: '$500K + $500K', conf: 90, events: [{ date: '2026-03-20', type: 'psa', label: 'PSA 3/20' }, { date: '2026-03-25', type: 'fund', label: 'Fund 3/25' }, { date: '2026-05-19', type: 'gohard', label: 'GH 5/19' }] },
+      { name: 'San Bernardino', em: '$162K', conf: 90, events: [{ date: '2026-03-13', type: 'psa', label: 'PSA 3/13' }, { date: '2026-03-18', type: 'fund', label: 'Fund 3/18' }, { date: '2026-06-11', type: 'gohard', label: 'GH 6/11' }] },
+      { name: 'Phoenix – S 43rd', em: '$500K', conf: 50, events: [{ date: '2026-03-20', type: 'psa', label: 'PSA 3/20' }, { date: '2026-03-25', type: 'fund', label: 'Fund 3/25' }, { date: '2026-05-19', type: 'gohard', label: 'GH 5/19' }] },
+      { name: 'Susana 1', em: '$575K', conf: 20, events: [] },
+    ];
+    const startDate = new Date(2025, 9, 20);
+    const endDate = new Date(2026, 6, 6);
+    const today = new Date(); today.setHours(0,0,0,0);
+    const weeks = []; let d = new Date(startDate);
+    while (d < endDate) { weeks.push(new Date(d)); d.setDate(d.getDate() + 14); }
+    const totalDays = (endDate - startDate) / 86400000;
+    function dayOffset(dateStr) { return (new Date(dateStr + 'T00:00:00') - startDate) / 86400000; }
+    const container = document.getElementById('inv-em-gantt-chart');
+    if (!container || container._built) return; container._built = true;
+    const numCols = weeks.length;
+    const colTemplate = '220px repeat(' + numCols + ', 1fr)';
+    const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    function confColor(c) { return c >= 90 ? 'var(--inv-green)' : c >= 50 ? 'var(--inv-amber)' : 'var(--inv-red)'; }
+    let html = '<div class="gantt-grid" style="grid-template-columns:' + colTemplate + '">';
+    html += '<div class="gantt-header-label">Deal · EM Amount</div>';
+    html += '<div class="gantt-header-dates" style="grid-column:2/-1;display:grid;grid-template-columns:repeat(' + numCols + ',1fr);">';
+    weeks.forEach(function(w) {
+      var wEnd = new Date(w); wEnd.setDate(wEnd.getDate() + 13);
+      var isToday = today >= w && today <= wEnd;
+      html += '<div' + (isToday ? ' class="today-col"' : '') + '>' + monthNames[w.getMonth()] + ' ' + w.getDate() + '</div>';
+    });
+    html += '</div>';
+    deals.forEach(function(deal) {
+      var confBadge = deal.conf > 0 ? '<span style="font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px;background:' + confColor(deal.conf) + ';color:white;margin-left:6px;">' + deal.conf + '%</span>' : '';
+      html += '<div class="gantt-row-label" style="flex-wrap:wrap;gap:4px;"><span style="font-weight:600;">' + deal.name + '</span><span style="font-size:10px;color:var(--inv-text-muted);">' + deal.em + '</span>' + confBadge + '</div>';
+      html += '<div class="gantt-row-bars" style="grid-column:2/-1;display:grid;grid-template-columns:repeat(' + numCols + ',1fr);position:relative;">';
+      for (var i = 0; i < numCols; i++) html += '<div></div>';
+      if (deal.events.length === 0) {
+        html += '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;color:var(--inv-text-muted);font-weight:500;font-style:italic;">Dates TBD</div>';
+      } else {
+        if (deal.events.length > 1) {
+          var fp = Math.max(0, Math.min(100, (dayOffset(deal.events[0].date) / totalDays) * 100));
+          var lp = Math.max(0, Math.min(100, (dayOffset(deal.events[deal.events.length-1].date) / totalDays) * 100));
+          html += '<div style="position:absolute;top:50%;left:' + fp + '%;width:' + (lp-fp) + '%;height:3px;background:linear-gradient(90deg,var(--inv-border),var(--inv-text-muted),var(--inv-border));border-radius:2px;transform:translateY(-50%);z-index:1;opacity:0.35;"></div>';
+        }
+        deal.events.forEach(function(ev) {
+          var pct = (dayOffset(ev.date) / totalDays) * 100;
+          if (pct >= -2 && pct <= 102) {
+            var clamp = Math.max(0, Math.min(97, pct));
+            var dotColor = ev.type === 'psa' ? 'var(--inv-blue)' : ev.type === 'fund' ? 'var(--inv-green)' : 'var(--inv-amber)';
+            var lblStyle = ev.type === 'psa' ? 'background:var(--inv-blue-bg);color:var(--inv-blue)' : ev.type === 'fund' ? 'background:var(--inv-green-bg);color:var(--inv-green)' : 'background:var(--inv-amber-bg);color:var(--inv-amber)';
+            html += '<div class="gantt-marker" style="left:' + clamp + '%;" title="' + ev.label + '">';
+            html += '<div class="gantt-dot" style="background:' + dotColor + ';"></div>';
+            html += '<span class="gantt-label" style="' + lblStyle + '">' + ev.label + '</span></div>';
+          }
+        });
+      }
+      var todayPct = ((today - startDate) / 86400000 / totalDays) * 100;
+      if (todayPct >= 0 && todayPct <= 100) html += '<div class="gantt-today-line" style="left:' + todayPct + '%;"></div>';
+      html += '</div>';
+    });
+    html += '</div>';
+    var tpg = ((today - startDate) / 86400000 / totalDays) * 100;
+    if (tpg >= 0 && tpg <= 100) html += '<div style="position:relative;height:0;margin-left:220px;"><div class="gantt-today-label" style="left:' + tpg + '%;position:absolute;top:-4px;">TODAY</div></div>';
+    container.innerHTML = html;
+  }
+
+  const now = new Date();
+  const fmt = d => d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'})+' · '+d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('as-of-date').textContent = fmt(now);
+  document.getElementById('ts-dev').textContent = 'Live · '+fmt(now);
+  function toggleSubsection(headerEl) {
+    headerEl.closest('.subsection').classList.toggle('collapsed');
+  }
+</script>
+</body>
+</html>
